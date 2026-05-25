@@ -1,0 +1,55 @@
+# Render Blueprint — API + Worker (free tier)
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: reposignal-api
+    runtime: node
+    buildCommand: pnpm install && pnpm --filter api run build
+    startCommand: pnpm --filter api run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      - key: INTERNAL_API_SECRET
+        sync: false
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false
+      - key: GITHUB_APP_ID
+        sync: false
+      - key: GITHUB_APP_PRIVATE_KEY
+        sync: false
+      - key: LINKEDIN_CLIENT_ID
+        sync: false
+      - key: LINKEDIN_CLIENT_SECRET
+        sync: false
+      - key: LINKEDIN_REDIRECT_URI
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+
+  - type: worker
+    name: reposignal-worker
+    runtime: node
+    buildCommand: pnpm install && pnpm --filter worker run build
+    startCommand: pnpm --filter worker run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

@@ -1,0 +1,22 @@
+Create a compact project card for LinkedIn.
+
+Repository: {{repoName}}
+Description: {{description}}
+Overall Score: {{overallScore}}
+
+Recent Highlights:
+{{#each highlights}}
+- {{this}}
+{{/each}}
+
+Output Requirements:
+Return a JSON object with the following fields exactly as specified.
+Do NOT include any markdown formatting around the JSON.
+
+Fields:
+- title (string): The title of the project card.
+- subtitle (string): A brief subtitle or tagline.
+- details (string): A short paragraph describing the recent progress and why it matters.
+- callToAction (string): A short, engaging sentence prompting the reader to check out the repo or engage.
+
+Return JSON only.

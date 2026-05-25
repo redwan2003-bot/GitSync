@@ -1,0 +1,25 @@
+Generate a project-update briefing.
+
+Repository: {{repoName}}
+Description: {{description}}
+
+Latest Scored Events:
+{{#each events}}
+- [{{type}}] {{title}} (Score: {{score}})
+{{/each}}
+
+Open Issues / Work in Progress:
+{{#each openIssues}}
+- [#{{number}}] {{title}}
+{{/each}}
+
+Output Requirements:
+Return a JSON object with the following fields exactly as specified.
+Do NOT include any markdown formatting around the JSON.
+
+Fields:
+- heading (string): A short, engaging heading.
+- summary (string): A summary of the project's current status and recent events.
+- nextSteps (array of strings): A list of actionable next steps based on the open issues or recent work.
+
+Return JSON only.

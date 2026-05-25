@@ -1,0 +1,46 @@
+---
+description: RepoSignal project rules for Cursor
+alwaysApply: true
+---
+
+# RepoSignal Rules
+
+You are working on a compliant GitHub-to-LinkedIn visibility automation tool.
+
+## Platform Policy
+
+- Use official LinkedIn APIs only.
+- Never scrape LinkedIn.
+- Never automate LinkedIn website clicks.
+- Never use unofficial Voyager endpoints.
+- Never implement auto-like, auto-comment, auto-connect, auto-message, or engagement manipulation.
+- LinkedIn profile Projects auto-editing is disabled unless explicit approved Profile Edit API access exists.
+
+## GitHub Webhooks
+
+- Always verify `X-Hub-Signature-256` with HMAC-SHA256.
+- Store GitHub delivery IDs and make processing idempotent.
+- Do webhook work asynchronously through queues.
+
+## Content Generation
+
+- Generate structured JSON before writing final post text.
+- Every claim must map to GitHub evidence or explicit user input.
+- Do not invent metrics, clients, users, revenue, production usage, or collaborators.
+- Avoid generic AI phrases.
+
+## Architecture
+
+- Keep domain logic in `packages/domain`.
+- Keep integrations in `packages/integrations`.
+- Keep UI primitives in `packages/ui`.
+- Keep API controllers thin.
+- Keep worker processors idempotent.
+
+## Security
+
+- Encrypt tokens at rest.
+- Never log OAuth tokens or webhook secrets.
+- Minimize private repo content storage.
+- Add audit logs to publishing and integration changes.
+
