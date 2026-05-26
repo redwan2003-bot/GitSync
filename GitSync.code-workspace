@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "RepoSignal",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "npm.packageManager": "pnpm",
+    "npm.autoDetect": "off"
+  }
+}

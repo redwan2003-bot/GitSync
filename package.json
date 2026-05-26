@@ -4,6 +4,10 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "build:packages": "pnpm --filter @reposignal/config build && pnpm --filter @reposignal/db build && pnpm --filter @reposignal/prompts build && pnpm --filter @reposignal/ai build",
+    "dev:api": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter api start:dev",
+    "dev:worker": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter worker start:dev",
+    "dev:web": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter web dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",

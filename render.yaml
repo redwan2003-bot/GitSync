@@ -5,6 +5,7 @@ services:
   - type: web
     name: reposignal-api
     runtime: node
+    plan: free
     buildCommand: pnpm install && pnpm --filter api run build
     startCommand: pnpm --filter api run start:prod
     envVars:
@@ -40,6 +41,7 @@ services:
   - type: worker
     name: reposignal-worker
     runtime: node
+    plan: free
     buildCommand: pnpm install && pnpm --filter worker run build
     startCommand: pnpm --filter worker run start:prod
     envVars:
