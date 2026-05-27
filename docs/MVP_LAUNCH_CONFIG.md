@@ -28,4 +28,9 @@
 - Auth.js (GitHub provider) on Vercel
 - API trusts signed internal headers from web BFF proxy (`INTERNAL_API_SECRET`)
 
+## Database (first deploy)
+
+- Vercel build runs `pnpm db:push` (see root `vercel.json`) so Auth.js Prisma tables exist in Neon `public` schema.
+- Or run manually once: `DATABASE_URL=... pnpm db:push`
+
 Fill secrets using root `.env.example`, then reply **env ready**.
