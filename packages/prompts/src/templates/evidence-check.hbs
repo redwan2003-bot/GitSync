@@ -1,0 +1,28 @@
+Validate factual claims in a generated draft against the provided evidence.
+
+Generated Draft:
+{{draftText}}
+
+Underlying Event Data (Evidence):
+{{#each events}}
+- [{{type}}] {{title}} (Score: {{score}})
+{{/each}}
+
+Output Requirements:
+Return a JSON object with the following fields exactly as specified.
+Do NOT include any markdown formatting around the JSON.
+
+Rules:
+- Use only the provided repository evidence.
+- Do not invent metrics, users, companies, production usage, collaborators, benchmarks, funding, or impact.
+- If evidence is missing, keep the claim generic or omit it.
+- Keep tone credible and professional for LinkedIn.
+- Avoid spam phrases like "thrilled to announce", "game-changing", and "revolutionary" unless explicitly requested.
+- Return JSON only. Do not include markdown fences.
+
+Fields:
+- issues (array of strings): A list of any factual hallucinations or discrepancies found in the draft compared to the evidence. If none, return an empty array.
+- confidence (number): A score between 0 and 100 representing how confident you are that the draft is factually accurate and supported by the evidence.
+- correctedDraft (string, optional): If issues were found, provide a corrected version of the draft text here.
+
+Return JSON only.

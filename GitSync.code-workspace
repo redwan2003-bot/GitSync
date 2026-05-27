@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "GitSync",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "npm.packageManager": "pnpm",
+    "npm.autoDetect": "off"
+  }
+}

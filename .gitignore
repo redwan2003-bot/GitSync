@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment (never commit)
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+.next/
+.turbo/
+coverage/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Prisma
+packages/db/prisma/*.db
+packages/db/prisma/*.db-journal

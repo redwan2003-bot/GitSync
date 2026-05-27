@@ -1,0 +1,4 @@
+{
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm -w run build:packages && pnpm db:push && pnpm --filter web build"
+}

@@ -1,0 +1,55 @@
+name: Deploy to Koyeb
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Koyeb
+        uses: koyeb-community/koyeb-actions@v2
+        with:
+          api_token: ${{ secrets.KOYEB_API_TOKEN }}
+
+      - name: Deploy API service
+        uses: koyeb/action-git-deploy@v1
+        with:
+          app-name: GitSync
+          service-name: GitSync-api
+          service-type: web
+          git: github.com/redwan2003-bot/GitSync
+          git-branch: main
+          git-builder: buildpack
+          git-build-command: pnpm install --prod=false && pnpm -w run build:packages && pnpm --filter api run build
+          git-run-command: pnpm --filter api run start:prod
+          service-instance-type: nano
+          service-regions: fra
+          service-ports: 3001:http
+          service-routes: /:3001
+          service-checks: 3001:http:/health
+          service-env: NODE_ENV=production,PORT=3001,DATABASE_URL=${{ secrets.DATABASE_URL }},REDIS_URL=${{ secrets.REDIS_URL }},TOKEN_ENCRYPTION_KEY=${{ secrets.TOKEN_ENCRYPTION_KEY }},AUTH_SECRET=${{ secrets.AUTH_SECRET }},INTERNAL_API_SECRET=${{ secrets.INTERNAL_API_SECRET }},GITHUB_WEBHOOK_SECRET=${{ secrets.GITHUB_WEBHOOK_SECRET }},GITHUB_APP_ID=${{ secrets.GITHUB_APP_ID }},GITHUB_APP_PRIVATE_KEY=${{ secrets.GITHUB_APP_PRIVATE_KEY }},LINKEDIN_CLIENT_ID=${{ secrets.LINKEDIN_CLIENT_ID }},LINKEDIN_CLIENT_SECRET=${{ secrets.LINKEDIN_CLIENT_SECRET }},LINKEDIN_REDIRECT_URI=${{ secrets.LINKEDIN_REDIRECT_URI }},WEB_APP_URL=${{ secrets.WEB_APP_URL }},GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},GEMINI_MODEL=gemini-3.5-flash,GEMINI_ALLOW_PRIVATE_REPO_DRAFTING=false,LINKEDIN_PROFILE_EDIT_ENABLED=false,DEFAULT_MAX_POSTS_PER_WEEK=3,WEBHOOK_RETENTION_DAYS=90,EVIDENCE_RETENTION_DAYS=90
+
+  deploy-worker:
+    needs: deploy-api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Koyeb
+        uses: koyeb-community/koyeb-actions@v2
+        with:
+          api_token: ${{ secrets.KOYEB_API_TOKEN }}
+
+      - name: Deploy Worker service
+        uses: koyeb/action-git-deploy@v1
+        with:
+          app-name: GitSync
+          service-name: GitSync-worker
+          service-type: worker
+          git: github.com/redwan2003-bot/GitSync
+          git-branch: main
+          git-builder: buildpack
+          git-build-command: pnpm install --prod=false && pnpm -w run build:packages && pnpm --filter worker run build
+          git-run-command: pnpm --filter worker run start:prod
+          service-instance-type: nano
+          service-regions: fra
+          service-env: NODE_ENV=production,DATABASE_URL=${{ secrets.DATABASE_URL }},REDIS_URL=${{ secrets.REDIS_URL }},TOKEN_ENCRYPTION_KEY=${{ secrets.TOKEN_ENCRYPTION_KEY }},GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},GEMINI_MODEL=gemini-3.5-flash,GEMINI_ALLOW_PRIVATE_REPO_DRAFTING=false

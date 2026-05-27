@@ -1,0 +1,2 @@
+# No tfvars needed for this basic example, as values are hardcoded in main.tf for validation purposes.
+# But you can declare variable overrides here.

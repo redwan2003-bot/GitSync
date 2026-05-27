@@ -1,0 +1,47 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "REDIS_URL",
+    "TOKEN_ENCRYPTION_KEY",
+    "AUTH_SECRET",
+    "AUTH_URL",
+    "AUTH_TRUST_HOST",
+    "AUTH_GITHUB_ID",
+    "AUTH_GITHUB_SECRET",
+    "INTERNAL_API_SECRET",
+    "PORT",
+    "WEB_APP_URL",
+    "LINKEDIN_CLIENT_ID",
+    "LINKEDIN_CLIENT_SECRET",
+    "LINKEDIN_REDIRECT_URI",
+    "GEMINI_API_KEY",
+    "GEMINI_MODEL",
+    "GEMINI_ALLOW_PRIVATE_REPO_DRAFTING",
+    "LINKEDIN_PROFILE_EDIT_ENABLED",
+    "DEFAULT_MAX_POSTS_PER_WEEK",
+    "WEBHOOK_RETENTION_DAYS",
+    "EVIDENCE_RETENTION_DAYS",
+    "NEXT_PUBLIC_API_URL"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
