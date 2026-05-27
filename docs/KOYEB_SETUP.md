@@ -5,6 +5,15 @@ This project keeps the web app on Vercel and moves backend workloads to Koyeb:
 - `reposignal-api` (web service)
 - `reposignal-worker` (worker service)
 
+## 0) Infrastructure-as-code note
+
+Koyeb does not currently provide a first-class single-file app spec for this deployment flow.
+Instead, this repo includes a reproducible GitHub Actions workflow:
+
+- `.github/workflows/deploy-koyeb.yml`
+
+Run it manually from GitHub Actions after you add all required repository secrets.
+
 ## 1) Create API service on Koyeb
 
 - **Service type:** Web Service
