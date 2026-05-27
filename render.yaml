@@ -6,7 +6,7 @@ services:
     name: reposignal-api
     runtime: node
     plan: free
-    buildCommand: pnpm install --prod=false && pnpm run build:packages && pnpm --filter api run build
+    buildCommand: pnpm install --prod=false && pnpm -w run build:packages && pnpm --filter api run build
     startCommand: pnpm --filter api run start:prod
     envVars:
       - key: NODE_ENV
@@ -42,7 +42,7 @@ services:
     name: reposignal-worker
     runtime: node
     plan: free
-    buildCommand: pnpm install --prod=false && pnpm run build:packages && pnpm --filter worker run build
+    buildCommand: pnpm install --prod=false && pnpm -w run build:packages && pnpm --filter worker run build
     startCommand: pnpm --filter worker run start:prod
     envVars:
       - key: NODE_ENV
