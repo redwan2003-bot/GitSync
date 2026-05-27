@@ -4,10 +4,10 @@ import { Logger } from '@nestjs/common';
 import { AiGenerationService } from '@reposignal/ai';
 
 @Processor('ai-generation', {
-  concurrency: 2, // Process max 2 AI generation jobs simultaneously across this worker instance
+  concurrency: 1, // Conservative free-tier hosted beta default
   limiter: {
-    max: 10,
-    duration: 1000 * 60, // Limit to 10 jobs per minute globally for this queue to respect API quotas
+    max: 5,
+    duration: 1000 * 60, // Limit to 5 jobs per minute globally for this queue to respect API quotas
   },
 })
 export class AiProcessor extends WorkerHost {
@@ -58,7 +58,7 @@ export class AiProcessor extends WorkerHost {
     } catch (error: any) {
       this.logger.error(`Failed to process AI job ${job.id}: ${error.message}`);
       
-      // If error is a rate limit or 5xx from OpenAI, let BullMQ retry.
+      // If error is a provider rate limit or 5xx, let BullMQ retry.
       // If it's a 4xx (like invalid prompt), we might want to fail permanently.
       // The backoff is handled by the enqueue options in WebhookService.
       throw error;

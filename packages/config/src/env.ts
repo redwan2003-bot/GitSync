@@ -2,6 +2,15 @@ import { z } from "zod";
 
 const nonEmpty = z.string().min(1);
 
+const geminiEnvSchema = z.object({
+  GEMINI_API_KEY: nonEmpty,
+  GEMINI_MODEL: z.string().default("gemini-3.5-flash"),
+  GEMINI_ALLOW_PRIVATE_REPO_DRAFTING: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
+});
+
 /** Shared across API, worker, and web (server). */
 export const sharedEnvSchema = z.object({
   NODE_ENV: z
@@ -13,7 +22,7 @@ export const sharedEnvSchema = z.object({
 });
 
 /** Nest API on Render */
-export const apiEnvSchema = sharedEnvSchema.extend({
+export const apiEnvSchema = sharedEnvSchema.merge(geminiEnvSchema).extend({
   PORT: z.coerce.number().default(3001),
   AUTH_SECRET: nonEmpty,
   INTERNAL_API_SECRET: nonEmpty,
@@ -23,7 +32,6 @@ export const apiEnvSchema = sharedEnvSchema.extend({
   LINKEDIN_CLIENT_ID: nonEmpty,
   LINKEDIN_CLIENT_SECRET: nonEmpty,
   LINKEDIN_REDIRECT_URI: z.string().url(),
-  OPENAI_API_KEY: nonEmpty,
   WEB_APP_URL: z.string().url(),
   LINKEDIN_PROFILE_EDIT_ENABLED: z
     .enum(["true", "false"])
@@ -35,9 +43,7 @@ export const apiEnvSchema = sharedEnvSchema.extend({
 });
 
 /** BullMQ worker on Render */
-export const workerEnvSchema = sharedEnvSchema.extend({
-  OPENAI_API_KEY: nonEmpty,
-});
+export const workerEnvSchema = sharedEnvSchema.merge(geminiEnvSchema);
 
 /** Next.js on Vercel */
 export const webEnvSchema = z.object({
@@ -92,7 +98,12 @@ export const apiEnvDevelopmentSchema = z.object({
     .string()
     .url()
     .default("http://localhost:3001/integrations/linkedin/callback"),
-  OPENAI_API_KEY: z.string().default(""),
+  GEMINI_API_KEY: z.string().default(""),
+  GEMINI_MODEL: z.string().default("gemini-3.5-flash"),
+  GEMINI_ALLOW_PRIVATE_REPO_DRAFTING: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
   WEB_APP_URL: z.string().url().default("http://localhost:3000"),
   LINKEDIN_PROFILE_EDIT_ENABLED: z
     .enum(["true", "false"])

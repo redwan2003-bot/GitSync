@@ -1,17 +1,27 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import * as Handlebars from "handlebars";
 import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { getTemplate } from "@reposignal/prompts";
 
-export class AiGenerationService {
-  private client: OpenAI;
+interface AiGenerationServiceOptions {
+  apiKey?: string;
+  model?: string;
+  client?: GoogleGenAI;
+}
 
-  constructor() {
-    const apiKey = process.env.OPENAI_API_KEY;
+export class AiGenerationService {
+  private readonly client: GoogleGenAI;
+  private readonly model: string;
+
+  constructor(options: AiGenerationServiceOptions = {}) {
+    const apiKey = options.apiKey ?? process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error("OPENAI_API_KEY is not set in environment.");
+      throw new Error("GEMINI_API_KEY is not set in environment.");
     }
-    this.client = new OpenAI({ apiKey });
+
+    this.model = options.model ?? process.env.GEMINI_MODEL ?? "gemini-3.5-flash";
+    this.client = options.client ?? new GoogleGenAI({ apiKey });
   }
 
   /**
@@ -21,35 +31,98 @@ export class AiGenerationService {
   async generateDraft<T>(
     templateName: string,
     context: Record<string, any>,
-    schema: z.ZodSchema<T>
+    schema: z.ZodSchema<T>,
   ): Promise<T> {
+    this.assertPrivateRepoAllowed(context);
+
     const templateString = getTemplate(templateName);
     const compiledTemplate = Handlebars.compile(templateString);
     const prompt = compiledTemplate(context);
+    const responseSchema = this.toGeminiSchema(schema);
 
-    // Call OpenAI with JSON mode enabled
-    const response = await this.client.chat.completions.create({
-      model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-    });
+    const response = await this.withRetries(() =>
+      this.client.models.generateContent({
+        model: this.model,
+        contents: prompt,
+        config: {
+          systemInstruction:
+            "You generate factual, evidence-bound RepoSignal content. Use only the provided evidence. Do not invent metrics, users, companies, production claims, collaborators, or benchmarks. Return JSON only.",
+          temperature: 0.3,
+          responseMimeType: "application/json",
+          responseSchema,
+        },
+      }),
+    );
 
-    const rawContent = response.choices[0]?.message?.content ?? "{}";
-    
-    // The model is instructed to return JSON. We parse it and then pass to Zod for strict validation.
+    const rawContent = response.text ?? "{}";
     let parsedJson: unknown;
     try {
       parsedJson = JSON.parse(rawContent);
-    } catch (error) {
-      throw new Error(`Failed to parse AI response as JSON. Raw response: ${rawContent}`);
+    } catch {
+      throw new Error(
+        `Failed to parse Gemini response as JSON. Raw response: ${rawContent}`,
+      );
     }
 
-    // Validate structured output with Zod
     const validationResult = schema.safeParse(parsedJson);
     if (!validationResult.success) {
-      throw new Error(`AI generated JSON did not match expected schema: ${validationResult.error.message}`);
+      throw new Error(
+        `Gemini generated JSON did not match expected schema: ${validationResult.error.message}`,
+      );
     }
 
     return validationResult.data;
+  }
+
+  private toGeminiSchema(schema: z.ZodTypeAny): Record<string, unknown> {
+    const jsonSchema = zodToJsonSchema(schema as any, {
+      $refStrategy: "none",
+      target: "jsonSchema7",
+    }) as Record<string, unknown>;
+
+    delete jsonSchema.$schema;
+    return jsonSchema;
+  }
+
+  private assertPrivateRepoAllowed(context: Record<string, any>): void {
+    const visibility =
+      context.repositoryVisibility ?? context.repository?.visibility;
+
+    if (
+      visibility === "private" &&
+      process.env.GEMINI_ALLOW_PRIVATE_REPO_DRAFTING !== "true"
+    ) {
+      throw new Error(
+        "Private repository drafting is disabled for Gemini hosted beta. Set GEMINI_ALLOW_PRIVATE_REPO_DRAFTING=true only after explicit user consent or a paid-provider privacy review.",
+      );
+    }
+  }
+
+  private async withRetries<T>(operation: () => Promise<T>): Promise<T> {
+    const maxAttempts = 3;
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        return await operation();
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.status ?? error?.response?.status;
+        const retryable =
+          status === 429 ||
+          status >= 500 ||
+          error?.code === "ECONNRESET" ||
+          error?.code === "ETIMEDOUT";
+
+        if (!retryable || attempt === maxAttempts) {
+          break;
+        }
+
+        const delayMs = 500 * 2 ** (attempt - 1);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+
+    throw lastError;
   }
 }

@@ -33,8 +33,12 @@ services:
         sync: false
       - key: LINKEDIN_REDIRECT_URI
         sync: false
-      - key: OPENAI_API_KEY
+      - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash
+      - key: GEMINI_ALLOW_PRIVATE_REPO_DRAFTING
+        value: "false"
       - key: WEB_APP_URL
         sync: false
 
@@ -53,5 +57,9 @@ services:
         sync: false
       - key: TOKEN_ENCRYPTION_KEY
         sync: false
-      - key: OPENAI_API_KEY
+      - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash
+      - key: GEMINI_ALLOW_PRIVATE_REPO_DRAFTING
+        value: "false"
