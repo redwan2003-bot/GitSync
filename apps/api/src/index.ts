@@ -1,14 +1,19 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createPostHogClient } from "./posthog";
+import { getPrisma } from "@GitSync/db";
 
 export type Env = {
   DATABASE_URL: string;
   GITHUB_WEBHOOK_SECRET: string;
   WEBHOOK_RETENTION_DAYS: string;
-  CF_QUEUE_GITHUB_EVENTS: Queue;
+  CF_QUEUE_GITHUB_EVENTS: any;
   POSTHOG_TOKEN: string;
   POSTHOG_HOST: string;
+  INTERNAL_API_SECRET?: string;
+  WEB_APP_URL?: string;
+  LINKEDIN_CLIENT_ID?: string;
+  LINKEDIN_REDIRECT_URI?: string;
 };
 
 const app = new Hono<{ Bindings: Env }>();
@@ -41,7 +46,7 @@ app.route("/integrations/linkedin", linkedinRouter);
 export default {
   fetch: app.fetch,
   
-  async queue(batch: MessageBatch<any>, env: Env): Promise<void> {
+  async queue(batch: any, env: Env): Promise<void> {
     const prisma = getPrisma(env.DATABASE_URL);
     // In a full implementation, we'd import AiGenerationService from @GitSync/ai
     // For this migration MVP, we handle the state updates:
