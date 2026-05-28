@@ -24,7 +24,7 @@ if (connectionString) {
 export const prisma: PrismaClient =
   globalForPrisma.prisma ??
   (new PrismaClient({
-    adapter,
+    ...(adapter ? { adapter } : {}),
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   }) as any);
 
