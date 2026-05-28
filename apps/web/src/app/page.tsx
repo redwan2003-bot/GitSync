@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, BrainCircuit, ShieldCheck, Zap } from "lucide-react";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  console.log("Vercel build trigger");
   return (
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30">
       {/* Navigation */}
