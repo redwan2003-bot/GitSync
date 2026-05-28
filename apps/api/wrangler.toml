@@ -1,0 +1,18 @@
+name = "reposignal-api"
+main = "src/index.ts"
+compatibility_date = "2024-03-20"
+compatibility_flags = [ "nodejs_compat" ]
+
+[vars]
+POSTHOG_TOKEN = "phc_m2jXRGwKcMyjrJj358UmNaBefzogAHDYmdsBUhsNgvpW"
+POSTHOG_HOST = "https://us.i.posthog.com"
+
+# Bindings to your Queues
+[[queues.producers]]
+queue = "reposignal-github-events"
+binding = "CF_QUEUE_GITHUB_EVENTS"
+
+[[queues.consumers]]
+queue = "reposignal-github-events"
+max_batch_size = 10
+max_batch_timeout = 5

@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Auth.js (Prisma adapter) ---
+
+model User {
+  id            String            @id @default(cuid())
+  email         String            @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  workspaces    WorkspaceMember[]
+  auditLogs     AuditLog[]
+  draftVersions DraftVersion[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- Workspace ---
+
+model Workspace {
+  id                String               @id @default(cuid())
+  name              String
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  members           WorkspaceMember[]
+  settings          WorkspaceSettings?
+  repositories      Repository[]
+  drafts            ContentDraft[]
+  tokenVault        TokenVaultEntry[]
+  githubInstalls    GitHubInstallation[]
+  webhookDeliveries WebhookDelivery[]
+  auditLogs         AuditLog[]
+  evidenceSnapshots EvidenceSnapshot[]
+  projectCards      ProjectCard[]
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String    @default("OWNER")
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+model WorkspaceSettings {
+  id                  String    @id @default(cuid())
+  workspaceId         String    @unique
+  autoMode            String    @default("REVIEW_REQUIRED")
+  maxPostsPerWeek     Int       @default(3)
+  privateReposEnabled Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// --- Integrations ---
+
+model TokenVaultEntry {
+  id             String    @id @default(cuid())
+  workspaceId    String
+  provider       String
+  encryptedToken String
+  iv             String
+  tag            String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider])
+}
+
+model GitHubInstallation {
+  id             String    @id @default(cuid())
+  workspaceId    String
+  installationId BigInt    @unique
+  accountLogin   String
+  accountType    String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// --- GitHub ---
+
+model Repository {
+  id             String         @id @default(cuid())
+  workspaceId    String
+  githubRepoId   BigInt
+  owner          String
+  name           String
+  fullName       String
+  visibility     String
+  defaultBranch  String?
+  htmlUrl        String
+  enabled        Boolean        @default(false)
+  selected       Boolean        @default(false)
+  privateEnabled Boolean        @default(false)
+  autoMode       String         @default("REVIEW_REQUIRED")
+  lastSyncedAt   DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  workspace      Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  drafts         ContentDraft[]
+  projectCards   ProjectCard[]
+
+  @@unique([workspaceId, githubRepoId])
+}
+
+model WebhookDelivery {
+  id           String     @id @default(cuid())
+  workspaceId  String?
+  deliveryId   String     @unique
+  event        String
+  payload      Json
+  status       String     @default("PENDING")
+  errorMessage String?
+  processedAt  DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime   @default(now())
+  workspace    Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+}
+
+// --- Content ---
+
+model ContentDraft {
+  id                String             @id @default(cuid())
+  workspaceId       String
+  repositoryId      String?
+  template          String
+  payloadJson       Json
+  generatedJson     Json?
+  generatedText     String?
+  evidenceMap       Json?
+  status            String             @default("DETECTED")
+  requiresReview    Boolean            @default(true)
+  linkedInPostUrn   String?
+  publishedAt       DateTime?
+  usage             Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  repository        Repository?        @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+  versions          DraftVersion[]
+  linkedInPost      LinkedInPost?
+  evidenceSnapshots EvidenceSnapshot[]
+
+  @@index([workspaceId, status])
+}
+
+model DraftVersion {
+  id         String       @id @default(cuid())
+  draftId    String
+  version    Int
+  fullText   String       @db.Text
+  editedById String?
+  createdAt  DateTime     @default(now())
+  draft      ContentDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  editor     User?        @relation(fields: [editedById], references: [id], onDelete: SetNull)
+
+  @@unique([draftId, version])
+}
+
+model EvidenceSnapshot {
+  id          String        @id @default(cuid())
+  workspaceId String
+  draftId     String?
+  payload     Json
+  expiresAt   DateTime
+  createdAt   DateTime      @default(now())
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  draft       ContentDraft? @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+model LinkedInPost {
+  id          String       @id @default(cuid())
+  draftId     String       @unique
+  urn         String
+  publishedAt DateTime     @default(now())
+  draft       ContentDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+model ProjectCard {
+  id                String     @id @default(cuid())
+  workspaceId       String
+  repositoryId      String
+  title             String
+  role              String?
+  description       String     @db.Text
+  startDate         String?
+  endDate           String?
+  technologies      Json
+  links             Json
+  syncStatus        String     @default("MANUAL_READY")
+  linkedInProjectId String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  workspace         Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  repository        Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+}
+
+// --- Audit ---
+
+model AuditLog {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  userId       String?
+  action       String
+  resourceType String
+  resourceId   String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user         User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+}

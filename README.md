@@ -57,7 +57,7 @@ Use a TypeScript-first monorepo:
 - Storage: S3-compatible object storage for generated images/media
 - Observability: OpenTelemetry, Sentry, structured logs, uptime checks
 - Analytics: PostHog or similar product analytics
-- Deployment: Vercel for web, Fly.io/Render/AWS ECS for API workers, Neon/Supabase/RDS for Postgres, Upstash/Redis Cloud for Redis
+- Deployment: Vercel for web, Fly.io/AWS ECS/similar for API workers, Neon/Supabase/RDS for Postgres, Upstash/Redis Cloud for Redis
 
 ## Suggested Product Theme
 

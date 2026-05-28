@@ -5,14 +5,14 @@
 | Service | Host | Example |
 |---------|------|---------|
 | Web | Vercel | `https://GitSync.vercel.app` |
-| API | Render | `https://GitSync-api.onrender.com` |
-| Worker | Render | `https://GitSync-worker.onrender.com` |
+| API | Cloud Provider (e.g., Fly.io) | `https://GitSync-api.fly.dev` |
+| Worker | Cloud Provider (e.g., Fly.io) | `https://GitSync-worker.fly.dev` |
 
 ## OAuth callbacks
 
 - **Auth.js:** `https://<vercel-host>/api/auth/callback/github`
-- **GitHub webhook:** `https://<render-api>/webhooks/github`
-- **LinkedIn:** `https://<render-api>/integrations/linkedin/callback`
+- **GitHub webhook:** `https://<api-host>/webhooks/github`
+- **LinkedIn:** `https://<api-host>/integrations/linkedin/callback`
 
 ## Policies
 

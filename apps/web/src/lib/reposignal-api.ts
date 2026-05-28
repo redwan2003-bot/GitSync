@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@reposignal/db";
+import { prisma } from "@GitSync/db";
 import { signInternalRequest } from "./api-sign";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL!;

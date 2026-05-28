@@ -1,20 +1,42 @@
 import { PrismaClient } from "@prisma/client";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import ws from "ws";
+
+// Set up WebSocket for Node.js environments (Next.js)
+if (typeof WebSocket === "undefined" && typeof ws !== "undefined") {
+  neonConfig.webSocketConstructor = ws;
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma =
+// Default instance for Next.js (uses process.env)
+const connectionString = process.env.DATABASE_URL || "";
+let adapter: PrismaNeon | undefined;
+
+if (connectionString) {
+  const pool = new Pool({ connectionString });
+  adapter = new PrismaNeon(pool);
+}
+
+export const prisma: PrismaClient =
   globalForPrisma.prisma ??
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["error", "warn"]
-        : ["error"],
-  });
+  (new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+  }) as any);
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
+}
+
+// Factory for Cloudflare Workers (passes URL from env)
+export function getPrisma(databaseUrl: string): PrismaClient {
+  const pool = new Pool({ connectionString: databaseUrl });
+  const adapter = new PrismaNeon(pool);
+  return new PrismaClient({ adapter }) as any;
 }
 
 export * from "@prisma/client";

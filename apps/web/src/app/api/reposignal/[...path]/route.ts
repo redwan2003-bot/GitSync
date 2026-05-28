@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@reposignal/db";
+import { prisma } from "@GitSync/db";
 import { signInternalRequest } from "@/lib/api-sign";
 import { NextRequest, NextResponse } from "next/server";
 

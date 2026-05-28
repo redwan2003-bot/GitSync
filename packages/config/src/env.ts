@@ -21,7 +21,7 @@ export const sharedEnvSchema = z.object({
   TOKEN_ENCRYPTION_KEY: nonEmpty,
 });
 
-/** Nest API on Render */
+/** Nest API schema */
 export const apiEnvSchema = sharedEnvSchema.merge(geminiEnvSchema).extend({
   PORT: z.coerce.number().default(3001),
   AUTH_SECRET: nonEmpty,
@@ -42,10 +42,10 @@ export const apiEnvSchema = sharedEnvSchema.merge(geminiEnvSchema).extend({
   EVIDENCE_RETENTION_DAYS: z.coerce.number().int().min(1).default(90),
 });
 
-/** BullMQ worker on Render */
+/** BullMQ worker schema */
 export const workerEnvSchema = sharedEnvSchema.merge(geminiEnvSchema);
 
-/** Next.js on Vercel */
+/** Next.js web application schema */
 export const webEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])

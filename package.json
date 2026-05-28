@@ -4,21 +4,22 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "build:packages": "pnpm --filter @GitSync/config build && pnpm --filter @GitSync/db build && pnpm --filter @GitSync/prompts build && pnpm --filter @GitSync/ai build",
-    "dev:api": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter api start:dev",
-    "dev:worker": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter worker start:dev",
-    "dev:web": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter web dev",
+    "build:packages": "pnpm --filter @GitSync/config run build && pnpm --filter @GitSync/db run build && pnpm --filter @GitSync/prompts run build && pnpm --filter @GitSync/ai run build",
+    "dev:api": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter api run start:dev",
+    "dev:worker": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter worker run start:dev",
+    "dev:web": "powershell -NoProfile -File scripts/load-env.ps1 && pnpm --filter web run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "db:push": "pnpm --filter @GitSync/db db:push",
-    "db:studio": "pnpm --filter @GitSync/db db:studio"
+    "db:push": "pnpm --filter @GitSync/db run db:push",
+    "db:studio": "pnpm --filter @GitSync/db run db:studio"
   },
   "devDependencies": {
-    "turbo": "latest",
     "prettier": "latest",
-    "typescript": "latest"
+    "turbo": "latest",
+    "typescript": "latest",
+    "wrangler": "^4.95.0"
   },
   "packageManager": "pnpm@9.0.0"
 }

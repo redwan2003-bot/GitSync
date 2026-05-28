@@ -132,7 +132,7 @@ Do not hard-code the provider into domain logic. The content pipeline should acc
 MVP:
 
 - Vercel: web
-- Fly.io or Render: API and workers
+- Fly.io or other cloud hosting: API and workers
 - Neon/Supabase: Postgres
 - Upstash: Redis
 - Cloudflare R2 or AWS S3: media assets
