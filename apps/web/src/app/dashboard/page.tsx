@@ -11,7 +11,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
   let githubConnected = false;
-  let linkedinConnected = searchParams.linkedin === 'connected';
+  let linkedinConnected = false;
 
   let membership = null;
 
@@ -38,14 +38,14 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
         });
       }
       
-      if (githubInstall) githubConnected = true;
+      if (githubInstall || searchParams.github === 'connected') githubConnected = true;
 
       // 2. Check LinkedIn Connection
       let linkedinToken = await prisma.tokenVaultEntry.findFirst({
         where: { workspaceId: membership.workspaceId, provider: "LINKEDIN" },
       });
 
-      if (linkedinToken) linkedinConnected = true;
+      if (linkedinToken || searchParams.linkedin === 'connected') linkedinConnected = true;
     }
   }
 
@@ -104,7 +104,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
               Install the GitSync GitHub App on selected public repositories.
             </p>
             <a 
-              href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL || "#"}
+              href={`${apiUrl}/integrations/github/connect?workspaceId=${membership?.workspaceId || ""}`}
               className="block w-full text-center py-2 px-4 rounded-lg bg-white text-slate-900 font-medium text-sm hover:bg-slate-100 transition-colors"
             >
               Install GitHub App

@@ -15,6 +15,7 @@ export type Env = {
   LINKEDIN_CLIENT_ID?: string;
   LINKEDIN_REDIRECT_URI?: string;
   LINKEDIN_CLIENT_SECRET?: string;
+  GITHUB_APP_SLUG?: string;
 };
 
 const app = new Hono<{ Bindings: Env }>();
@@ -37,12 +38,13 @@ import { githubRouter } from "./routes/github";
 import { draftsRouter } from "./routes/drafts";
 import { accountRouter } from "./routes/account";
 import { linkedinRouter } from "./routes/linkedin";
+import { githubAppRouter } from "./routes/github-app";
 
-// TODO: Mount routers here
 app.route("/webhooks", githubRouter);
 app.route("/drafts", draftsRouter);
 app.route("/account", accountRouter);
 app.route("/integrations/linkedin", linkedinRouter);
+app.route("/integrations/github", githubAppRouter);
 
 export default {
   fetch: app.fetch,
