@@ -13,8 +13,10 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
   let githubConnected = false;
   let linkedinConnected = searchParams.linkedin === 'connected';
 
+  let membership = null;
+
   if (session?.user?.id) {
-    const membership = await prisma.workspaceMember.findFirst({
+    membership = await prisma.workspaceMember.findFirst({
       where: { userId: session.user.id },
       select: { workspaceId: true },
     });
