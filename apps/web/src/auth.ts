@@ -6,20 +6,25 @@ import { authConfig } from "./auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: "database",
-  },
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    async jwt({ token, user }) {
+      if (user && user.id) {
+        token.id = user.id;
         const membership = await prisma.workspaceMember.findFirst({
           where: { userId: user.id },
           select: { workspaceId: true },
         });
         if (membership) {
-          (session as { workspaceId?: string }).workspaceId =
-            membership.workspaceId;
+          token.workspaceId = membership.workspaceId;
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string;
+        if (token.workspaceId) {
+          (session as { workspaceId?: string }).workspaceId = token.workspaceId as string;
         }
       }
       return session;
