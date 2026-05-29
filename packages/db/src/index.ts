@@ -8,35 +8,31 @@ if (typeof WebSocket === "undefined" && typeof ws !== "undefined") {
   neonConfig.webSocketConstructor = ws;
 }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-// Default instance for Next.js (uses process.env)
-const connectionString = process.env.DATABASE_URL || "";
-let adapter: PrismaNeon | undefined;
-
-if (connectionString) {
+// Node environment (process available)
+let prisma;
+if (typeof process !== "undefined" && process.env?.DATABASE_URL) {
+  const { PrismaClient } = require("@prisma/client");
+  const connectionString = process.env.DATABASE_URL;
   const pool = new Pool({ connectionString });
-  adapter = new PrismaNeon(pool);
-}
-
-export const prisma: PrismaClient =
-  globalForPrisma.prisma ??
-  (new PrismaClient({
-    ...(adapter ? { adapter } : {}),
+  const adapter = new PrismaNeon(pool);
+  prisma = new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-  }) as any);
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  });
+} else {
+  // Edge runtime (Cloudflare Workers) - no global Prisma instance.
+  // Use getPrisma(databaseUrl) to obtain a client per request.
+  prisma = undefined as any;
 }
 
-// Factory for Cloudflare Workers (passes URL from env)
-export function getPrisma(databaseUrl: string): PrismaClient {
+export { prisma };
+
+// Factory for Workers: creates a new Prisma client per request using the provided DATABASE_URL
+export function getPrisma(databaseUrl: string) {
+  const { PrismaClient } = require("@prisma/client");
   const pool = new Pool({ connectionString: databaseUrl });
   const adapter = new PrismaNeon(pool);
-  return new PrismaClient({ adapter }) as any;
+  return new PrismaClient({ adapter });
 }
 
 export * from "@prisma/client";
@@ -47,6 +43,12 @@ export async function ensureUserWorkspace(
   email: string,
   name?: string | null,
 ): Promise<{ workspaceId: string }> {
+  const databaseUrl = (globalThis as any).DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is not defined in the Worker environment.");
+  }
+  const prisma = getPrisma(databaseUrl);
+
   const existing = await prisma.workspaceMember.findFirst({
     where: { userId },
     select: { workspaceId: true },
@@ -58,9 +60,7 @@ export async function ensureUserWorkspace(
   const workspace = await prisma.workspace.create({
     data: {
       name: name ? `${name}'s workspace` : `${email.split("@")[0]}'s workspace`,
-      members: {
-        create: { userId, role: "OWNER" },
-      },
+      members: { create: { userId, role: "OWNER" } },
       settings: {
         create: {
           autoMode: "REVIEW_REQUIRED",

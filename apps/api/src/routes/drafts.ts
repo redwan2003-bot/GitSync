@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { getPrisma } from "@GitSync/db";
+import type { PrismaClient } from "@GitSync/db";
 import { Env } from "../index";
 import { internalAuthMiddleware } from "../auth/middleware";
 
@@ -50,7 +51,7 @@ draftsRouter.put("/:id", async (c) => {
   });
   const nextVersion = (latestVersion?.version ?? 0) + 1;
 
-  const updated = await prisma.$transaction(async (tx) => {
+  const updated = await prisma.$transaction(async (tx: PrismaClient) => {
     await tx.draftVersion.create({
       data: {
         draftId: id,
@@ -113,7 +114,7 @@ draftsRouter.post("/:id/publish", async (c) => {
   const urn = `urn:li:share:${Math.floor(Math.random() * 1000000000)}`;
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: PrismaClient) => {
       const linkedInPost = await tx.linkedInPost.create({
         data: { draftId: id, urn },
       });

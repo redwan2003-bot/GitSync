@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "git-sync-worker",
+  "main": "apps/web/src/index.ts",
+  "compatibility_date": "2025-02-04",
+  "observability": { "enabled": true },
+  "vars": {
+    "INTERNAL_API_URL": "https://gitsync-api.workers.dev"
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "MY_QUEUE",
+        "queue": "reposignal-github-events"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "reposignal-github-events",
+        "max_batch_size": 10,
+        "dead_letter_queue": "my-queue-dlq",
+        "script": "apps/web/src/consumer.ts"
+      }
+    ],
+    "dead_letter_queues": [
+      {
+        "queue": "my-queue-dlq",
+        "script": "apps/web/src/dlq_handler.ts"
+      }
+    ]
+  }
+}
