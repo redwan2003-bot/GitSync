@@ -69,30 +69,34 @@ async function proxy(
   ctx: { params: Promise<{ path: string[] }> },
   method: string,
 ) {
-  const headers = await buildHeaders();
-  if (!headers) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const headers = await buildHeaders();
+    if (!headers) {
+      return NextResponse.json({ error: "Unauthorized (Missing headers or INTERNAL_API_SECRET)" }, { status: 401 });
+    }
+
+    const { path } = await ctx.params;
+    const target = `${API_BASE}/${path.join("/")}${req.nextUrl.search}`;
+
+    const res = await fetch(target, {
+      method,
+      headers: {
+        ...headers,
+        ...(req.headers.get("content-type")
+          ? { "content-type": req.headers.get("content-type")! }
+          : {}),
+      },
+      body: method !== "GET" && method !== "HEAD" ? await req.text() : undefined,
+    });
+
+    const text = await res.text();
+    return new NextResponse(text, {
+      status: res.status,
+      headers: {
+        "content-type": res.headers.get("content-type") ?? "application/json",
+      },
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: `Proxy Error: ${error.message}` }, { status: 500 });
   }
-
-  const { path } = await ctx.params;
-  const target = `${API_BASE}/${path.join("/")}${req.nextUrl.search}`;
-
-  const res = await fetch(target, {
-    method,
-    headers: {
-      ...headers,
-      ...(req.headers.get("content-type")
-        ? { "content-type": req.headers.get("content-type")! }
-        : {}),
-    },
-    body: method !== "GET" && method !== "HEAD" ? await req.text() : undefined,
-  });
-
-  const text = await res.text();
-  return new NextResponse(text, {
-    status: res.status,
-    headers: {
-      "content-type": res.headers.get("content-type") ?? "application/json",
-    },
-  });
 }
