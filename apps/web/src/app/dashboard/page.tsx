@@ -64,9 +64,12 @@ export default async function DashboardPage() {
             <p className="text-sm text-slate-400 mb-6">
               Install the GitSync GitHub App on selected public repositories.
             </p>
-            <button className="w-full py-2 px-4 rounded-lg bg-white text-slate-900 font-medium text-sm hover:bg-slate-100 transition-colors">
+            <a 
+              href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL || "#"}
+              className="block w-full text-center py-2 px-4 rounded-lg bg-white text-slate-900 font-medium text-sm hover:bg-slate-100 transition-colors"
+            >
               Install GitHub App
-            </button>
+            </a>
           </div>
 
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
