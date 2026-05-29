@@ -6,6 +6,10 @@ compatibility_flags = [ "nodejs_compat" ]
 [vars]
 POSTHOG_TOKEN = "phc_m2jXRGwKcMyjrJj358UmNaBefzogAHDYmdsBUhsNgvpW"
 POSTHOG_HOST = "https://us.i.posthog.com"
+LINKEDIN_CLIENT_ID = "864xlmni6yny64"
+LINKEDIN_REDIRECT_URI = "https://reposignal-api.gitsync.workers.dev/integrations/linkedin/callback"
+WEB_APP_URL = "https://gitsyncweb.vercel.app/"
+WEBHOOK_RETENTION_DAYS = "90"
 
 # Bindings to your Queues
 [[queues.producers]]
