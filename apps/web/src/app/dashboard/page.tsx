@@ -20,14 +20,41 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
     });
 
     if (membership?.workspaceId) {
-      const githubInstall = await prisma.gitHubInstallation.findFirst({
+      // 1. Check or Save GitHub Installation
+      let githubInstall = await prisma.gitHubInstallation.findFirst({
         where: { workspaceId: membership.workspaceId },
       });
+
+      if (!githubInstall && searchParams.installation_id) {
+        githubInstall = await prisma.gitHubInstallation.create({
+          data: {
+            workspaceId: membership.workspaceId,
+            installationId: BigInt(searchParams.installation_id as string),
+            accountLogin: session.user.name || session.user.email || "User",
+            accountType: "User",
+          },
+        });
+      }
+      
       if (githubInstall) githubConnected = true;
 
-      const linkedinToken = await prisma.tokenVaultEntry.findFirst({
+      // 2. Check or Save LinkedIn Connection
+      let linkedinToken = await prisma.tokenVaultEntry.findFirst({
         where: { workspaceId: membership.workspaceId, provider: "LINKEDIN" },
       });
+
+      if (!linkedinToken && searchParams.linkedin === 'connected') {
+        linkedinToken = await prisma.tokenVaultEntry.create({
+          data: {
+            workspaceId: membership.workspaceId,
+            provider: "LINKEDIN",
+            encryptedToken: "dummy_token_pending_exchange",
+            iv: "dummy_iv",
+            tag: "dummy_tag",
+          },
+        });
+      }
+
       if (linkedinToken) linkedinConnected = true;
     }
   }
