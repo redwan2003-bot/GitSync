@@ -14,6 +14,7 @@ export type Env = {
   WEB_APP_URL?: string;
   LINKEDIN_CLIENT_ID?: string;
   LINKEDIN_REDIRECT_URI?: string;
+  LINKEDIN_CLIENT_SECRET?: string;
 };
 
 const app = new Hono<{ Bindings: Env }>();

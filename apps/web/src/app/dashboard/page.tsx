@@ -38,22 +38,10 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
       
       if (githubInstall) githubConnected = true;
 
-      // 2. Check or Save LinkedIn Connection
+      // 2. Check LinkedIn Connection
       let linkedinToken = await prisma.tokenVaultEntry.findFirst({
         where: { workspaceId: membership.workspaceId, provider: "LINKEDIN" },
       });
-
-      if (!linkedinToken && searchParams.linkedin === 'connected') {
-        linkedinToken = await prisma.tokenVaultEntry.create({
-          data: {
-            workspaceId: membership.workspaceId,
-            provider: "LINKEDIN",
-            encryptedToken: "dummy_token_pending_exchange",
-            iv: "dummy_iv",
-            tag: "dummy_tag",
-          },
-        });
-      }
 
       if (linkedinToken) linkedinConnected = true;
     }
@@ -146,7 +134,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
               Official OAuth only. Profile Projects editing stays manual in v1.
             </p>
             <a
-              href={`${apiUrl}/integrations/linkedin/connect`}
+              href={`${apiUrl}/integrations/linkedin/connect?workspaceId=${membership?.workspaceId || ""}`}
               className="block w-full text-center py-2 px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-500 transition-colors"
             >
               Connect with LinkedIn

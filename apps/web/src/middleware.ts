@@ -16,6 +16,11 @@ export default auth((req) => {
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
+
+  // Redirect authenticated users from home to dashboard
+  if (req.auth && pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
+  }
 });
 
 export const config = {
