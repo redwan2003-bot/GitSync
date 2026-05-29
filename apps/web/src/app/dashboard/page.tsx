@@ -3,12 +3,34 @@ import { UserMenu } from "@/components/user-menu";
 import Link from "next/link";
 import { Github, Linkedin, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 
-export default async function DashboardPage() {
+import { prisma } from "@GitSync/db";
+
+export default async function DashboardPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const session = await auth();
+  const searchParams = await props.searchParams;
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-  const githubConnected = false;
-  const linkedinConnected = false;
+  let githubConnected = false;
+  let linkedinConnected = searchParams.linkedin === 'connected';
+
+  if (session?.user?.id) {
+    const membership = await prisma.workspaceMember.findFirst({
+      where: { userId: session.user.id },
+      select: { workspaceId: true },
+    });
+
+    if (membership?.workspaceId) {
+      const githubInstall = await prisma.gitHubInstallation.findFirst({
+        where: { workspaceId: membership.workspaceId },
+      });
+      if (githubInstall) githubConnected = true;
+
+      const linkedinToken = await prisma.tokenVaultEntry.findFirst({
+        where: { workspaceId: membership.workspaceId, provider: "LINKEDIN" },
+      });
+      if (linkedinToken) linkedinConnected = true;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
