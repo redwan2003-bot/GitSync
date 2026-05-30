@@ -136,9 +136,9 @@ export default function SettingsPage() {
           </div>
         </SettingCard>
 
-        {/* 3. OpenAI Status */}
+        {/* 3. Gemini AI Configuration */}
         <SettingCard
-          title="OpenAI Configuration"
+          title="Gemini 3.5 Flash Configuration"
           description="Manage AI model settings for draft generation"
           status="connected"
           icon={Zap}
@@ -147,21 +147,21 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">API Key</span>
               <span className="text-xs font-mono bg-surface-soft px-2 py-1 rounded text-text">
-                sk-***...***
+                AIz***...***
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Model</span>
               <select className="px-2 py-1 rounded bg-surface-soft border border-border text-sm text-text">
-                <option>gpt-4</option>
-                <option>gpt-3.5-turbo</option>
+                <option>gemini-3.5-flash</option>
+                <option>gemini-pro</option>
               </select>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Status</span>
               <span className="flex items-center gap-1 text-sm text-signal">
                 <CheckCircle2 size={14} />
-                Valid
+                Active
               </span>
             </div>
             <button className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-bg font-medium text-sm hover:bg-signal/90 transition-colors">
