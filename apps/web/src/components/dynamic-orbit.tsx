@@ -1,15 +1,10 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import React from 'react';
 import SignalOrbitFallback from '@/components/signal-orbit-fallback';
 
-// Lazy‑load the 3D scene only on the client side; SSR is disabled.
-const SignalOrbitScene = dynamic(() => import('./signal-orbit-scene'), {
-  ssr: false,
-  loading: () => <SignalOrbitFallback />,
-});
-
+// Temporarily render only the fallback SVG to avoid React context issues
+// The 3D scene will be re-enabled once peer dependency conflicts are resolved
 export default function DynamicOrbit() {
-  return <SignalOrbitScene />;
+  return <SignalOrbitFallback />;
 }
