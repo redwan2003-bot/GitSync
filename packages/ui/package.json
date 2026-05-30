@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "workspace:~"
+    "react": "^19.2.4"
   },
   "devDependencies": {
     "typescript": "^5.3.0"
