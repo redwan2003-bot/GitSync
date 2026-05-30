@@ -1,7 +1,7 @@
 'use client';
 
 import { BentoCard } from '@/components/bento-card';
-import { H1, Body, Caption } from '@/components/typography';
+import { H1 } from '@/components/typography';
 import {
   Github,
   Linkedin,
