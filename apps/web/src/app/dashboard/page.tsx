@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
-import { UserMenu } from "@/components/user-menu";
 import Link from "next/link";
 import { Github, Linkedin, CheckCircle2, AlertCircle, FileText } from "lucide-react";
+import DynamicOrbit from "@/components/dynamic-orbit";
+import DashboardTopBar from "@/components/DashboardTopBar";
 
 import { prisma } from "@GitSync/db";
 
@@ -51,22 +52,9 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <h1 className="text-xl font-bold tracking-tight text-white">
-            GitSync
-          </h1>
-          <Link
-            href="/dashboard/drafts"
-            className="text-sm text-slate-400 hover:text-white flex items-center gap-1.5"
-          >
-            <FileText className="w-4 h-4" />
-            Drafts
-          </Link>
-        </div>
-        <UserMenu email={session?.user?.email} />
-      </header>
-
+      <DashboardTopBar title="Dashboard" />
+        
+      <DynamicOrbit />
       <main className="max-w-4xl mx-auto p-6 mt-8">
         <div className="mb-8">
           <h2 className="text-2xl font-bold tracking-tight text-white">

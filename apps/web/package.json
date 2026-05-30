@@ -16,7 +16,11 @@
     "next": "16.2.6",
     "next-auth": "^5.0.0-beta.25",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "three": "^0.164.0",
+    "@react-three/fiber": "^8.15.5",
+    "@react-three/drei": "^9.95.1",
+    "framer-motion": "^11.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
