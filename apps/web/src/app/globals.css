@@ -1,6 +1,18 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Pixelify+Sans:wght@400;700&display=swap');
 
 :root {
+  --bg: #0e1116;
+  --surface: #151a21;
+  --surface-soft: #1e242d;
+  --text: #f5f7fa;
+  --muted: #a7b0be;
+  --border: #2a323d;
+  --signal: #32d583;
+  --commit: #f5b544;
+  --cyan: #37d5ff;
+  --linkedin: #0a66c2;
+  --danger: #f97066;
+  
   --color-background: #0a0a0a;
   --color-foreground: #e0e0e0;
   --color-primary: #00ffff; /* Cyan */
@@ -10,6 +22,39 @@
   --font-heading: var(--font-space-grotesk);
   --font-body: var(--font-plus-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
+}
+
+@import "tailwindcss";
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--text);
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: bold;
+  }
+
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .status-badge {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 }
 
 @layer utilities {
@@ -24,6 +69,12 @@
   .text-secondary { color: var(--color-secondary); }
   .text-accent { color: var(--color-accent); }
   .text-danger { color: var(--color-danger); }
+
+  .transition-smooth {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
 }
 
 @keyframes spin-slow {
@@ -36,6 +87,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
   .animate-spin-slow {
     animation: none;
   }
@@ -46,10 +102,4 @@
     --color-background: #0a0a0a;
     --color-foreground: #e0e0e0;
   }
-}
-
-body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-body);
 }
