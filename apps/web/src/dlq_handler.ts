@@ -2,7 +2,8 @@
 // This script handles messages that landed in the dead‑letter queue.
 // It can be attached to a worker via the "dead_letter_queue" binding.
 
-export default {
+const dlqHandler = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async queue(batch: any, env: any, ctx: any) {
     for (const message of batch) {
       try {
@@ -16,3 +17,5 @@ export default {
     }
   }
 };
+
+export default dlqHandler;

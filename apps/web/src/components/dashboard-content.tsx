@@ -16,6 +16,27 @@ export default function DashboardContent({
   membership,
   apiUrl,
 }: DashboardContentProps) {
+  const handleGithubConnect = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    try {
+      const connectUrl = `${apiUrl}/integrations/github/connect?workspaceId=${membership?.workspaceId || ""}`;
+      const response = await fetch(connectUrl, { 
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      
+      if (response.ok) {
+        window.location.href = connectUrl;
+        return;
+      }
+    } catch (_err) {}
+    
+    // Fallback: Direct GitHub App install URL if API is down
+    const appSlug = 'gitsync-engine';
+    const installUrl = `https://github.com/apps/${appSlug}/installations/new?state=${encodeURIComponent(membership?.workspaceId || "")}`;
+    window.location.href = installUrl;
+  };
+
   return (
     <>
       <DynamicOrbit />
@@ -56,7 +77,8 @@ export default function DashboardContent({
               Install the GitSync GitHub App on selected public repositories.
             </p>
             <a 
-              href={`${apiUrl}/integrations/github/connect?workspaceId=${membership?.workspaceId || ""}`}
+              href="#"
+              onClick={handleGithubConnect}
               className="block w-full text-center py-2 px-4 rounded-lg bg-white text-slate-900 font-medium text-sm hover:bg-slate-100 transition-colors"
             >
               Install GitHub App

@@ -2,7 +2,8 @@
 // This script processes messages from the Cloudflare Queue "reposignal-github-events".
 // It runs in the context of a Cloudflare Worker with a queue binding.
 
-export default {
+const queueHandler = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async queue(batch: any, env: any, ctx: any) {
     // batch: an array of QueueMessages
     // env: contains bindings defined in wrangler.jsonc, e.g., MY_QUEUE (producer) if needed.
@@ -27,4 +28,6 @@ export default {
     }
   }
 };
+
+export default queueHandler;
 

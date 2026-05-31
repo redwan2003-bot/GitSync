@@ -1,57 +1,22 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { BentoCard } from '@/components/bento-card';
 import { H1, H2, PixelStatusBadge } from '@/components/typography';
 import { Globe, Lock, GitBranch, ToggleRight } from 'lucide-react';
 import Link from 'next/link';
 
-// Mock repo data - replace with API call if available
-const MOCK_REPOS = [
-  {
-    id: '1',
-    name: 'gitflow',
-    visibility: 'public',
-    status: 'READY' as const,
-    score: 87,
-    lastActivity: '2 hours ago',
-    pendingDrafts: 1,
-  },
-  {
-    id: '2',
-    name: 'ui-kit',
-    visibility: 'private',
-    status: 'SYNCING' as const,
-    score: 64,
-    lastActivity: '30 mins ago',
-    pendingDrafts: 0,
-  },
-  {
-    id: '3',
-    name: 'api-core',
-    visibility: 'public',
-    status: 'READY' as const,
-    score: 92,
-    lastActivity: '5 mins ago',
-    pendingDrafts: 2,
-  },
-  {
-    id: '4',
-    name: 'mobile-app',
-    visibility: 'private',
-    status: 'FAILED' as const,
-    score: 45,
-    lastActivity: '1 day ago',
-    pendingDrafts: 0,
-  },
-];
+interface Repo {
+  id: string;
+  name: string;
+  visibility: 'public' | 'private';
+  status: 'READY' | 'SYNCING' | 'FAILED';
+  score: number;
+  lastActivity: string;
+  pendingDrafts: number;
+}
 
-function RepoCard({ repo }: { repo: (typeof MOCK_REPOS)[0] }) {
-  const statusMap: Record<string, 'READY' | 'SYNCING' | 'FAILED'> = {
-    READY: 'READY',
-    SYNCING: 'SYNCING',
-    FAILED: 'FAILED',
-  };
-
+function RepoCard({ repo }: { repo: Repo }) {
   return (
     <BentoCard className="flex flex-col gap-4">
       {/* Header with name and visibility */}
@@ -75,7 +40,7 @@ function RepoCard({ repo }: { repo: (typeof MOCK_REPOS)[0] }) {
       {/* Status and Score Row */}
       <div className="flex items-center justify-between py-3 border-t border-b border-border">
         <div className="flex items-center gap-2">
-          <PixelStatusBadge status={statusMap[repo.status]} />
+          <PixelStatusBadge status={repo.status} />
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-signal">{repo.score}</div>
@@ -111,7 +76,52 @@ function RepoCard({ repo }: { repo: (typeof MOCK_REPOS)[0] }) {
 }
 
 export default function RepositoriesPage() {
-  const repos = MOCK_REPOS; // Replace with API call
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadRepos() {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        const res = await fetch(`${apiUrl}/api/GitSync/github-repos`);
+        
+        if (!res.ok) throw new Error('Failed to fetch repos');
+        
+        const data = await res.json();
+        // Backend returns hasGitHub flag; show empty state if no repos
+        setRepos(data.repos || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load repositories');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRepos();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <H1>Repositories</H1>
+        <div className="animate-pulse space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-32 bg-surface-soft rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <H1>Repositories</H1>
+        <div className="p-4 bg-danger/10 text-danger rounded-lg">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -125,7 +135,7 @@ export default function RepositoriesPage() {
         </div>
       </div>
 
-      {/* Search/Filter Stub (can be enhanced later) */}
+      {/* Search/Filter Stub */}
       <div className="flex gap-3">
         <input
           type="text"
@@ -145,9 +155,15 @@ export default function RepositoriesPage() {
         <div className="text-center py-12">
           <GitBranch size={48} className="mx-auto text-muted/30 mb-4" />
           <H2 className="text-lg mb-2">No repositories connected</H2>
-          <p className="text-sm text-muted max-w-md mx-auto">
+          <p className="text-sm text-muted max-w-md mx-auto mb-6">
             Connect GitHub repositories to start tracking signals and generating LinkedIn content.
           </p>
+          <Link
+            href="/dashboard/settings"
+            className="inline-block px-4 py-2 bg-signal text-white rounded-lg hover:bg-signal/90 transition-colors"
+          >
+            Install GitHub App
+          </Link>
         </div>
       )}
     </div>

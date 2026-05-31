@@ -96,7 +96,8 @@ async function proxy(
         "content-type": res.headers.get("content-type") ?? "application/json",
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Proxy Error: ${error.message}` }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: `Proxy Error: ${message}` }, { status: 500 });
   }
 }

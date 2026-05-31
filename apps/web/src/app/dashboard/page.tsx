@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense, useState, useEffect } from 'react';
 import { BentoCard } from '@/components/bento-card';
 import { SignalOrbitPanel } from '@/components/signal-orbit-panel';
 import { AnimatedMetricCard } from '@/components/animated-metric-card';
@@ -8,8 +9,90 @@ import { RepoSignalCard } from '@/components/repo-signal-card';
 import { IntegrationStatusCard } from '@/components/integration-status-card';
 import { H2 } from '@/components/typography';
 import Link from 'next/link';
+import { fetchFromAPI } from '@/lib/api-client';
 
-export default function DashboardPage() {
+interface DashboardMetrics {
+  repositoriesCount: number;
+  draftsAwaitingReview: number;
+  publishedPostsCount: number;
+  failedSyncsCount: number;
+}
+
+interface Signal {
+  id: string;
+  action: string;
+  description: string;
+  resource?: string;
+  timestamp: string | Date;
+}
+
+interface Draft {
+  id: string;
+  title: string;
+  createdAt: string | Date;
+}
+
+function MetricsLoader() {
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        
+        const [metricsRes, signalsRes, draftsRes] = await Promise.all([
+          fetch(`${apiUrl}/api/GitSync/dashboard/metrics`),
+          fetch(`${apiUrl}/api/GitSync/audit-logs?limit=3`),
+          fetch(`${apiUrl}/api/GitSync/dashboard/pending-drafts`),
+        ]);
+
+        if (!metricsRes.ok || !signalsRes.ok || !draftsRes.ok) {
+          throw new Error('Failed to fetch dashboard data');
+        }
+
+        const metricsData = await metricsRes.json();
+        const signalsData = await signalsRes.json();
+        const draftsData = await draftsRes.json();
+
+        setMetrics(metricsData);
+        setSignals(signalsData.logs || []);
+        setDrafts(draftsData.data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+        console.error('Dashboard load error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-max">
+        {[...Array(6)].map((_, i) => (
+          <BentoCard key={i}>
+            <div className="h-20 bg-surface-soft animate-pulse rounded" />
+          </BentoCard>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-danger/10 text-danger rounded-lg">
+        <p>Error loading dashboard: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-max">
       {/* Signal Orbit Panel (2x2) */}
@@ -21,16 +104,16 @@ export default function DashboardPage() {
       <BentoCard>
         <AnimatedMetricCard
           icon="GitBranch"
-          value={12}
+          value={metrics?.repositoriesCount || 0}
           label="Active Repositories"
-          secondary="Up 2 from last week"
+          secondary={metrics?.repositoriesCount === 0 ? 'No repos connected' : 'Connected'}
           color="signal"
         />
       </BentoCard>
       <BentoCard>
         <AnimatedMetricCard
           icon="FileText"
-          value={3}
+          value={metrics?.draftsAwaitingReview || 0}
           label="Drafts Awaiting Review"
           secondary="Ready to publish"
           color="commit"
@@ -39,16 +122,16 @@ export default function DashboardPage() {
       <BentoCard>
         <AnimatedMetricCard
           icon="CheckCircle"
-          value={47}
+          value={metrics?.publishedPostsCount || 0}
           label="Published Posts"
-          secondary="This month"
+          secondary="Total published"
           color="signal"
         />
       </BentoCard>
       <BentoCard>
         <AnimatedMetricCard
           icon="AlertCircle"
-          value={1}
+          value={metrics?.failedSyncsCount || 0}
           label="Failed Syncs"
           secondary="Last 24 hours"
           color="danger"
@@ -65,11 +148,31 @@ export default function DashboardPage() {
       <BentoCard>
         <div className="space-y-4">
           <H2 className="text-lg">Recent Signals</H2>
-          <div className="space-y-3">
-            <RepoSignalCard repo="gitflow" event="COMMIT" timestamp="2 mins ago" />
-            <RepoSignalCard repo="ui-kit" event="PR_OPENED" timestamp="1 hour ago" />
-            <RepoSignalCard repo="api-core" event="RELEASE" timestamp="3 hours ago" />
-          </div>
+          {signals.length === 0 ? (
+            <p className="text-xs text-muted">No recent signals</p>
+          ) : (
+            <div className="space-y-3">
+              {signals.slice(0, 3).map((signal) => {
+                // Map audit log actions to RepoSignalCard event types
+                const eventMap: Record<string, 'COMMIT' | 'PR_OPENED' | 'RELEASE' | 'WEBHOOK_FAILED'> = {
+                  'PUBLISHED': 'RELEASE',
+                  'SYNCED': 'COMMIT',
+                  'CREATED': 'COMMIT',
+                  'FAILED': 'WEBHOOK_FAILED',
+                  'UPDATED': 'COMMIT',
+                };
+                const event = eventMap[signal.action] || 'COMMIT';
+                return (
+                  <RepoSignalCard
+                    key={signal.id}
+                    repo={signal.resource || 'Unknown'}
+                    event={event}
+                    timestamp={new Date(signal.timestamp).toLocaleTimeString()}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </BentoCard>
 
@@ -77,16 +180,18 @@ export default function DashboardPage() {
       <BentoCard>
         <div className="space-y-4">
           <H2 className="text-lg">Pending Drafts</H2>
-          <div className="space-y-3">
-            <div className="pb-3 border-b border-border">
-              <div className="text-sm font-medium text-text">Released v2.0.0 update</div>
-              <div className="text-xs text-muted">gitflow • 2 hours ago</div>
+          {drafts.length === 0 ? (
+            <p className="text-xs text-muted">No pending drafts</p>
+          ) : (
+            <div className="space-y-3">
+              {drafts.slice(0, 2).map((draft) => (
+                <div key={draft.id} className="pb-3 border-b border-border">
+                  <div className="text-sm font-medium text-text">{draft.title}</div>
+                  <div className="text-xs text-muted">{new Date(draft.createdAt).toLocaleDateString()}</div>
+                </div>
+              ))}
             </div>
-            <div className="pb-3 border-b border-border">
-              <div className="text-sm font-medium text-text">New feature: Dark mode</div>
-              <div className="text-xs text-muted">ui-kit • 4 hours ago</div>
-            </div>
-          </div>
+          )}
           <Link href="/dashboard/drafts" className="text-xs text-signal hover:text-signal/80 transition-colors inline-block mt-2">
             View all drafts →
           </Link>
@@ -99,5 +204,13 @@ export default function DashboardPage() {
         <IntegrationStatusCard />
       </BentoCard>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading dashboard...</div>}>
+      <MetricsLoader />
+    </Suspense>
   );
 }

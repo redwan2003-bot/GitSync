@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { BentoCard } from '@/components/bento-card';
 import { H1 } from '@/components/typography';
 import {
@@ -11,6 +12,18 @@ import {
   User,
   CheckCircle2,
 } from 'lucide-react';
+
+interface IntegrationStatus {
+  github: { connected: boolean; configured: boolean };
+  linkedin: { connected: boolean; configured: boolean };
+  aiProvider: {
+    provider: string;
+    model: string;
+    configured: boolean;
+  };
+  database: { connected: boolean };
+  queue: { connected: boolean };
+}
 
 const SettingCard = ({
   title,
@@ -64,6 +77,83 @@ const SettingCard = ({
 };
 
 export default function SettingsPage() {
+  const [integrations, setIntegrations] = useState<IntegrationStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadIntegrations() {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        const res = await fetch(`${apiUrl}/api/GitSync/integration-status`);
+        
+        if (!res.ok) throw new Error('Failed to fetch integration status');
+        
+        const data = await res.json();
+        setIntegrations(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load integrations');
+        console.error('Integration status error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadIntegrations();
+  }, []);
+
+  const handleDisconnect = async (service: string) => {
+    console.log(`Disconnect ${service} - endpoint not yet implemented`);
+  };
+
+  const handleInstallGithub = async () => {
+    // Use NextAuth signIn with GitHub provider
+    const response = await fetch('/api/auth/signin/github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok) {
+      window.location.href = `/api/auth/signin/github`;
+    }
+  };
+
+  const handleConnectLinkedin = async () => {
+    // Use NextAuth signIn with LinkedIn provider
+    const response = await fetch('/api/auth/signin/linkedin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok) {
+      window.location.href = `/api/auth/signin/linkedin`;
+    }
+  };
+
+  const handleViewLogs = () => {
+    window.location.href = '/dashboard/audit';
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <H1>Settings</H1>
+        <div className="animate-pulse space-y-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-32 bg-surface-soft rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <H1>Settings</H1>
+        <div className="p-4 bg-danger/10 text-danger rounded-lg">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -80,29 +170,32 @@ export default function SettingsPage() {
         <SettingCard
           title="GitHub Connection"
           description="Authenticate with GitHub to sync repositories"
-          status="connected"
+          status={integrations?.github.connected ? 'connected' : 'disconnected'}
           icon={Github}
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Status</span>
-              <span className="text-sm font-medium text-text">Connected</span>
+              <span className="text-sm font-medium text-text">
+                {integrations?.github.connected ? 'Connected' : 'Disconnected'}
+              </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Account</span>
-              <span className="text-sm font-medium text-text">redwan2003</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Scopes</span>
-              <span className="text-xs text-cyan">repos, user, workflow</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Last Sync</span>
-              <span className="text-sm font-medium text-text">2 minutes ago</span>
-            </div>
-            <button className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm hover:bg-danger/5 transition-colors">
-              Disconnect
-            </button>
+            {integrations?.github.connected && (
+              <button
+                onClick={() => handleDisconnect('github')}
+                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm hover:bg-danger/5 transition-colors"
+              >
+                Disconnect
+              </button>
+            )}
+            {!integrations?.github.connected && (
+              <button
+                onClick={handleInstallGithub}
+                className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors"
+              >
+                Install GitHub App
+              </button>
+            )}
           </div>
         </SettingCard>
 
@@ -110,29 +203,32 @@ export default function SettingsPage() {
         <SettingCard
           title="LinkedIn Connection"
           description="Authenticate with LinkedIn to publish posts"
-          status="connected"
+          status={integrations?.linkedin.connected ? 'connected' : 'disconnected'}
           icon={Linkedin}
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Status</span>
-              <span className="text-sm font-medium text-text">Connected</span>
+              <span className="text-sm font-medium text-text">
+                {integrations?.linkedin.connected ? 'Connected' : 'Disconnected'}
+              </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Profile</span>
-              <span className="text-sm font-medium text-text">Redwan Ahmmed</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Followers</span>
-              <span className="text-sm font-medium text-text">1,234</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Last Sync</span>
-              <span className="text-sm font-medium text-text">1 hour ago</span>
-            </div>
-            <button className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm hover:bg-danger/5 transition-colors">
-              Disconnect
-            </button>
+            {integrations?.linkedin.connected && (
+              <button
+                onClick={() => handleDisconnect('linkedin')}
+                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm hover:bg-danger/5 transition-colors"
+              >
+                Disconnect
+              </button>
+            )}
+            {!integrations?.linkedin.connected && (
+              <button
+                onClick={handleConnectLinkedin}
+                className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors"
+              >
+                Connect LinkedIn
+              </button>
+            )}
           </div>
         </SettingCard>
 
@@ -140,31 +236,29 @@ export default function SettingsPage() {
         <SettingCard
           title="Gemini 3.5 Flash Configuration"
           description="Manage AI model settings for draft generation"
-          status="connected"
+          status={integrations?.aiProvider.configured ? 'connected' : 'disconnected'}
           icon={Zap}
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">API Key</span>
-              <span className="text-xs font-mono bg-surface-soft px-2 py-1 rounded text-text">
-                AIz***...***
-              </span>
+              <span className="text-sm text-muted">Provider</span>
+              <span className="text-sm font-medium text-text">{integrations?.aiProvider.provider}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Model</span>
-              <select className="px-2 py-1 rounded bg-surface-soft border border-border text-sm text-text">
-                <option>gemini-3.5-flash</option>
-                <option>gemini-pro</option>
-              </select>
+              <span className="text-sm font-medium text-text">{integrations?.aiProvider.model}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Status</span>
-              <span className="flex items-center gap-1 text-sm text-signal">
+              <span className={`flex items-center gap-1 text-sm ${integrations?.aiProvider.configured ? 'text-signal' : 'text-danger'}`}>
                 <CheckCircle2 size={14} />
-                Active
+                {integrations?.aiProvider.configured ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <button className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-bg font-medium text-sm hover:bg-signal/90 transition-colors">
+            <button
+              disabled={!integrations?.aiProvider.configured}
+              className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Update Key
             </button>
           </div>
@@ -179,25 +273,17 @@ export default function SettingsPage() {
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Rate Limit</span>
-              <span className="text-sm font-medium text-text">3 posts per week</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Private Repos</span>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked readOnly className="rounded" />
-                <span className="text-sm text-text">Excluded</span>
-              </label>
-            </div>
-            <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Approval Required</span>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked readOnly className="rounded" />
                 <span className="text-sm text-text">Enabled</span>
               </label>
             </div>
-            <button className="w-full mt-4 px-4 py-2 rounded-lg border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors">
-              Edit Policies
+            <button
+              disabled
+              className="w-full mt-4 px-4 py-2 rounded-lg border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors disabled:opacity-50"
+            >
+              Edit Policies (Coming Soon)
             </button>
           </div>
         </SettingCard>
@@ -212,26 +298,22 @@ export default function SettingsPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Queue</span>
-              <span className="flex items-center gap-1 text-sm text-signal">
+              <span className={`flex items-center gap-1 text-sm ${integrations?.queue.connected ? 'text-signal' : 'text-danger'}`}>
                 <CheckCircle2 size={14} />
-                Operational
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Webhooks</span>
-              <span className="flex items-center gap-1 text-sm text-signal">
-                <CheckCircle2 size={14} />
-                Active
+                {integrations?.queue.connected ? 'Operational' : 'Offline'}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Database</span>
-              <span className="flex items-center gap-1 text-sm text-signal">
+              <span className={`flex items-center gap-1 text-sm ${integrations?.database.connected ? 'text-signal' : 'text-danger'}`}>
                 <CheckCircle2 size={14} />
-                Connected
+                {integrations?.database.connected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
-            <button className="w-full mt-4 px-4 py-2 rounded-lg border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors">
+            <button
+              onClick={handleViewLogs}
+              className="w-full mt-4 px-4 py-2 rounded-lg border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors"
+            >
               View Logs
             </button>
           </div>
@@ -245,20 +327,11 @@ export default function SettingsPage() {
           icon={User}
         >
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Email</span>
-              <span className="text-sm font-medium text-text">redwan@example.com</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Workspace</span>
-              <span className="text-sm font-medium text-text">GitSync Dev</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted">Member Since</span>
-              <span className="text-sm font-medium text-text">Jan 2024</span>
-            </div>
-            <button className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-bg font-medium text-sm hover:bg-signal/90 transition-colors">
-              Edit Profile
+            <button
+              disabled
+              className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors disabled:opacity-50"
+            >
+              Edit Profile (Coming Soon)
             </button>
           </div>
         </SettingCard>

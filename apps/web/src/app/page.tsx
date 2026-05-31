@@ -70,7 +70,7 @@ export default async function LandingPage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">AI Smart Summaries</h3>
               <p className="text-gray-400">
-                We don't publish raw commit spam. Our AI analyzes your work and translates it into meaningful professional progress that recruiters actually want to read.
+                We don&apos;t publish raw commit spam. Our AI analyzes your work and translates it into meaningful professional progress that recruiters actually want to read.
               </p>
             </div>
 

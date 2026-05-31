@@ -2,51 +2,16 @@
 
 import { H1 } from '@/components/typography';
 import { Search, Filter, Calendar } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-// Mock audit logs
-const MOCK_LOGS = [
-  {
-    id: '1',
-    timestamp: '2024-05-31T12:34:56Z',
-    action: 'PUBLISHED',
-    actor: 'redwan',
-    resource: 'Draft #42 (gitflow)',
-    details: 'Posted to LinkedIn',
-  },
-  {
-    id: '2',
-    timestamp: '2024-05-31T11:20:30Z',
-    action: 'SYNCED',
-    actor: 'system',
-    resource: 'Repository (ui-kit)',
-    details: 'Fetched 3 commits',
-  },
-  {
-    id: '3',
-    timestamp: '2024-05-31T10:15:22Z',
-    action: 'CREATED',
-    actor: 'ai-engine',
-    resource: 'Draft (api-core)',
-    details: 'Generated from commit activity',
-  },
-  {
-    id: '4',
-    timestamp: '2024-05-31T09:45:10Z',
-    action: 'FAILED',
-    actor: 'system',
-    resource: 'Webhook (mobile-app)',
-    details: 'Connection timeout after 30s',
-  },
-  {
-    id: '5',
-    timestamp: '2024-05-31T08:30:45Z',
-    action: 'UPDATED',
-    actor: 'redwan',
-    resource: 'Integration (LinkedIn)',
-    details: 'Refreshed auth token',
-  },
-];
+interface AuditLog {
+  id: string;
+  timestamp: string;
+  action: string;
+  actor?: string;
+  resource?: string;
+  details?: string;
+}
 
 const ACTION_COLORS: Record<string, string> = {
   PUBLISHED: 'text-signal',
@@ -66,9 +31,9 @@ const AuditRow = ({
 }: {
   timestamp: string;
   action: string;
-  actor: string;
-  resource: string;
-  details: string;
+  actor?: string;
+  resource?: string;
+  details?: string;
 }) => {
   const date = new Date(timestamp).toLocaleTimeString('en-US', {
     hour12: false,
@@ -84,24 +49,45 @@ const AuditRow = ({
         <span className={`${ACTION_COLORS[action] || 'text-text'} font-medium w-20 shrink-0`}>
           {action}
         </span>
-        <span className="text-cyan w-20 shrink-0">{actor}</span>
-        <span className="text-text flex-1">{resource}</span>
-        <span className="text-muted">{details}</span>
+        <span className="text-cyan w-20 shrink-0">{actor || 'system'}</span>
+        <span className="text-text flex-1">{resource || 'N/A'}</span>
+        <span className="text-muted">{details || ''}</span>
       </div>
     </div>
   );
 };
 
 export default function AuditPage() {
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('All');
-  const [filteredLogs, setFilteredLogs] = useState(MOCK_LOGS);
+  const [filteredLogs, setFilteredLogs] = useState<AuditLog[]>([]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
+  useEffect(() => {
+    async function loadLogs() {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        const res = await fetch(`${apiUrl}/api/GitSync/audit-logs?limit=100`);
+        
+        if (!res.ok) throw new Error('Failed to fetch logs');
+        
+        const data = await res.json();
+        setLogs(data.logs || []);
+        setFilteredLogs(data.logs || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load audit logs');
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    let filtered = MOCK_LOGS;
+    loadLogs();
+  }, []);
+
+  useEffect(() => {
+    let filtered = logs;
 
     // Filter by action
     if (actionFilter !== 'All') {
@@ -109,40 +95,35 @@ export default function AuditPage() {
     }
 
     // Filter by search term
-    if (term) {
-      filtered = filtered.filter(
-        (log) =>
-          log.resource.toLowerCase().includes(term) ||
-          log.actor.toLowerCase().includes(term) ||
-          log.details.toLowerCase().includes(term)
-      );
-    }
-
-    setFilteredLogs(filtered);
-  };
-
-  const handleActionFilter = (action: string) => {
-    setActionFilter(action);
-
-    let filtered = MOCK_LOGS;
-
-    // Filter by action
-    if (action !== 'All') {
-      filtered = filtered.filter((log) => log.action === action);
-    }
-
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
         (log) =>
-          log.resource.toLowerCase().includes(searchTerm) ||
-          log.actor.toLowerCase().includes(searchTerm) ||
-          log.details.toLowerCase().includes(searchTerm)
+          (log.resource?.toLowerCase().includes(searchTerm)) ||
+          (log.actor?.toLowerCase().includes(searchTerm)) ||
+          (log.details?.toLowerCase().includes(searchTerm))
       );
     }
 
     setFilteredLogs(filtered);
-  };
+  }, [searchTerm, actionFilter, logs]);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <H1>Audit Log</H1>
+        <div className="bg-surface border border-border rounded-lg p-8 animate-pulse h-96" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <H1>Audit Log</H1>
+        <div className="p-4 bg-danger/10 text-danger rounded-lg">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -175,7 +156,7 @@ export default function AuditPage() {
           <Filter size={18} className="text-muted" />
           <select
             value={actionFilter}
-            onChange={(e) => handleActionFilter(e.target.value)}
+            onChange={(e) => setActionFilter(e.target.value)}
             className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-text focus:outline-none focus:border-signal"
           >
             <option>All</option>
@@ -195,7 +176,7 @@ export default function AuditPage() {
             type="text"
             placeholder="Search by repo, user, or action..."
             value={searchTerm}
-            onChange={handleSearch}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-3 py-2 rounded-lg bg-surface border border-border text-sm text-text placeholder-muted/50 focus:outline-none focus:border-signal"
           />
         </div>
@@ -231,10 +212,12 @@ export default function AuditPage() {
             <div className="font-jetbrains-mono text-sm space-y-2">
               <div className="text-muted">$ audit filter applied</div>
               <div className="text-muted">no logs matching criteria</div>
-              <div className="text-muted mt-4">placeholder row structure:</div>
-              <div className="text-muted mt-2 opacity-50">12:34:56 ACTION actor resource details</div>
-              <div className="text-muted opacity-50">12:34:56 ACTION actor resource details</div>
-              <div className="text-muted opacity-50">12:34:56 ACTION actor resource details</div>
+              {logs.length === 0 && (
+                <>
+                  <div className="text-muted mt-4">no audit events recorded yet</div>
+                  <div className="text-muted mt-2">start publishing or syncing to generate events</div>
+                </>
+              )}
             </div>
           </div>
         )}
