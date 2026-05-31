@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { BentoCard } from '@/components/bento-card';
 import { H1 } from '@/components/typography';
 import {
@@ -106,25 +107,13 @@ export default function SettingsPage() {
   };
 
   const handleInstallGithub = async () => {
-    // Use NextAuth signIn with GitHub provider
-    const response = await fetch('/api/auth/signin/github', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (response.ok) {
-      window.location.href = `/api/auth/signin/github`;
-    }
+    // Use NextAuth signIn - this redirects to GitHub OAuth
+    await signIn('github', { redirect: true, callbackUrl: '/dashboard' });
   };
 
   const handleConnectLinkedin = async () => {
-    // Use NextAuth signIn with LinkedIn provider
-    const response = await fetch('/api/auth/signin/linkedin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (response.ok) {
-      window.location.href = `/api/auth/signin/linkedin`;
-    }
+    // Use NextAuth signIn - this redirects to LinkedIn OAuth
+    await signIn('linkedin', { redirect: true, callbackUrl: '/dashboard' });
   };
 
   const handleViewLogs = () => {
