@@ -24,9 +24,8 @@ export default function ProjectCardsPage() {
       try {
         // Note: Project cards endpoint may not exist yet on backend
         // This is a placeholder for future implementation
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
         try {
-          const res = await fetch(`${apiUrl}/api/GitSync/project-cards`);
+          const res = await fetch('/api/GitSync/project-cards');
           if (res.ok) {
             const data = await res.json();
             setCards(data.cards || []);

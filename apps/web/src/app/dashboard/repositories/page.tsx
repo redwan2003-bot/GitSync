@@ -83,8 +83,7 @@ export default function RepositoriesPage() {
   useEffect(() => {
     async function loadRepos() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-        const res = await fetch(`${apiUrl}/api/GitSync/github-repos`);
+        const res = await fetch('/api/GitSync/github-repos');
         
         if (!res.ok) throw new Error('Failed to fetch repos');
         

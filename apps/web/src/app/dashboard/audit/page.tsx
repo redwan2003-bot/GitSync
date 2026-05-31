@@ -68,8 +68,7 @@ export default function AuditPage() {
   useEffect(() => {
     async function loadLogs() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-        const res = await fetch(`${apiUrl}/api/GitSync/audit-logs?limit=100`);
+        const res = await fetch('/api/GitSync/audit-logs?limit=100');
         
         if (!res.ok) throw new Error('Failed to fetch logs');
         

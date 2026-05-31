@@ -43,12 +43,11 @@ function MetricsLoader() {
     async function loadData() {
       try {
         setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
         
         const [metricsRes, signalsRes, draftsRes] = await Promise.all([
-          fetch(`${apiUrl}/api/GitSync/dashboard/metrics`),
-          fetch(`${apiUrl}/api/GitSync/audit-logs?limit=3`),
-          fetch(`${apiUrl}/api/GitSync/dashboard/pending-drafts`),
+          fetch('/api/GitSync/dashboard/metrics'),
+          fetch('/api/GitSync/audit-logs?limit=3'),
+          fetch('/api/GitSync/dashboard/pending-drafts'),
         ]);
 
         if (!metricsRes.ok || !signalsRes.ok || !draftsRes.ok) {

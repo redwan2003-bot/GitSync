@@ -84,8 +84,7 @@ export default function SettingsPage() {
   useEffect(() => {
     async function loadIntegrations() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-        const res = await fetch(`${apiUrl}/api/GitSync/integration-status`);
+        const res = await fetch('/api/GitSync/integration-status');
         
         if (!res.ok) throw new Error('Failed to fetch integration status');
         
