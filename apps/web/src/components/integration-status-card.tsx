@@ -5,7 +5,7 @@ import { Github, Linkedin, Zap } from 'lucide-react';
 const INTEGRATIONS = [
   { name: 'GitHub', icon: Github, connected: true },
   { name: 'LinkedIn', icon: Linkedin, connected: true },
-  { name: 'OpenAI', icon: Zap, connected: true },
+  { name: 'Gemini', icon: Zap, connected: true },
 ];
 
 export function IntegrationStatusCard() {
