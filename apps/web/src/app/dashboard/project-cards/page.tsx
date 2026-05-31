@@ -22,25 +22,21 @@ export default function ProjectCardsPage() {
   useEffect(() => {
     async function loadCards() {
       try {
-        // Note: Project cards endpoint may not exist yet on backend
-        // This is a placeholder for future implementation
-        try {
-          const res = await fetch('/api/GitSync/project-cards');
-          if (res.ok) {
-            const data = await res.json();
-            setCards(data.cards || []);
-            if (data.cards?.length > 0) {
-              setSelectedCard(data.cards[0]);
-            }
-          } else {
-            setCards([]);
-          }
-        } catch (err) {
-          // Backend endpoint doesn't exist yet - show empty state
-          setCards([]);
+        const res = await fetch('/api/GitSync/project-cards');
+        
+        if (!res.ok) throw new Error('Failed to fetch project cards');
+        
+        const data = await res.json();
+        const projectCards = Array.isArray(data.cards) ? data.cards : [];
+        
+        setCards(projectCards);
+        if (projectCards.length > 0) {
+          setSelectedCard(projectCards[0]);
         }
       } catch (err) {
+        // Backend endpoint doesn't exist yet or failed - show empty state gracefully
         console.error('Failed to load project cards:', err);
+        setCards([]);
       } finally {
         setLoading(false);
       }

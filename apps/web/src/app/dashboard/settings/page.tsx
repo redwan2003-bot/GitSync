@@ -26,6 +26,18 @@ interface IntegrationStatus {
   queue: { connected: boolean };
 }
 
+const DEFAULT_INTEGRATIONS: IntegrationStatus = {
+  github: { connected: false, configured: false },
+  linkedin: { connected: false, configured: false },
+  aiProvider: {
+    provider: 'gemini',
+    model: 'gemini-3.5-flash',
+    configured: false,
+  },
+  database: { connected: false },
+  queue: { connected: false },
+};
+
 const SettingCard = ({
   title,
   description,
@@ -93,6 +105,7 @@ export default function SettingsPage() {
         setIntegrations(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load integrations');
+        setIntegrations(DEFAULT_INTEGRATIONS);
         console.error('Integration status error:', err);
       } finally {
         setLoading(false);
