@@ -44,23 +44,36 @@ function MetricsLoader() {
       try {
         setLoading(true);
         
-        const [metricsRes, signalsRes, draftsRes] = await Promise.all([
+        // Use allSettled so one failing endpoint doesn't break the dashboard
+        const [metricsResult, signalsResult, draftsResult] = await Promise.allSettled([
           fetch('/api/GitSync/dashboard/metrics'),
           fetch('/api/GitSync/audit-logs?limit=3'),
           fetch('/api/GitSync/dashboard/pending-drafts'),
         ]);
 
-        if (!metricsRes.ok || !signalsRes.ok || !draftsRes.ok) {
-          throw new Error('Failed to fetch dashboard data');
+        // Handle metrics
+        if (metricsResult.status === 'fulfilled' && metricsResult.value.ok) {
+          const metricsData = await metricsResult.value.json();
+          setMetrics(metricsData);
+        } else {
+          console.warn('Metrics fetch failed', metricsResult);
         }
 
-        const metricsData = await metricsRes.json();
-        const signalsData = await signalsRes.json();
-        const draftsData = await draftsRes.json();
+        // Handle signals
+        if (signalsResult.status === 'fulfilled' && signalsResult.value.ok) {
+          const signalsData = await signalsResult.value.json();
+          setSignals(signalsData.logs || []);
+        } else {
+          console.warn('Signals fetch failed', signalsResult);
+        }
 
-        setMetrics(metricsData);
-        setSignals(signalsData.logs || []);
-        setDrafts(draftsData.data || []);
+        // Handle drafts
+        if (draftsResult.status === 'fulfilled' && draftsResult.value.ok) {
+          const draftsData = await draftsResult.value.json();
+          setDrafts(draftsData.data || []);
+        } else {
+          console.warn('Drafts fetch failed', draftsResult);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load dashboard');
         console.error('Dashboard load error:', err);

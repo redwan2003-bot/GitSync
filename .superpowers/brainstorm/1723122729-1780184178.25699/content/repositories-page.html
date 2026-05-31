@@ -1,0 +1,115 @@
+<h2>Repositories Page</h2>
+<p class="subtitle">Compact, scannable repo list with signal scores and draft status</p>
+
+<div class="mockup">
+  <div class="mockup-header">Repositories Page Layout</div>
+  <div class="mockup-body" style="background:#0E1116;padding:20px;font-size:12px;max-height:600px;overflow-y:auto;border-radius:6px;">
+    
+    <!-- Filters / Search -->
+    <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center;">
+      <input type="text" placeholder="Search repositories..." style="flex:1;padding:8px 12px;background:#1E242D;border:1px solid #2A323D;border-radius:4px;color:#F5F7FA;font-size:12px;"/>
+      <select style="padding:8px 12px;background:#1E242D;border:1px solid #2A323D;border-radius:4px;color:#A7B0BE;font-size:12px;">
+        <option>Status: All</option>
+        <option>Tracked</option>
+        <option>Inactive</option>
+      </select>
+    </div>
+
+    <!-- Repo Cards (Bento style) -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+      
+      <!-- Repo Card 1 -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;font-size:13px;">react</div>
+            <div style="color:#A7B0BE;font-size:10px;margin-top:2px;">facebook/react</div>
+          </div>
+          <div style="width:28px;height:28px;background:#151A21;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#37D5FF;font-size:11px;font-weight:bold;">92</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <span style="background:#1A3A2A;color:#32D583;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">PUBLIC</span>
+          <span style="background:#2A2E3D;color:#37D5FF;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">SYNCING</span>
+        </div>
+        <div style="border-top:1px solid #2A323D;padding-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#A7B0BE;margin-bottom:4px;">
+            <span>Last activity:</span>
+            <span>2h ago</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#A7B0BE;">
+            <span>Drafts:</span>
+            <span style="color:#F5B544;">1 pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repo Card 2 -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;font-size:13px;">kubernetes</div>
+            <div style="color:#A7B0BE;font-size:10px;margin-top:2px;">kubernetes/kubernetes</div>
+          </div>
+          <div style="width:28px;height:28px;background:#151A21;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#37D5FF;font-size:11px;font-weight:bold;">78</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <span style="background:#1A3A2A;color:#32D583;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">PUBLIC</span>
+          <span style="background:#2A2E3D;color:#37D5FF;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">SYNCED</span>
+        </div>
+        <div style="border-top:1px solid #2A323D;padding-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#A7B0BE;margin-bottom:4px;">
+            <span>Last activity:</span>
+            <span>15m ago</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#A7B0BE;">
+            <span>Drafts:</span>
+            <span style="color:#32D583;">0 pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repo Card 3 -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;font-size:13px;">nextjs</div>
+            <div style="color:#A7B0BE;font-size:10px;margin-top:2px;">vercel/next.js</div>
+          </div>
+          <div style="width:28px;height:28px;background:#151A21;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#37D5FF;font-size:11px;font-weight:bold;">85</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <span style="background:#1A3A2A;color:#32D583;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">PUBLIC</span>
+          <span style="background:#3A2E1A;color:#F5B544;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">REVIEW</span>
+        </div>
+        <div style="border-top:1px solid #2A323D;padding-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#A7B0BE;margin-bottom:4px;">
+            <span>Last activity:</span>
+            <span>1h ago</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#A7B0BE;">
+            <span>Drafts:</span>
+            <span style="color:#F5B544;">2 pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repo Card 4 (empty state placeholder) -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;color:#A7B0BE;display:flex;align-items:center;justify-content:center;min-height:150px;text-align:center;">
+        <div>
+          <div style="color:#666;font-size:11px;margin-bottom:4px;">Add more repositories</div>
+          <div style="font-size:9px;color:#666;">Connect GitHub to sync additional projects</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<ul style="color:#A7B0BE;font-size:13px;line-height:1.8;margin-top:1rem;">
+  <li><strong>Search + Filter:</strong> Find repos and filter by status (All, Tracked, Inactive)</li>
+  <li><strong>Repo Card:</strong> Repo name + owner, Signal Score (92/100 example), Visibility badge, Status badge, Last activity, Draft count with color coding</li>
+  <li><strong>2-column grid on desktop:</strong> Scales to 1 column on tablet/mobile</li>
+  <li><strong>Signal Score badge:</strong> Quick visual indicator of repo health/activity</li>
+  <li><strong>Status badges use Pixelify Sans:</strong> SYNCED, SYNCING, REVIEW, etc.</li>
+</ul>

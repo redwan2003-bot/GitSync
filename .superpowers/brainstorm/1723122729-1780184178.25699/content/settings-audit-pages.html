@@ -1,0 +1,147 @@
+<h2>Settings & Audit Pages</h2>
+<p class="subtitle">Premium settings cards and terminal-style audit log</p>
+
+<div class="mockup">
+  <div class="mockup-header">Settings Page Layout</div>
+  <div class="mockup-body" style="background:#0E1116;padding:20px;font-size:12px;max-height:600px;overflow-y:auto;border-radius:6px;">
+    
+    <!-- Settings Sections -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+      
+      <!-- GitHub Connection -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:32px;height:32px;background:#2A323D;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;">🐙</div>
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;">GitHub</div>
+            <div style="color:#32D583;font-size:10px;margin-top:2px;">Connected</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#A7B0BE;margin-bottom:12px;">
+          <div>redwan2003-bot</div>
+          <div style="margin-top:4px;color:#666;">Last synced: 2m ago</div>
+        </div>
+        <button style="width:100%;padding:8px;background:#1A3A2A;color:#32D583;border:1px solid #32D583;border-radius:4px;cursor:pointer;font-size:11px;">Reconnect</button>
+      </div>
+
+      <!-- LinkedIn Connection -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:32px;height:32px;background:#0A66C2;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:12px;font-weight:bold;">in</div>
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;">LinkedIn</div>
+            <div style="color:#32D583;font-size:10px;margin-top:2px;">Connected</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#A7B0BE;margin-bottom:12px;">
+          <div>Redwan Ahmmed</div>
+          <div style="margin-top:4px;color:#666;">Last publish: 14h ago</div>
+        </div>
+        <button style="width:100%;padding:8px;background:#0A66C2;color:#FFF;border:1px solid #0A66C2;border-radius:4px;cursor:pointer;font-size:11px;">Manage</button>
+      </div>
+
+      <!-- OpenAI Status -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:32px;height:32px;background:#2A323D;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;">⚡</div>
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;">OpenAI</div>
+            <div style="color:#F97066;font-size:10px;margin-top:2px;">Not configured</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#A7B0BE;margin-bottom:12px;">
+          <div>AI draft generation not available</div>
+          <div style="margin-top:4px;color:#666;">Add API key to enable</div>
+        </div>
+        <button style="width:100%;padding:8px;background:#2A2E3D;color:#A7B0BE;border:1px solid #2A323D;border-radius:4px;cursor:pointer;font-size:11px;">Configure</button>
+      </div>
+
+      <!-- Posting Policy -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="color:#F5F7FA;font-weight:500;margin-bottom:12px;">Posting Policy</div>
+        <div style="font-size:10px;color:#A7B0BE;line-height:1.6;">
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span>Rate limit</span>
+              <strong style="color:#F5F7FA;">3 posts/week</strong>
+            </div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span>Private repos</span>
+              <strong style="color:#F5F7FA;">Excluded</strong>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span>Manual review</span>
+              <strong style="color:#F5F7FA;">Required</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database & Queue -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="color:#F5F7FA;font-weight:500;margin-bottom:12px;">System Status</div>
+        <div style="font-size:10px;color:#A7B0BE;line-height:1.6;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span>Database</span>
+            <span style="color:#32D583;">● Connected</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span>Message Queue</span>
+            <span style="color:#32D583;">● Healthy</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span>API</span>
+            <span style="color:#32D583;">● Operational</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<hr style="border:none;border-top:1px solid #2A323D;margin:2rem 0;">
+
+<div class="mockup">
+  <div class="mockup-header">Audit Page Layout</div>
+  <div class="mockup-body" style="background:#0E1116;padding:20px;font-size:12px;max-height:600px;border-radius:6px;font-family:monospace;">
+    
+    <!-- Search Header -->
+    <div style="margin-bottom:16px;">
+      <input type="text" placeholder="Filter logs..." style="width:100%;padding:8px 12px;background:#1E242D;border:1px solid #2A323D;border-radius:4px;color:#F5F7FA;font-size:11px;font-family:monospace;"/>
+    </div>
+
+    <!-- Terminal-style logs -->
+    <div style="background:#151A21;border:1px solid #2A323D;border-radius:4px;padding:12px;min-height:350px;max-height:400px;overflow-y:auto;">
+      <div style="color:#37D5FF;line-height:1.6;font-size:11px;">
+        <div><span style="color:#A7B0BE;">[2026-05-30 23:35:42]</span> <span style="color:#32D583;">✓ SYNC</span> Repository 'react' synchronized</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 23:32:18]</span> <span style="color:#37D5FF;">→ DRAFT</span> AI draft created for facebook/react#48291</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 23:25:55]</span> <span style="color:#F5B544;">◐ REVIEW</span> Draft waiting for user approval</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 22:18:30]</span> <span style="color:#32D583;">✓ PUBLISH</span> LinkedIn post published from draft #1847</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 21:45:12]</span> <span style="color:#32D583;">✓ ACTIVITY</span> 3 new commits detected in kubernetes</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 20:30:44]</span> <span style="color:#37D5FF;">→ WEBHOOK</span> GitHub webhook received (push event)</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 19:15:22]</span> <span style="color:#F5B544;">⚠ RATE_LIMIT</span> Approaching weekly post limit (2/3)</div>
+        <div><span style="color:#A7B0BE;">[2026-05-30 18:00:00]</span> <span style="color:#32D583;">✓ SYNC</span> Repository 'next.js' synchronized</div>
+      </div>
+
+      <!-- Empty state example -->
+      <div style="margin-top:48px;text-align:center;color:#666;font-size:10px;">
+        <!-- Scroll down for older entries... -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ul style="color:#A7B0BE;font-size:13px;line-height:1.8;margin-top:1.5rem;">
+  <li><strong>Settings page:</strong> Premium cards with integration status, real values (not placeholders), action buttons, and system status</li>
+  <li><strong>Audit page:</strong> Terminal-style monospace log, timestamps, color-coded action types (SYNC, DRAFT, REVIEW, PUBLISH, etc.)</li>
+  <li><strong>No empty "Coming Soon":</strong> Both pages are fully functional and information-dense</li>
+  <li><strong>Integration badges:</strong> Real status dots and connection info, not placeholders</li>
+  <li><strong>Audit timestamps:</strong> JetBrains Mono font for all log entries</li>
+</ul>

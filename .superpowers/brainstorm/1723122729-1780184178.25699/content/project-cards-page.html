@@ -1,0 +1,116 @@
+<h2>Project Cards Page</h2>
+<p class="subtitle">LinkedIn project-card assistant with preview and copy actions</p>
+
+<div class="mockup">
+  <div class="mockup-header">Project Cards Page Layout</div>
+  <div class="mockup-body" style="background:#0E1116;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:12px;max-height:600px;border-radius:6px;">
+    
+    <!-- Left: Card List -->
+    <div style="border-right:1px solid #2A323D;padding-right:20px;overflow-y:auto;max-height:600px;">
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#F5F7FA;margin-bottom:12px;">Project Cards</h3>
+        <input type="text" placeholder="Search cards..." style="width:100%;padding:8px 12px;background:#1E242D;border:1px solid #2A323D;border-radius:4px;color:#F5F7FA;font-size:11px;"/>
+      </div>
+
+      <!-- Card Items -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        
+        <!-- Card 1 -->
+        <div style="background:#1E242D;border:1px solid #2A323D;border-radius:6px;padding:12px;cursor:pointer;border-left:3px solid #37D5FF;">
+          <div style="color:#F5F7FA;font-weight:500;font-size:11px;">GitSync Dashboard</div>
+          <div style="color:#A7B0BE;font-size:9px;margin-top:4px;">React, TypeScript, Next.js</div>
+          <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+            <span style="background:#1A3A2A;color:#32D583;padding:2px 6px;border-radius:2px;font-size:8px;font-family:monospace;">UI</span>
+            <span style="background:#1A3A2A;color:#32D583;padding:2px 6px;border-radius:2px;font-size:8px;font-family:monospace;">FRONTEND</span>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="background:#1E242D;border:1px solid #2A323D;border-radius:6px;padding:12px;cursor:pointer;">
+          <div style="color:#F5F7FA;font-weight:500;font-size:11px;">API Integration</div>
+          <div style="color:#A7B0BE;font-size:9px;margin-top:4px;">Node.js, TypeScript, GraphQL</div>
+          <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+            <span style="background:#1A2E3A;color:#37D5FF;padding:2px 6px;border-radius:2px;font-size:8px;font-family:monospace;">BACKEND</span>
+            <span style="background:#2A2E1A;color:#F5B544;padding:2px 6px;border-radius:2px;font-size:8px;font-family:monospace;">IN PROGRESS</span>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="background:#1E242D;border:1px solid #2A323D;border-radius:6px;padding:12px;cursor:pointer;">
+          <div style="color:#F5F7FA;font-weight:500;font-size:11px;">Database Schema</div>
+          <div style="color:#A7B0BE;font-size:9px;margin-top:4px;">Prisma, PostgreSQL, Neon</div>
+          <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+            <span style="background:#1A3A2A;color:#32D583;padding:2px 6px;border-radius:2px;font-size:8px;font-family:monospace;">DATABASE</span>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div style="margin-top:16px;padding:16px;border:1px dashed #2A323D;border-radius:6px;text-align:center;">
+          <div style="color:#A7B0BE;font-size:10px;">
+            <div>Add a project card</div>
+            <div style="font-size:9px;color:#666;margin-top:4px;">+ New card</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right: Preview & Copy -->
+    <div style="overflow-y:auto;max-height:600px;">
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#F5F7FA;margin-bottom:12px;">Preview & Copy</h3>
+        <div style="font-size:10px;color:#A7B0BE;margin-bottom:12px;">
+          Click a card to edit or copy to clipboard
+        </div>
+      </div>
+
+      <!-- LinkedIn Card Preview -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;margin-bottom:12px;">
+        <div style="color:#F5F7FA;font-weight:500;font-size:12px;margin-bottom:8px;">GitSync Dashboard</div>
+        <div style="color:#A7B0BE;font-size:11px;line-height:1.6;margin-bottom:12px;">
+          Building the premium command-center dashboard for GitSync with React, TypeScript, and Next.js. Featuring sidebar navigation, bento grid layouts, and real-time signal orbit visualization.
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;">
+          <span style="background:#1A3A2A;color:#32D583;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">UI</span>
+          <span style="background:#1A3A2A;color:#32D583;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">FRONTEND</span>
+          <span style="background:#1A2E3A;color:#37D5FF;padding:4px 8px;border-radius:3px;font-size:9px;font-family:monospace;">REACT</span>
+        </div>
+        <button style="width:100%;padding:10px;background:#0A66C2;color:#FFF;border:none;border-radius:4px;cursor:pointer;font-size:11px;margin-bottom:8px;">Copy to Clipboard</button>
+        <button style="width:100%;padding:10px;background:#2A323D;color:#F5F7FA;border:1px solid #2A323D;border-radius:4px;cursor:pointer;font-size:11px;">Edit Card</button>
+      </div>
+
+      <!-- Info Cards -->
+      <div style="display:grid;grid-template-columns:1fr;gap:8px;">
+        <div style="background:#151A21;border:1px solid #2A323D;border-radius:6px;padding:12px;">
+          <div style="color:#A7B0BE;font-size:9px;text-transform:uppercase;">Last Updated</div>
+          <div style="color:#F5F7FA;font-size:11px;margin-top:4px;">2h ago</div>
+        </div>
+        <div style="background:#151A21;border:1px solid #2A323D;border-radius:6px;padding:12px;">
+          <div style="color:#A7B0BE;font-size:9px;text-transform:uppercase;">Character Count</div>
+          <div style="color:#F5F7FA;font-size:11px;margin-top:4px;">187 / 2000</div>
+        </div>
+      </div>
+
+      <!-- Guidance -->
+      <div style="margin-top:16px;padding:12px;background:#1A2E1A;border-left:3px solid #32D583;border-radius:4px;">
+        <div style="color:#32D583;font-size:10px;font-weight:500;">💡 Tip</div>
+        <div style="color:#A7B0BE;font-size:9px;margin-top:6px;">
+          Project cards are managed manually on LinkedIn. GitSync helps you draft and organize them here for easy copying.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<ul style="color:#A7B0BE;font-size:13px;line-height:1.8;margin-top:1.5rem;">
+  <li><strong>Two-column layout:</strong> Left card list, right preview/copy interface</li>
+  <li><strong>Card list:</strong> Search, selectable cards with tags, quick visual indicators</li>
+  <li><strong>Preview section:</strong> Full LinkedIn-styled card preview, copy button, edit button</li>
+  <li><strong>Info cards:</strong> Last updated, character count, metadata</li>
+  <li><strong>Guidance:</strong> Explains the purpose (drafting helper, not auto-publish)</li>
+  <li><strong>Empty state:</strong> Prompts to add first card with clear CTA</li>
+  <li><strong>Tag badges:</strong> Color-coded by category (UI, BACKEND, FRONTEND, DATABASE)</li>
+</ul>

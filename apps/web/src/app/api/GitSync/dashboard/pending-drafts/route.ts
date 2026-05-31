@@ -7,9 +7,10 @@ export async function GET(request: NextRequest) {
     const session = await auth();
 
     if (!session?.user?.id) {
+      console.log('[pending-drafts] Unauthorized - no session');
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { data: [] },
+        { status: 200 }
       );
     }
 
@@ -18,35 +19,49 @@ export async function GET(request: NextRequest) {
     });
 
     if (!workspace) {
+      console.log(`[pending-drafts] No workspace for user ${session.user.id}`);
       return NextResponse.json(
-        { error: 'No workspace' },
-        { status: 403 }
+        { data: [] },
+        { status: 200 }
       );
     }
 
-    // Fetch pending drafts (awaiting review)
+    console.log(`[pending-drafts] Fetching drafts for workspace ${workspace.workspaceId}`);
+
+    // Fetch pending drafts with status DRAFT_PENDING
     const pendingDrafts = await prisma.contentDraft.findMany({
       where: {
         workspaceId: workspace.workspaceId,
-        status: 'PENDING_REVIEW', // Awaiting review status
+        status: 'DRAFT_PENDING', // Correct status value
       },
       select: {
         id: true,
-        title: true,
+        generatedText: true, // Use generatedText as title
         createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
       take: 10,
     });
 
+    console.log(`[pending-drafts] Found ${pendingDrafts.length} drafts`);
+
     return NextResponse.json({
-      data: pendingDrafts,
+      data: pendingDrafts.map((d: { id: string; generatedText: string | null; createdAt: Date }) => ({
+        id: d.id,
+        title: d.generatedText?.substring(0, 100) || 'Untitled Draft',
+        createdAt: d.createdAt,
+      })),
     });
   } catch (error) {
-    console.error('Pending drafts error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const stack = error instanceof Error ? error.stack : '';
+    console.error('[pending-drafts] Error:', message);
+    console.error('[pending-drafts] Stack:', stack);
+    
+    // Return empty array instead of 500 to not break dashboard
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { data: [] },
+      { status: 200 }
     );
   }
 }

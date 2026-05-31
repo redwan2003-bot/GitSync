@@ -1,0 +1,113 @@
+<h2>Drafts Page</h2>
+<p class="subtitle">Draft review queue with LinkedIn preview and evidence links</p>
+
+<div class="mockup">
+  <div class="mockup-header">Drafts Page Layout</div>
+  <div class="mockup-body" style="background:#0E1116;padding:20px;font-size:12px;max-height:600px;overflow-y:auto;border-radius:6px;">
+    
+    <!-- Status Tabs -->
+    <div style="display:flex;gap:12px;margin-bottom:20px;border-bottom:1px solid #2A323D;padding-bottom:12px;">
+      <button style="padding:8px 16px;background:#2A323D;color:#37D5FF;border:none;border-radius:4px;cursor:pointer;font-size:12px;border-bottom:2px solid #37D5FF;margin-bottom:-12px;">All (3)</button>
+      <button style="padding:8px 16px;background:transparent;color:#A7B0BE;border:none;cursor:pointer;font-size:12px;">Pending (2)</button>
+      <button style="padding:8px 16px;background:transparent;color:#A7B0BE;border:none;cursor:pointer;font-size:12px;">Approved (1)</button>
+    </div>
+
+    <!-- Draft Cards -->
+    <div style="display:grid;grid-template-columns:1fr;gap:16px;">
+      
+      <!-- Draft Card 1 -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;font-size:13px;">React 18.3 Release Highlights</div>
+            <div style="color:#A7B0BE;font-size:10px;margin-top:4px;">from <strong>facebook/react</strong></div>
+          </div>
+          <span style="background:#3A2E1A;color:#F5B544;padding:4px 8px;border-radius:3px;font-size:9px;font-weight:500;font-family:monospace;">PENDING REVIEW</span>
+        </div>
+        <div style="background:#151A21;border-radius:4px;padding:12px;margin-bottom:12px;border-left:3px solid #37D5FF;">
+          <div style="color:#37D5FF;font-size:11px;font-family:monospace;line-height:1.5;">
+            🚀 React 18.3 is now available! Here's what's new:<br/>
+            • Async transitions stabilized<br/>
+            • Server components improvements<br/>
+            • Performance enhancements
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:10px;">
+          <div style="color:#A7B0BE;">Created: 2h ago • 287 chars</div>
+          <div style="display:flex;gap:6px;">
+            <button style="padding:6px 12px;background:#1A3A2A;color:#32D583;border:1px solid #32D583;border-radius:4px;cursor:pointer;font-size:10px;">Review</button>
+            <button style="padding:6px 12px;background:#3A1A1A;color:#F97066;border:1px solid #F97066;border-radius:4px;cursor:pointer;font-size:10px;">Reject</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draft Card 2 -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;font-size:13px;">Kubernetes 1.28 GA Launch</div>
+            <div style="color:#A7B0BE;font-size:10px;margin-top:4px;">from <strong>kubernetes/kubernetes</strong></div>
+          </div>
+          <span style="background:#3A2E1A;color:#F5B544;padding:4px 8px;border-radius:3px;font-size:9px;font-weight:500;font-family:monospace;">PENDING REVIEW</span>
+        </div>
+        <div style="background:#151A21;border-radius:4px;padding:12px;margin-bottom:12px;border-left:3px solid #37D5FF;">
+          <div style="color:#37D5FF;font-size:11px;font-family:monospace;line-height:1.5;">
+            Kubernetes 1.28 is generally available!<br/>
+            Read the full release notes →
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:10px;">
+          <div style="color:#A7B0BE;">Created: 4h ago • 142 chars</div>
+          <div style="display:flex;gap:6px;">
+            <button style="padding:6px 12px;background:#1A3A2A;color:#32D583;border:1px solid #32D583;border-radius:4px;cursor:pointer;font-size:10px;">Review</button>
+            <button style="padding:6px 12px;background:#3A1A1A;color:#F97066;border:1px solid #F97066;border-radius:4px;cursor:pointer;font-size:10px;">Reject</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draft Card 3 (Approved) -->
+      <div style="background:#1E242D;border:1px solid #2A323D;border-radius:8px;padding:16px;opacity:0.7;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div>
+            <div style="color:#F5F7FA;font-weight:500;font-size:13px;">Next.js 14 Canary Features</div>
+            <div style="color:#A7B0BE;font-size:10px;margin-top:4px;">from <strong>vercel/next.js</strong></div>
+          </div>
+          <span style="background:#1A3A2A;color:#32D583;padding:4px 8px;border-radius:3px;font-size:9px;font-weight:500;font-family:monospace;">APPROVED</span>
+        </div>
+        <div style="background:#151A21;border-radius:4px;padding:12px;margin-bottom:12px;border-left:3px solid #37D5FF;">
+          <div style="color:#37D5FF;font-size:11px;font-family:monospace;line-height:1.5;">
+            Excited to announce the Next.js 14 canary release...
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:10px;">
+          <div style="color:#A7B0BE;">Created: 12h ago • 198 chars • Published</div>
+          <div style="display:flex;gap:6px;">
+            <button style="padding:6px 12px;background:#151A21;color:#A7B0BE;border:1px solid #2A323D;border-radius:4px;cursor:pointer;font-size:10px;">View</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty State Example (if no drafts) -->
+    <div style="margin-top:32px;padding:32px;border:1px dashed #2A323D;border-radius:8px;text-align:center;">
+      <div style="color:#A7B0BE;font-size:11px;">
+        <div style="margin-bottom:8px;">No drafts yet</div>
+        <div style="font-size:10px;color:#666;">
+          Drafts appear here when GitSync detects meaningful GitHub activity.<br/>
+          Connect a repository to get started.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ul style="color:#A7B0BE;font-size:13px;line-height:1.8;margin-top:1rem;">
+  <li><strong>Status Tabs:</strong> All, Pending, Approved filter the queue</li>
+  <li><strong>Draft Card:</strong> Title, source repo, status badge, preview text in monospace, creation time, character count, action buttons</li>
+  <li><strong>Preview Styling:</strong> Left border accent (cyan), monospace font family for evidence</li>
+  <li><strong>Action buttons:</strong> Review (green) / Reject (red) for pending, View (gray) for approved</li>
+  <li><strong>Empty state:</strong> Explains how drafts appear, guides to next action</li>
+  <li><strong>Status badges:</strong> PENDING REVIEW, APPROVED use Pixelify Sans</li>
+</ul>
