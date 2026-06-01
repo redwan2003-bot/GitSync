@@ -57,6 +57,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
           </div>
           <button
             onClick={() => onOpenChange(false)}
+            aria-label="Close sidebar menu"
             className="lg:hidden p-1 hover:bg-surface-soft rounded"
           >
             <X size={20} className="text-muted" />

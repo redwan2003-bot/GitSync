@@ -116,7 +116,8 @@ export default function SettingsPage() {
   }, []);
 
   const handleDisconnect = async (service: string) => {
-    console.log(`Disconnect ${service} - endpoint not yet implemented`);
+    // Disconnect endpoint not yet implemented - buttons are disabled
+    // When backend is ready, implement: DELETE /api/GitSync/integrations/{service}
   };
 
   const handleInstallGithub = async () => {
@@ -183,10 +184,11 @@ export default function SettingsPage() {
             </div>
             {integrations?.github.connected && (
               <button
-                onClick={() => handleDisconnect('github')}
-                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm hover:bg-danger/5 transition-colors"
+                disabled
+                title="Disconnect feature coming soon"
+                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm opacity-50 cursor-not-allowed"
               >
-                Disconnect
+                Disconnect (Coming Soon)
               </button>
             )}
             {!integrations?.github.connected && (
@@ -216,10 +218,11 @@ export default function SettingsPage() {
             </div>
             {integrations?.linkedin.connected && (
               <button
-                onClick={() => handleDisconnect('linkedin')}
-                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm hover:bg-danger/5 transition-colors"
+                disabled
+                title="Disconnect feature coming soon"
+                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm opacity-50 cursor-not-allowed"
               >
-                Disconnect
+                Disconnect (Coming Soon)
               </button>
             )}
             {!integrations?.linkedin.connected && (
