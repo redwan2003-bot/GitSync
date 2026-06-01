@@ -55,8 +55,10 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             {/* Draft Content */}
             <textarea
               value={draft.content}
-              className="w-full h-48 bg-surface-soft border border-border rounded-lg p-4 text-sm text-text font-mono placeholder-muted/50 focus:outline-none focus:border-signal resize-none"
+              readOnly
+              className="w-full h-48 bg-surface-soft border border-border rounded-lg p-4 text-sm text-text font-mono placeholder-muted/50 focus:outline-none focus:border-signal resize-none opacity-75 cursor-not-allowed"
               placeholder="Draft content will appear here"
+              title="Edit is coming soon - copy to edit elsewhere for now"
             />
 
             {/* Actions */}
@@ -77,11 +79,8 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
                   </>
                 )}
               </button>
-              <button className="flex-1 px-4 py-2 rounded-lg border border-signal text-signal font-medium text-sm hover:bg-signal/5 transition-colors">
-                Publish
-              </button>
-              <button className="flex-1 px-4 py-2 rounded-lg bg-surface-soft text-muted font-medium text-sm hover:text-text transition-colors">
-                Save
+              <button disabled className="flex-1 px-4 py-2 rounded-lg border border-signal/30 text-signal/50 font-medium text-sm opacity-50 cursor-not-allowed" title="Publishing is coming soon">
+                Publish (Soon)
               </button>
             </div>
           </div>
