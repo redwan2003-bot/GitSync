@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { BentoCard } from '@/components/bento-card';
 import { H1 } from '@/components/typography';
 import {
@@ -93,25 +94,26 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  const loadIntegrations = async () => {
+    try {
+      const res = await fetch('/api/GitSync/integration-status');
+      
+      if (!res.ok) throw new Error('Failed to fetch integration status');
+      
+      const data = await res.json();
+      setIntegrations(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load integrations');
+      setIntegrations(DEFAULT_INTEGRATIONS);
+      console.error('Integration status error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadIntegrations() {
-      try {
-        const res = await fetch('/api/GitSync/integration-status');
-        
-        if (!res.ok) throw new Error('Failed to fetch integration status');
-        
-        const data = await res.json();
-        setIntegrations(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load integrations');
-        setIntegrations(DEFAULT_INTEGRATIONS);
-        console.error('Integration status error:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     loadIntegrations();
   }, []);
 
@@ -132,6 +134,21 @@ export default function SettingsPage() {
 
     loadWorkspaceId();
   }, []);
+
+  // Refresh integrations when returning from GitHub install
+  useEffect(() => {
+    const githubParam = searchParams.get('github');
+    const installationIdParam = searchParams.get('installation_id');
+    
+    if (githubParam === 'connected' || installationIdParam) {
+      // Give backend a moment to process
+      const timer = setTimeout(() => {
+        loadIntegrations();
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const handleDisconnect = async (service: string) => {
     // Disconnect endpoint not yet implemented - buttons are disabled

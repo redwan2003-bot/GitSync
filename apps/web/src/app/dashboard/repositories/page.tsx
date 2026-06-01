@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { BentoCard } from '@/components/bento-card';
 import { H1, H2, PixelStatusBadge } from '@/components/typography';
 import { Globe, Lock, GitBranch, ToggleRight } from 'lucide-react';
@@ -80,24 +81,24 @@ export default function RepositoriesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  const loadRepos = async () => {
+    try {
+      const res = await fetch('/api/GitSync/github-repos');
+      
+      if (!res.ok) throw new Error('Failed to fetch repos');
+      
+      const data = await res.json();
+      setRepos(data.repos || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load repositories');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadRepos() {
-      try {
-        const res = await fetch('/api/GitSync/github-repos');
-        
-        if (!res.ok) throw new Error('Failed to fetch repos');
-        
-        const data = await res.json();
-        // Backend returns hasGitHub flag; show empty state if no repos
-        setRepos(data.repos || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load repositories');
-      } finally {
-        setLoading(false);
-      }
-    }
-
     loadRepos();
   }, []);
 
@@ -118,6 +119,21 @@ export default function RepositoriesPage() {
 
     loadWorkspaceId();
   }, []);
+
+  // Refresh repos when returning from GitHub install
+  useEffect(() => {
+    const githubParam = searchParams.get('github');
+    const installationIdParam = searchParams.get('installation_id');
+    
+    if (githubParam === 'connected' || installationIdParam) {
+      // Give backend a moment to process
+      const timer = setTimeout(() => {
+        loadRepos();
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   if (loading) {
     return (

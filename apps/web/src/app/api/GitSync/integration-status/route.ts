@@ -47,6 +47,9 @@ export async function GET(request: NextRequest) {
       github: {
         connected: !!github,
         configured: process.env.GITHUB_APP_ID ? true : false,
+        installationId: github ? github.installationId.toString() : null,
+        accountLogin: github?.accountLogin || null,
+        accountType: github?.accountType || null,
       },
       linkedin: {
         connected: !!linkedin,
