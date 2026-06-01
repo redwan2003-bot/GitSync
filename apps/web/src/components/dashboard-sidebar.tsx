@@ -44,8 +44,9 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
       try {
         const res = await fetch('/api/GitSync/integration-status');
         if (res.ok) {
-          const data = await res.json();
-          setIntegrations(data);
+          const response = await res.json();
+          // Extract data from standardized API response
+          setIntegrations(response.data || response);
         }
       } catch (err) {
         console.error('Failed to load integrations:', err);

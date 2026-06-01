@@ -108,8 +108,9 @@ export default function SettingsPage() {
       
       if (!res.ok) throw new Error('Failed to fetch integration status');
       
-      const data = await res.json();
-      setIntegrations(data);
+      const response = await res.json();
+      // Extract data from standardized API response
+      setIntegrations(response.data || response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load integrations');
       setIntegrations(DEFAULT_INTEGRATIONS);

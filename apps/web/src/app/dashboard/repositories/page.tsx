@@ -100,8 +100,9 @@ export default function RepositoriesPage() {
       
       if (!res.ok) throw new Error('Failed to fetch integration status');
       
-      const data = await res.json();
-      setIntegrationStatus(data);
+      const response = await res.json();
+      // Extract data from standardized API response
+      setIntegrationStatus(response.data || response);
     } catch (err) {
       console.error('Integration status error:', err);
       setIntegrationStatus(null);

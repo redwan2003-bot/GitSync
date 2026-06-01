@@ -9,21 +9,22 @@ import { prisma } from '@GitSync/db';
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
-  // SECURITY: Disable debug endpoint in production
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json(
-      { error: 'Debug endpoint disabled in production' },
-      { status: 403 }
-    );
-  }
-
   try {
     const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized', code: 'UNAUTHORIZED' },
         { status: 401 }
+      );
+    }
+
+    // In production, only allow for development/admin access
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (isProduction && !process.env.ALLOW_DEBUG_ENDPOINTS) {
+      return NextResponse.json(
+        { error: 'Debug endpoint disabled in production', code: 'FORBIDDEN' },
+        { status: 403 }
       );
     }
 
@@ -61,18 +62,20 @@ export async function GET(_request: NextRequest) {
       },
     });
 
-    // Get latest 10 global installations (redacted)
-    const globalInstallations = await prisma.gitHubInstallation.findMany({
-      take: 10,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        workspaceId: true,
-        installationId: true,
-        accountType: true,
-        createdAt: true,
-      },
-    });
+    // Get latest 10 global installations (redacted in production)
+    const globalInstallations = isProduction
+      ? []
+      : await prisma.gitHubInstallation.findMany({
+          take: 10,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            workspaceId: true,
+            installationId: true,
+            accountType: true,
+            createdAt: true,
+          },
+        });
 
     // Get integration status by querying the same data
     let integrationStatus = null;
@@ -141,7 +144,7 @@ export async function GET(_request: NextRequest) {
       },
       installations: {
         forThisWorkspace: installations,
-        globalLatest10: globalInstallations,
+        globalLatest10: isProduction ? [] : globalInstallations,
       },
       integrationStatus,
     });
@@ -150,6 +153,7 @@ export async function GET(_request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Internal server error',
+        code: 'INTERNAL_ERROR',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
