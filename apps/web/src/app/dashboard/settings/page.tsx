@@ -244,8 +244,8 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* DEBUG PANEL - Temporary */}
-      {debugInfo && (
+      {/* DEBUG PANEL - Development only */}
+      {process.env.NODE_ENV !== 'production' && debugInfo && (
         <div className="p-4 rounded-lg border border-slate-700 bg-slate-950">
           <div className="flex items-start justify-between mb-3">
             <h3 className="text-sm font-semibold text-slate-300">Debug: GitHub Installation</h3>
