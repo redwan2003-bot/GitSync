@@ -76,12 +76,37 @@ function RepoCard({ repo }: { repo: Repo }) {
   );
 }
 
+interface IntegrationStatus {
+  github: {
+    connected: boolean;
+    configured: boolean;
+    installationId: string | null;
+    accountLogin: string | null;
+    accountType: string | null;
+  };
+}
+
 export default function RepositoriesPage() {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus | null>(null);
   const searchParams = useSearchParams();
+
+  const loadIntegrations = async () => {
+    try {
+      const res = await fetch('/api/GitSync/integration-status');
+      
+      if (!res.ok) throw new Error('Failed to fetch integration status');
+      
+      const data = await res.json();
+      setIntegrationStatus(data);
+    } catch (err) {
+      console.error('Integration status error:', err);
+      setIntegrationStatus(null);
+    }
+  };
 
   const loadRepos = async () => {
     try {
@@ -100,6 +125,7 @@ export default function RepositoriesPage() {
 
   useEffect(() => {
     loadRepos();
+    loadIntegrations();
   }, []);
 
   useEffect(() => {
@@ -120,7 +146,7 @@ export default function RepositoriesPage() {
     loadWorkspaceId();
   }, []);
 
-  // Refresh repos when returning from GitHub install
+  // Refresh repos and integrations when returning from GitHub install
   useEffect(() => {
     const githubParam = searchParams.get('github');
     const installationIdParam = searchParams.get('installation_id');
@@ -129,6 +155,7 @@ export default function RepositoriesPage() {
       // Give backend a moment to process
       const timer = setTimeout(() => {
         loadRepos();
+        loadIntegrations();
       }, 1500);
       
       return () => clearTimeout(timer);
@@ -178,17 +205,37 @@ export default function RepositoriesPage() {
         />
       </div>
 
-      {/* Repos Grid */}
+      {/* Repos Grid or Empty State */}
       {repos.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {repos.map((repo) => (
             <RepoCard key={repo.id} repo={repo} />
           ))}
         </div>
+      ) : integrationStatus?.github?.connected ? (
+        // GitHub connected but no repos
+        <div className="text-center py-12">
+          <GitBranch size={48} className="mx-auto text-signal/30 mb-4" />
+          <H2 className="text-lg mb-2">GitHub Connected</H2>
+          <p className="text-sm text-muted max-w-md mx-auto mb-2">
+            {integrationStatus.github.accountLogin ? `Linked to ${integrationStatus.github.accountLogin}` : 'App is connected'}
+          </p>
+          <p className="text-sm text-muted max-w-md mx-auto mb-6">
+            Repository sync is not complete yet. No repositories are available.
+          </p>
+          <button
+            disabled
+            className="inline-block px-4 py-2 rounded-lg bg-slate-700 text-slate-300 opacity-50 cursor-not-allowed"
+            title="Repository sync coming soon"
+          >
+            Repository sync coming soon
+          </button>
+        </div>
       ) : (
+        // GitHub disconnected
         <div className="text-center py-12">
           <GitBranch size={48} className="mx-auto text-muted/30 mb-4" />
-          <H2 className="text-lg mb-2">No repositories connected</H2>
+          <H2 className="text-lg mb-2">No GitHub App connected</H2>
           <p className="text-sm text-muted max-w-md mx-auto mb-6">
             Connect GitHub repositories to start tracking signals and generating LinkedIn content.
           </p>

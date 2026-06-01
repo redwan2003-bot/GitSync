@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -13,6 +13,12 @@ import {
   ChevronRight,
   X,
 } from 'lucide-react';
+
+interface IntegrationStatus {
+  github: { connected: boolean };
+  linkedin: { connected: boolean };
+  aiProvider: { configured: boolean };
+}
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -30,6 +36,26 @@ const NAV_ITEMS = [
 
 export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const [integrations, setIntegrations] = useState<IntegrationStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadIntegrations = async () => {
+      try {
+        const res = await fetch('/api/GitSync/integration-status');
+        if (res.ok) {
+          const data = await res.json();
+          setIntegrations(data);
+        }
+      } catch (err) {
+        console.error('Failed to load integrations:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadIntegrations();
+  }, []);
 
   return (
     <>
@@ -102,15 +128,27 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted">GitHub</span>
-              <div className="w-2 h-2 rounded-full bg-signal" />
+              <div className={`w-2 h-2 rounded-full ${
+                !loading && integrations?.github?.connected
+                  ? 'bg-signal'
+                  : 'bg-muted/30'
+              }`} />
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted">LinkedIn</span>
-              <div className="w-2 h-2 rounded-full bg-signal" />
+              <div className={`w-2 h-2 rounded-full ${
+                !loading && integrations?.linkedin?.connected
+                  ? 'bg-signal'
+                  : 'bg-muted/30'
+              }`} />
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted">Gemini</span>
-              <div className="w-2 h-2 rounded-full bg-signal" />
+              <div className={`w-2 h-2 rounded-full ${
+                !loading && integrations?.aiProvider?.configured
+                  ? 'bg-signal'
+                  : 'bg-muted/30'
+              }`} />
             </div>
           </div>
         </div>

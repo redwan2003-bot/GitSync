@@ -209,12 +209,15 @@ export default function AuditPage() {
         ) : (
           <div className="px-4 py-8">
             <div className="font-jetbrains-mono text-sm space-y-2">
-              <div className="text-muted">$ audit filter applied</div>
-              <div className="text-muted">no logs matching criteria</div>
-              {logs.length === 0 && (
+              {logs.length === 0 ? (
                 <>
-                  <div className="text-muted mt-4">no audit events recorded yet</div>
-                  <div className="text-muted mt-2">start publishing or syncing to generate events</div>
+                  <div className="text-muted">$ audit --all</div>
+                  <div className="text-muted">no audit events recorded yet</div>
+                </>
+              ) : (
+                <>
+                  <div className="text-muted">$ audit filter applied</div>
+                  <div className="text-muted">no logs matching criteria</div>
                 </>
               )}
             </div>
