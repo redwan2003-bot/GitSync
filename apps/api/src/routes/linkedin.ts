@@ -133,17 +133,17 @@ linkedinRouter.get("/callback", async (c) => {
       try {
         const workspace = await prisma.workspace.findFirst({
           where: { id: state },
-          include: { members: { take: 1, select: { user: { select: { email: true } } } } },
+          include: { members: { take: 1, select: { user: { select: { id: true, email: true } } } } },
         });
-        const userEmail = workspace?.members[0]?.user?.email || "unknown";
+        const userId = workspace?.members[0]?.user?.id;
 
         await prisma.auditLog.create({
           data: {
             workspaceId: state,
+            userId,
             action: "LINKEDIN_CONNECTED",
-            actor: userEmail,
-            resource: "LinkedIn:OAuth",
-            details: "LinkedIn OAuth callback successful",
+            resourceType: "LinkedInToken",
+            metadata: { provider: "LINKEDIN" },
           },
         });
       } catch (auditErr) {

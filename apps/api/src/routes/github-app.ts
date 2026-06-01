@@ -107,10 +107,11 @@ githubAppRouter.get("/callback", async (c) => {
     await prisma.auditLog.create({
       data: {
         workspaceId: state,
+        userId: owner?.id || undefined,
         action: "GITHUB_APP_INSTALLED",
-        actor: owner?.email || "system",
-        resource: `GitHubApp:${installationId}`,
-        details: `Setup action: ${setupAction}`,
+        resourceType: "GitHubInstallation",
+        resourceId: installationId,
+        metadata: { setup_action: setupAction },
       },
     }).catch(() => {
       // Silently fail if audit log fails, don't block installation

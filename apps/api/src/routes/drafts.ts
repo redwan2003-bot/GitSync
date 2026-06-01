@@ -191,9 +191,9 @@ draftsRouter.post("/:id/publish", async (c) => {
         workspaceId: auth.workspaceId,
         userId: auth.userId,
         action: "DRAFT_PUBLISHED_TO_LINKEDIN",
-        resourceType: "content_draft",
+        resourceType: "ContentDraft",
         resourceId: id,
-        details: `Published to LinkedIn: ${linkedInPost.urn}`,
+        metadata: { urn: linkedInPost.urn },
       },
     }).catch((err: unknown) => {
       console.warn("[Draft Publish] Failed to create audit log:", err);
