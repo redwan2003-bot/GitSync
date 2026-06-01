@@ -94,6 +94,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [syncing, setSyncing] = useState(false);
   const searchParams = useSearchParams();
 
   const loadIntegrations = async () => {
@@ -135,6 +137,23 @@ export default function SettingsPage() {
     loadWorkspaceId();
   }, []);
 
+  // Load debug info
+  useEffect(() => {
+    async function loadDebugInfo() {
+      try {
+        const res = await fetch('/api/GitSync/github/debug-installation');
+        if (res.ok) {
+          const data = await res.json();
+          setDebugInfo(data);
+        }
+      } catch (err) {
+        console.error('Debug info error:', err);
+      }
+    }
+
+    loadDebugInfo();
+  }, []);
+
   // Refresh integrations when returning from GitHub install
   useEffect(() => {
     const githubParam = searchParams.get('github');
@@ -157,6 +176,40 @@ export default function SettingsPage() {
 
   const handleViewLogs = () => {
     window.location.href = '/dashboard/audit';
+  };
+
+  const handleSyncInstallation = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/GitSync/github/installations/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          installationId: 137189045,
+          accountLogin: 'redwan2003-bot',
+          accountType: 'User',
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        alert(`Sync failed: ${JSON.stringify(error)}`);
+        return;
+      }
+
+      const result = await res.json();
+      alert('Installation synced! Refreshing...');
+      
+      // Reload debug info and integration status
+      const debugRes = await fetch('/api/GitSync/github/debug-installation');
+      if (debugRes.ok) setDebugInfo(await debugRes.json());
+      
+      await loadIntegrations();
+    } catch (err) {
+      alert(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setSyncing(false);
+    }
   };
 
   if (loading) {
@@ -190,6 +243,41 @@ export default function SettingsPage() {
           Manage integrations, policies, and system preferences.
         </p>
       </div>
+
+      {/* DEBUG PANEL - Temporary */}
+      {debugInfo && (
+        <div className="p-4 rounded-lg border border-slate-700 bg-slate-950">
+          <div className="flex items-start justify-between mb-3">
+            <h3 className="text-sm font-semibold text-slate-300">Debug: GitHub Installation</h3>
+            <code className="text-xs text-slate-500 bg-slate-900 px-2 py-1 rounded">
+              {debugInfo.installations?.forThisWorkspace?.length > 0 ? '✓ Found' : '✗ Missing'}
+            </code>
+          </div>
+          
+          <div className="space-y-2 text-xs text-slate-400 mb-4">
+            <div>Workspace: <code className="text-slate-300">{debugInfo.workspace?.id}</code></div>
+            <div>Installation ID: <code className="text-slate-300">
+              {debugInfo.installations?.forThisWorkspace?.[0]?.installationId || 'not found'}
+            </code></div>
+            <div>Connected: <code className="text-slate-300">
+              {debugInfo.integrationStatus?.github?.connected ? '✓ true' : '✗ false'}
+            </code></div>
+            <div>Account: <code className="text-slate-300">
+              {debugInfo.integrationStatus?.github?.accountLogin || 'not linked'}
+            </code></div>
+          </div>
+
+          {!debugInfo.installations?.forThisWorkspace?.length && (
+            <button
+              onClick={handleSyncInstallation}
+              disabled={syncing}
+              className="w-full px-3 py-2 rounded bg-signal/20 text-signal font-medium text-xs hover:bg-signal/30 disabled:opacity-50 transition-colors"
+            >
+              {syncing ? 'Syncing...' : 'Repair: Sync Installation 137189045'}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Settings Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
