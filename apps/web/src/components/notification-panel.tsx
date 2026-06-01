@@ -57,7 +57,7 @@ export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps
         <Bell size={40} className="mx-auto text-muted/30 mb-3" />
         <p className="text-sm font-medium text-muted">No notifications yet.</p>
         <p className="text-xs text-muted/70 mt-2">
-          You'll see activity here when there's something new.
+          You&apos;ll see activity here when there&apos;s something new.
         </p>
       </div>
     </div>

@@ -6,7 +6,8 @@ import { prisma } from '@GitSync/db';
  * Get current user's workspace ID
  * Used for GitHub App installation link state parameter
  */
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
   try {
     const session = await auth();
 

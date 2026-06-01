@@ -16,7 +16,6 @@ export default function ProjectCardsPage() {
   const [cards, setCards] = useState<ProjectCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<ProjectCard | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   useEffect(() => {

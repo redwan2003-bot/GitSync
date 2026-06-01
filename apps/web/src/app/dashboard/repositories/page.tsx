@@ -124,8 +124,11 @@ export default function RepositoriesPage() {
   };
 
   useEffect(() => {
-    loadRepos();
-    loadIntegrations();
+    async function initializePageData() {
+      await Promise.all([loadRepos(), loadIntegrations()]);
+    }
+    
+    initializePageData();
   }, []);
 
   useEffect(() => {

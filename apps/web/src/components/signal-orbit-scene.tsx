@@ -1,6 +1,4 @@
-'use client';
-
-import React from 'react';
+import React, { JSX } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Sphere, OrbitControls, Stars } from '@react-three/drei';
 
@@ -12,17 +10,21 @@ const REPOS = [
   { id: 4, name: 'repo-4', color: '#ff4444' },
 ];
 
-const OrbitingGroup = ({ repo, idx }: { repo: typeof REPOS[0]; idx: number }): any => {
+interface RepoNode {
+  id: number;
+  name: string;
+  color: string;
+}
+
+const OrbitingGroup = ({ repo, idx }: { repo: RepoNode; idx: number }): JSX.Element => {
   const angle = (idx / REPOS.length) * Math.PI * 2;
   const radius = 4 + idx;
   const x = Math.cos(angle) * radius;
   const z = Math.sin(angle) * radius;
   
+  // React Three Fiber requires createElement with type casting
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return React.createElement(
-    'group' as any,
-    { position: [x, 0, z] },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return React.createElement('group' as any, { position: [x, 0, z] }, 
     React.createElement(
       Sphere,
       { args: [0.6, 32, 32] },
@@ -35,10 +37,10 @@ const OrbitingGroup = ({ repo, idx }: { repo: typeof REPOS[0]; idx: number }): a
   );
 };
 
-export default function SignalOrbitScene() {
+export default function SignalOrbitScene(): JSX.Element {
+  // React Three Fiber Canvas requires type casting
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return React.createElement(
-    Canvas as any,
+  return React.createElement(Canvas as any, 
     {
       camera: { position: [0, 0, 12], fov: 60 },
       style: { width: '100%', height: '400px' },

@@ -1,4 +1,7 @@
+'use client';
+
 import { DashboardShell } from '@/components/dashboard-shell';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function DashboardLayout({
   children,
@@ -6,8 +9,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardShell pageTitle="Dashboard" pageDescription="Signal Orbit Command Center">
-      {children}
-    </DashboardShell>
+    <ErrorBoundary>
+      <DashboardShell pageTitle="Dashboard" pageDescription="Signal Orbit Command Center">
+        {children}
+      </DashboardShell>
+    </ErrorBoundary>
   );
 }

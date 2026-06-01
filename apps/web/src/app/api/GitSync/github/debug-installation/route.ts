@@ -5,9 +5,18 @@ import { prisma } from '@GitSync/db';
 /**
  * Debug endpoint for GitHub App installation troubleshooting
  * Protected by auth. Shows installation state, workspace, and database info.
- * Do not expose publicly.
+ * DISABLED in production for security.
  */
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
+  // SECURITY: Disable debug endpoint in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoint disabled in production' },
+      { status: 403 }
+    );
+  }
+
   try {
     const session = await auth();
 

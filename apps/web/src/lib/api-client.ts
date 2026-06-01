@@ -86,7 +86,7 @@ export async function fetchFromAPI<T>(
         try {
           const data = await response.json() as T;
           return { data };
-        } catch (parseError) {
+        } catch {
           return {
             error: 'Failed to parse JSON response',
             code: 500,
@@ -96,7 +96,7 @@ export async function fetchFromAPI<T>(
         try {
           const data = (await response.text()) as unknown as T;
           return { data };
-        } catch (parseError) {
+        } catch {
           return {
             error: 'Failed to parse text response',
             code: 500,

@@ -63,7 +63,6 @@ export default function AuditPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('All');
-  const [filteredLogs, setFilteredLogs] = useState<AuditLog[]>([]);
 
   useEffect(() => {
     async function loadLogs() {
@@ -74,7 +73,6 @@ export default function AuditPage() {
         
         const data = await res.json();
         setLogs(data.logs || []);
-        setFilteredLogs(data.logs || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load audit logs');
       } finally {
@@ -85,26 +83,23 @@ export default function AuditPage() {
     loadLogs();
   }, []);
 
-  useEffect(() => {
-    let filtered = logs;
+  // Compute filtered logs during render instead of in an effect
+  let filteredLogs = logs;
 
-    // Filter by action
-    if (actionFilter !== 'All') {
-      filtered = filtered.filter((log) => log.action === actionFilter);
-    }
+  // Filter by action
+  if (actionFilter !== 'All') {
+    filteredLogs = filteredLogs.filter((log) => log.action === actionFilter);
+  }
 
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (log) =>
-          (log.resource?.toLowerCase().includes(searchTerm)) ||
-          (log.actor?.toLowerCase().includes(searchTerm)) ||
-          (log.details?.toLowerCase().includes(searchTerm))
-      );
-    }
-
-    setFilteredLogs(filtered);
-  }, [searchTerm, actionFilter, logs]);
+  // Filter by search term
+  if (searchTerm) {
+    filteredLogs = filteredLogs.filter(
+      (log) =>
+        (log.resource?.toLowerCase().includes(searchTerm)) ||
+        (log.actor?.toLowerCase().includes(searchTerm)) ||
+        (log.details?.toLowerCase().includes(searchTerm))
+    );
+  }
 
   if (loading) {
     return (

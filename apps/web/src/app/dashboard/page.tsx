@@ -9,7 +9,6 @@ import { RepoSignalCard } from '@/components/repo-signal-card';
 import { IntegrationStatusCard } from '@/components/integration-status-card';
 import { H2 } from '@/components/typography';
 import Link from 'next/link';
-import { fetchFromAPI } from '@/lib/api-client';
 
 interface DashboardMetrics {
   repositoriesCount: number;

@@ -120,7 +120,13 @@ export default function DraftsPage() {
         const fetchedDrafts = Array.isArray(data.data) ? data.data : [];
         
         // Map API response to draft card format
-        const formattedDrafts: Draft[] = fetchedDrafts.map((d: any) => ({
+        interface DraftResponse {
+          id: string;
+          title?: string;
+          createdAt: string;
+        }
+        
+        const formattedDrafts: Draft[] = fetchedDrafts.map((d: DraftResponse) => ({
           id: d.id,
           title: d.title || 'Untitled',
           generatedText: d.title,

@@ -94,7 +94,11 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<{
+    workspace?: { id: string; name: string };
+    installations?: { forThisWorkspace: Array<{ installationId: string; accountLogin: string }> };
+    integrationStatus?: { github: { connected: boolean; accountLogin?: string } };
+  } | null>(null);
   const [syncing, setSyncing] = useState(false);
   const searchParams = useSearchParams();
 
@@ -116,7 +120,10 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    loadIntegrations();
+    const loadInitialData = async () => {
+      await loadIntegrations();
+    };
+    loadInitialData();
   }, []);
 
   useEffect(() => {
@@ -169,11 +176,6 @@ export default function SettingsPage() {
     }
   }, [searchParams]);
 
-  const handleDisconnect = async (service: string) => {
-    // Disconnect endpoint not yet implemented - buttons are disabled
-    // When backend is ready, implement: DELETE /api/GitSync/integrations/{service}
-  };
-
   const handleViewLogs = () => {
     window.location.href = '/dashboard/audit';
   };
@@ -197,7 +199,7 @@ export default function SettingsPage() {
         return;
       }
 
-      const result = await res.json();
+      await res.json();
       alert('Installation synced! Refreshing...');
       
       // Reload debug info and integration status
@@ -250,7 +252,7 @@ export default function SettingsPage() {
           <div className="flex items-start justify-between mb-3">
             <h3 className="text-sm font-semibold text-slate-300">Debug: GitHub Installation</h3>
             <code className="text-xs text-slate-500 bg-slate-900 px-2 py-1 rounded">
-              {debugInfo.installations?.forThisWorkspace?.length > 0 ? '✓ Found' : '✗ Missing'}
+              {(debugInfo.installations?.forThisWorkspace?.length ?? 0) > 0 ? '✓ Found' : '✗ Missing'}
             </code>
           </div>
           

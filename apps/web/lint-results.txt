@@ -1,0 +1,125 @@
+﻿
+> web@0.1.0 lint C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web
+> eslint
+
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\dashboard\metrics\route.ts
+  5:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\dashboard\pending-drafts\route.ts
+  5:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\github-repos\route.ts
+  5:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\github\debug-installation\route.ts
+  10:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\integration-status\route.ts
+  5:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\project-cards\route.ts
+  5:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\api\GitSync\workspace-id\route.ts
+  9:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\audit\page.tsx
+  106:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\audit\page.tsx:106:5
+  104 |     }
+  105 |
+> 106 |     setFilteredLogs(filtered);
+      |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  107 |   }, [searchTerm, actionFilter, logs]);
+  108 |
+  109 |   if (loading) {  react-hooks/set-state-in-effect
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\drafts\page.tsx
+  123:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\page.tsx
+  12:10  warning  'fetchFromAPI' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\project-cards\page.tsx
+  19:10  warning  'error' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  19:17  warning  'setError' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\repositories\page.tsx
+  127:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\repositories\page.tsx:127:5
+  125 |
+  126 |   useEffect(() => {
+> 127 |     loadRepos();
+      |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  128 |     loadIntegrations();
+  129 |   }, []);
+  130 |  react-hooks/set-state-in-effect
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\settings\page.tsx
+   97:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  119:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\app\dashboard\settings\page.tsx:119:5
+  117 |
+  118 |   useEffect(() => {
+> 119 |     loadIntegrations();
+      |     ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  120 |   }, []);
+  121 |
+  122 |   useEffect(() => {  react-hooks/set-state-in-effect
+  172:9   warning  'handleDisconnect' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  172:35  warning  'service' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  200:13  warning  'result' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\components\notification-panel.tsx
+  60:14  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  60:46  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\components\profile-dropdown.tsx
+  3:29  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\components\signal-orbit-scene.tsx
+  15:80  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
+  21:3   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  23:16  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
+  25:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  39:3   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  41:15  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\consumer.ts
+  7:27  warning  'env' is defined but never used  @typescript-eslint/no-unused-vars
+  7:37  warning  'ctx' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\dlq_handler.ts
+  7:27  warning  'env' is defined but never used  @typescript-eslint/no-unused-vars
+  7:37  warning  'ctx' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Redwan Ahmmed\Desktop\GitSync\GitSync-main\apps\web\src\lib\api-client.ts
+  89:18  warning  'parseError' is defined but never used  @typescript-eslint/no-unused-vars
+  99:18  warning  'parseError' is defined but never used  @typescript-eslint/no-unused-vars
+
+Γ£û 33 problems (10 errors, 23 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.
+
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.

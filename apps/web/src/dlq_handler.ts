@@ -3,8 +3,8 @@
 // It can be attached to a worker via the "dead_letter_queue" binding.
 
 const dlqHandler = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async queue(batch: any, env: any, ctx: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+  async queue(batch: any, _env: any, _ctx: any) {
     for (const message of batch) {
       try {
         const payload = await message.json();
