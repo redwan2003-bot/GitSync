@@ -79,6 +79,7 @@ export default function RepositoriesPage() {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadRepos() {
@@ -98,6 +99,24 @@ export default function RepositoriesPage() {
     }
 
     loadRepos();
+  }, []);
+
+  useEffect(() => {
+    async function loadWorkspaceId() {
+      try {
+        const res = await fetch('/api/GitSync/workspace-id');
+        
+        if (!res.ok) throw new Error('Failed to fetch workspace ID');
+        
+        const data = await res.json();
+        setWorkspaceId(data.workspaceId || null);
+      } catch (err) {
+        console.error('Workspace ID error:', err);
+        setWorkspaceId(null);
+      }
+    }
+
+    loadWorkspaceId();
   }, []);
 
   if (loading) {
@@ -158,10 +177,16 @@ export default function RepositoriesPage() {
             Connect GitHub repositories to start tracking signals and generating LinkedIn content.
           </p>
           <a
-            href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}
+            href={workspaceId ? `${process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}?state=${encodeURIComponent(workspaceId)}` : "#"}
+            onClick={(e) => !workspaceId && e.preventDefault()}
             target="_blank"
             rel="noreferrer"
-            className="inline-block px-4 py-2 bg-signal text-white rounded-lg hover:bg-signal/90 transition-colors"
+            className={`inline-block px-4 py-2 rounded-lg transition-colors ${
+              workspaceId
+                ? 'bg-signal text-white hover:bg-signal/90 cursor-pointer'
+                : 'bg-slate-700 text-slate-300 opacity-50 cursor-not-allowed'
+            }`}
+            title={!workspaceId ? 'Workspace not ready. Refresh or sign in again.' : ''}
           >
             Install GitHub App
           </a>

@@ -55,14 +55,24 @@ export default function DashboardContent({
             <p className="text-sm text-slate-400 mb-6">
               Install the GitSync GitHub App on selected public repositories.
             </p>
-            <a 
-              href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}
-              target="_blank"
-              rel="noreferrer"
-              className="block w-full text-center py-2 px-4 rounded-lg bg-white text-slate-900 font-medium text-sm hover:bg-slate-100 transition-colors"
-            >
-              Install GitHub App
-            </a>
+            {membership?.workspaceId ? (
+              <a 
+                href={`${process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}?state=${encodeURIComponent(membership.workspaceId)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="block w-full text-center py-2 px-4 rounded-lg bg-white text-slate-900 font-medium text-sm hover:bg-slate-100 transition-colors"
+              >
+                Install GitHub App
+              </a>
+            ) : (
+              <button
+                disabled
+                title="Workspace not ready. Refresh or sign in again."
+                className="w-full text-center py-2 px-4 rounded-lg bg-slate-700 text-slate-300 font-medium text-sm opacity-50 cursor-not-allowed"
+              >
+                Install GitHub App
+              </button>
+            )}
           </div>
 
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">

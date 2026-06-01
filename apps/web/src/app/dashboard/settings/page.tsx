@@ -92,6 +92,7 @@ export default function SettingsPage() {
   const [integrations, setIntegrations] = useState<IntegrationStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadIntegrations() {
@@ -112,6 +113,24 @@ export default function SettingsPage() {
     }
 
     loadIntegrations();
+  }, []);
+
+  useEffect(() => {
+    async function loadWorkspaceId() {
+      try {
+        const res = await fetch('/api/GitSync/workspace-id');
+        
+        if (!res.ok) throw new Error('Failed to fetch workspace ID');
+        
+        const data = await res.json();
+        setWorkspaceId(data.workspaceId || null);
+      } catch (err) {
+        console.error('Workspace ID error:', err);
+        setWorkspaceId(null);
+      }
+    }
+
+    loadWorkspaceId();
   }, []);
 
   const handleDisconnect = async (service: string) => {
@@ -181,14 +200,24 @@ export default function SettingsPage() {
               </button>
             )}
             {!integrations?.github.connected && (
-              <a
-                href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors inline-block text-center"
-              >
-                Install GitHub App
-              </a>
+              workspaceId ? (
+                <a
+                  href={`${process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}?state=${encodeURIComponent(workspaceId)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors inline-block text-center"
+                >
+                  Install GitHub App
+                </a>
+              ) : (
+                <button
+                  disabled
+                  title="Workspace not ready. Refresh or sign in again."
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-slate-700 text-slate-300 font-medium text-sm opacity-50 cursor-not-allowed text-center"
+                >
+                  Install GitHub App
+                </button>
+              )
             )}
           </div>
         </SettingCard>
