@@ -37,28 +37,29 @@ export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps
     }
   }, [open, onOpenChange]);
 
-  return (
-    <div ref={panelRef} className="relative">
-      {open && (
-        <div className="absolute top-full right-0 mt-2 w-80 bg-surface border border-border rounded-lg shadow-lg z-50">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-border">
-            <div className="flex items-center gap-2">
-              <Bell size={18} className="text-muted" />
-              <h2 className="text-sm font-semibold text-text">Notifications</h2>
-            </div>
-          </div>
+  if (!open) return null;
 
-          {/* Empty State */}
-          <div className="px-4 py-8 text-center">
-            <Bell size={40} className="mx-auto text-muted/30 mb-4" />
-            <p className="text-sm text-muted">No notifications yet.</p>
-            <p className="text-xs text-muted/70 mt-2">
-              You'll see activity here when there's something new.
-            </p>
-          </div>
-        </div>
-      )}
+  return (
+    <div
+      ref={panelRef}
+      className="bg-surface border border-border rounded-lg shadow-xl overflow-hidden min-h-64"
+      role="region"
+      aria-label="Notifications"
+    >
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-border bg-surface-soft/30 flex items-center gap-2">
+        <Bell size={18} className="text-muted flex-shrink-0" />
+        <h2 className="text-sm font-semibold text-text">Notifications</h2>
+      </div>
+
+      {/* Empty State */}
+      <div className="px-4 py-12 text-center">
+        <Bell size={40} className="mx-auto text-muted/30 mb-3" />
+        <p className="text-sm font-medium text-muted">No notifications yet.</p>
+        <p className="text-xs text-muted/70 mt-2">
+          You'll see activity here when there's something new.
+        </p>
+      </div>
     </div>
   );
 }

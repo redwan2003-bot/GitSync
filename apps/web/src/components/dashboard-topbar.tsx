@@ -19,8 +19,18 @@ export function DashboardTopbar({
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
+  const handleNotificationClick = () => {
+    setNotificationsOpen(!notificationsOpen);
+    setProfileOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    setProfileOpen(!profileOpen);
+    setNotificationsOpen(false);
+  };
+
   return (
-    <header className="h-14 border-b border-border bg-surface flex items-center justify-between px-6">
+    <header className="h-14 border-b border-border bg-surface flex items-center justify-between px-6 relative z-40">
       {/* Left: Menu + Title */}
       <div className="flex items-center gap-4">
         <button
@@ -47,31 +57,43 @@ export function DashboardTopbar({
         {/* Notifications Button */}
         <div className="relative">
           <button
-            onClick={() => setNotificationsOpen(!notificationsOpen)}
+            onClick={handleNotificationClick}
             aria-label="View notifications"
+            aria-haspopup="menu"
+            aria-expanded={notificationsOpen}
             className="p-1 hover:bg-surface-soft rounded transition-colors"
           >
             <Bell size={18} className="text-muted" />
           </button>
-          <NotificationPanel
-            open={notificationsOpen}
-            onOpenChange={setNotificationsOpen}
-          />
+          {notificationsOpen && (
+            <div className="absolute right-0 top-full mt-2 z-50 w-80 max-w-[calc(100vw-2rem)] md:max-w-80">
+              <NotificationPanel
+                open={notificationsOpen}
+                onOpenChange={setNotificationsOpen}
+              />
+            </div>
+          )}
         </div>
 
         {/* Profile Button */}
         <div className="relative">
           <button
-            onClick={() => setProfileOpen(!profileOpen)}
+            onClick={handleProfileClick}
             aria-label="Open user profile menu"
+            aria-haspopup="menu"
+            aria-expanded={profileOpen}
             className="p-1 hover:bg-surface-soft rounded transition-colors"
           >
             <User size={18} className="text-muted" />
           </button>
-          <ProfileDropdown
-            open={profileOpen}
-            onOpenChange={setProfileOpen}
-          />
+          {profileOpen && (
+            <div className="absolute right-0 top-full mt-2 z-50 w-80 max-w-[calc(100vw-2rem)] md:max-w-80">
+              <ProfileDropdown
+                open={profileOpen}
+                onOpenChange={setProfileOpen}
+              />
+            </div>
+          )}
         </div>
       </div>
     </header>
