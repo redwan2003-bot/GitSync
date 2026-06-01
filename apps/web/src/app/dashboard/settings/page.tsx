@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { BentoCard } from '@/components/bento-card';
 import { H1 } from '@/components/typography';
 import {
@@ -120,16 +119,6 @@ export default function SettingsPage() {
     // When backend is ready, implement: DELETE /api/GitSync/integrations/{service}
   };
 
-  const handleInstallGithub = async () => {
-    // Use NextAuth signIn - this redirects to GitHub OAuth
-    await signIn('github', { redirect: true, callbackUrl: '/dashboard' });
-  };
-
-  const handleConnectLinkedin = async () => {
-    // Use NextAuth signIn - this redirects to LinkedIn OAuth
-    await signIn('linkedin', { redirect: true, callbackUrl: '/dashboard' });
-  };
-
   const handleViewLogs = () => {
     window.location.href = '/dashboard/audit';
   };
@@ -192,12 +181,14 @@ export default function SettingsPage() {
               </button>
             )}
             {!integrations?.github.connected && (
-              <button
-                onClick={handleInstallGithub}
-                className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors"
+              <a
+                href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors inline-block text-center"
               >
                 Install GitHub App
-              </button>
+              </a>
             )}
           </div>
         </SettingCard>
@@ -226,12 +217,14 @@ export default function SettingsPage() {
               </button>
             )}
             {!integrations?.linkedin.connected && (
-              <button
-                onClick={handleConnectLinkedin}
-                className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors"
+              <a
+                href={process.env.NEXT_PUBLIC_LINKEDIN_CONNECT_URL ?? "#"}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors inline-block text-center"
               >
                 Connect LinkedIn
-              </button>
+              </a>
             )}
           </div>
         </SettingCard>

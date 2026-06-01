@@ -157,12 +157,14 @@ export default function RepositoriesPage() {
           <p className="text-sm text-muted max-w-md mx-auto mb-6">
             Connect GitHub repositories to start tracking signals and generating LinkedIn content.
           </p>
-          <Link
-            href="/dashboard/settings"
+          <a
+            href={process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL ?? "https://github.com/apps/gitsync-engine/installations/new"}
+            target="_blank"
+            rel="noreferrer"
             className="inline-block px-4 py-2 bg-signal text-white rounded-lg hover:bg-signal/90 transition-colors"
           >
             Install GitHub App
-          </Link>
+          </a>
         </div>
       )}
     </div>
