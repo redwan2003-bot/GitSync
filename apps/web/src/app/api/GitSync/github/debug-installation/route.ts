@@ -65,22 +65,47 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Get integration status
+    // Get integration status by querying the same data
     let integrationStatus = null;
     try {
-      const statusRes = await fetch(
-        new URL('/api/GitSync/integration-status', request.url).toString(),
-        {
-          headers: {
-            cookie: request.headers.get('cookie') || '',
+      const [github, linkedin, gemini] = await Promise.all([
+        prisma.gitHubInstallation.findFirst({
+          where: { workspaceId },
+        }),
+        prisma.tokenVaultEntry.findFirst({
+          where: {
+            workspaceId,
+            provider: 'LINKEDIN',
           },
-        }
-      );
-      if (statusRes.ok) {
-        integrationStatus = await statusRes.json();
-      }
+        }),
+        prisma.tokenVaultEntry.findFirst({
+          where: {
+            workspaceId,
+            provider: 'GEMINI',
+          },
+        }),
+      ]);
+
+      integrationStatus = {
+        github: {
+          connected: !!github,
+          configured: !!process.env.GITHUB_APP_ID,
+          installationId: github ? github.installationId.toString() : null,
+          accountLogin: github?.accountLogin || null,
+          accountType: github?.accountType || null,
+        },
+        linkedin: {
+          connected: !!linkedin,
+          configured: !!process.env.LINKEDIN_CLIENT_ID,
+        },
+        aiProvider: {
+          provider: 'gemini',
+          model: 'gemini-3.5-flash',
+          configured: !!gemini || !!process.env.GEMINI_API_KEY,
+        },
+      };
     } catch (err) {
-      console.error('Failed to fetch integration status:', err);
+      console.error('Failed to get integration status:', err);
     }
 
     // Database info (safe to show)
