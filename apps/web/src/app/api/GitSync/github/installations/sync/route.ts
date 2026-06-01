@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@GitSync/db';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 /**
  * Manual sync/repair endpoint for GitHub App installation
@@ -12,6 +13,8 @@ import { prisma } from '@GitSync/db';
  *   accountLogin: string,
  *   accountType: string
  * }
+ * 
+ * Rate limited to 10 requests per minute per user.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -21,6 +24,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Rate limiting: 10 requests per minute per user
+    const rateLimitCheck = checkRateLimit(`github-sync:${session.user.id}`, 10, 60);
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil(
+              (rateLimitCheck.resetAt.getTime() - Date.now()) / 1000
+            ).toString(),
+          },
+        }
       );
     }
 
@@ -41,12 +60,32 @@ export async function POST(request: NextRequest) {
     const workspaceId = workspaceMember.workspaceId;
 
     // Parse request body
-    const body = await request.json();
+    const body = await request.json() as {
+      installationId?: unknown;
+      accountLogin?: unknown;
+      accountType?: unknown;
+    };
     const { installationId, accountLogin, accountType } = body;
 
-    if (!installationId || !accountLogin) {
+    // Validate input
+    if (!installationId || typeof installationId !== 'number') {
       return NextResponse.json(
-        { error: 'Missing installationId or accountLogin' },
+        { error: 'Invalid installationId: must be a number' },
+        { status: 400 }
+      );
+    }
+
+    if (!accountLogin || typeof accountLogin !== 'string' || accountLogin.length === 0) {
+      return NextResponse.json(
+        { error: 'Invalid accountLogin: must be a non-empty string' },
+        { status: 400 }
+      );
+    }
+
+    // Validate installation ID is reasonable
+    if (installationId < 1 || installationId > Number.MAX_SAFE_INTEGER) {
+      return NextResponse.json(
+        { error: 'Invalid installationId: out of range' },
         { status: 400 }
       );
     }
@@ -56,16 +95,18 @@ export async function POST(request: NextRequest) {
       where: { installationId: BigInt(installationId) },
       update: {
         workspaceId,
-        accountLogin,
-        accountType: accountType || 'User',
+        accountLogin: accountLogin.slice(0, 255), // Prevent overly long strings
+        accountType: (typeof accountType === 'string' ? accountType : 'User').slice(0, 50),
       },
       create: {
         workspaceId,
         installationId: BigInt(installationId),
-        accountLogin,
-        accountType: accountType || 'User',
+        accountLogin: accountLogin.slice(0, 255),
+        accountType: (typeof accountType === 'string' ? accountType : 'User').slice(0, 50),
       },
     });
+
+    console.log(`[GitHub Sync] User ${userId} synced installation ${installationId} to workspace ${workspaceId}`);
 
     return NextResponse.json({
       success: true,

@@ -5,6 +5,14 @@ import { Env } from "../index";
 const githubAppRouter = new Hono<{ Bindings: Env }>();
 
 /**
+ * Validate workspace ID format (UUID v4)
+ */
+function isValidUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+/**
  * GitHub App Installation Callback
  * 
  * GitHub redirects here after a user installs the app.
@@ -13,6 +21,11 @@ const githubAppRouter = new Hono<{ Bindings: Env }>();
  * You must set this as the GitHub App's "Setup URL" (Post Installation URL):
  *   https://reposignal-api.gitsync.workers.dev/integrations/github/callback
  * And enable "Redirect on update" in your GitHub App settings.
+ * 
+ * Security:
+ * - Validates workspace ID format
+ * - Validates installation ID is numeric
+ * - Logs all callbacks for audit trail
  */
 githubAppRouter.get("/callback", async (c) => {
   const installationId = c.req.query("installation_id");
@@ -21,14 +34,22 @@ githubAppRouter.get("/callback", async (c) => {
 
   const webUrl = c.env.WEB_APP_URL || "https://gitsyncweb.vercel.app";
 
-  if (!installationId) {
-    return c.redirect(`${webUrl}/dashboard?github=error&message=missing_installation_id`);
+  // Validate installation ID is numeric
+  if (!installationId || !/^\d+$/.test(installationId)) {
+    console.warn("[GitHub Callback] Invalid installation ID:", installationId);
+    return c.redirect(`${webUrl}/dashboard?github=error&message=invalid_installation_id`);
   }
 
   // If state (workspaceId) was not passed, we can't associate this installation.
-  // The user will need to re-install via the button on the dashboard.
   if (!state) {
+    console.warn("[GitHub Callback] Missing workspace state");
     return c.redirect(`${webUrl}/dashboard?github=error&message=missing_workspace_state`);
+  }
+
+  // Validate workspace ID format (UUID)
+  if (!isValidUUID(state)) {
+    console.warn("[GitHub Callback] Invalid workspace ID format:", state);
+    return c.redirect(`${webUrl}/dashboard?github=error&message=invalid_workspace_format`);
   }
 
   try {
@@ -46,6 +67,7 @@ githubAppRouter.get("/callback", async (c) => {
     });
 
     if (!workspace) {
+      console.warn("[GitHub Callback] Workspace not found:", state);
       return c.redirect(`${webUrl}/dashboard?github=error&message=workspace_not_found`);
     }
 
@@ -56,31 +78,49 @@ githubAppRouter.get("/callback", async (c) => {
       where: { workspaceId: state },
     });
 
+    const accountLogin = owner?.name || owner?.email || "User";
+
     if (existing) {
       // Update the existing record if re-installed
       await prisma.gitHubInstallation.update({
         where: { id: existing.id },
         data: {
           installationId: BigInt(installationId),
-          accountLogin: owner?.name || owner?.email || "User",
+          accountLogin: accountLogin.slice(0, 255),
         },
       });
+      console.log(`[GitHub Callback] Updated installation ${installationId} for workspace ${state}`);
     } else {
       // Create a new installation record
       await prisma.gitHubInstallation.create({
         data: {
           workspaceId: state,
           installationId: BigInt(installationId),
-          accountLogin: owner?.name || owner?.email || "User",
+          accountLogin: accountLogin.slice(0, 255),
           accountType: "User",
         },
       });
+      console.log(`[GitHub Callback] Created installation ${installationId} for workspace ${state}`);
     }
 
-    return c.redirect(`${webUrl}/dashboard?github=connected`);
+    // Log callback for audit trail
+    await prisma.auditLog.create({
+      data: {
+        workspaceId: state,
+        action: "GITHUB_APP_INSTALLED",
+        actor: owner?.email || "system",
+        resource: `GitHubApp:${installationId}`,
+        details: `Setup action: ${setupAction}`,
+      },
+    }).catch(() => {
+      // Silently fail if audit log fails, don't block installation
+      console.warn("[GitHub Callback] Failed to create audit log");
+    });
+
+    return c.redirect(`${webUrl}/dashboard?github=connected&installation_id=${installationId}`);
   } catch (err: any) {
-    console.error("GitHub App callback error:", err);
-    return c.redirect(`${webUrl}/dashboard?github=error&message=${encodeURIComponent(err.message)}`);
+    console.error("[GitHub Callback] Error:", err.message || err);
+    return c.redirect(`${webUrl}/dashboard?github=error&message=${encodeURIComponent("Installation failed")}`);
   }
 });
 
@@ -90,6 +130,10 @@ githubAppRouter.get("/callback", async (c) => {
  * the workspaceId encoded as the `state` parameter.
  * 
  * URL: /integrations/github/connect?workspaceId=XXX
+ * 
+ * Security:
+ * - Validates workspace ID format before redirecting to GitHub
+ * - Prevents arbitrary external redirects via state parameter
  */
 githubAppRouter.get("/connect", (c) => {
   const workspaceId = c.req.query("workspaceId");
@@ -100,7 +144,14 @@ githubAppRouter.get("/connect", (c) => {
     return c.json({ error: "Missing workspaceId" }, 400);
   }
 
+  // Validate workspace ID format (UUID)
+  if (!isValidUUID(workspaceId)) {
+    console.warn("[GitHub Connect] Invalid workspace ID format:", workspaceId);
+    return c.json({ error: "Invalid workspaceId format" }, 400);
+  }
+
   const installUrl = `https://github.com/apps/${appName}/installations/new?state=${encodeURIComponent(workspaceId)}`;
+  console.log(`[GitHub Connect] Redirecting to GitHub install for workspace: ${workspaceId}`);
   return c.redirect(installUrl);
 });
 
