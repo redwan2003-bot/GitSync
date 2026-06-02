@@ -85,9 +85,9 @@ export default function ProjectCardsPage() {
             <div className="flex items-center justify-between mb-4">
               <H2 className="text-lg">Your Cards</H2>
               <button
-                disabled
-                className="p-2 rounded-lg hover:bg-surface-soft transition-colors disabled:opacity-50"
-                title="Coming soon"
+                onClick={handleOpenLinkedin}
+                className="p-2 rounded-lg hover:bg-surface-soft transition-colors"
+                title="Create on LinkedIn"
               >
                 <Plus size={18} className="text-signal" />
               </button>
@@ -227,9 +227,9 @@ export default function ProjectCardsPage() {
             ) : (
               <div className="text-center py-12">
                 <div className="text-4xl mb-4">📋</div>
-                <H2 className="text-lg mb-2">No Project Cards</H2>
+                <H2 className="text-lg mb-2">No project cards yet</H2>
                 <p className="text-sm text-muted mb-6">
-                  Create your first project card on LinkedIn to manage it here.
+                  LinkedIn project cards are managed manually in v1. GitSync helps you prepare the copy and links.
                 </p>
                 <button
                   onClick={handleOpenLinkedin}

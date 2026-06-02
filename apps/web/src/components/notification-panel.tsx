@@ -42,12 +42,12 @@ export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps
   return (
     <div
       ref={panelRef}
-      className="bg-surface border border-border rounded-lg shadow-xl overflow-hidden min-h-64"
+      className="bg-[#0f1115] border border-border rounded-lg shadow-2xl overflow-hidden min-h-64 z-50"
       role="region"
       aria-label="Notifications"
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border bg-surface-soft/30 flex items-center gap-2">
+      <div className="px-4 py-3 border-b border-border bg-[#1a1d24] flex items-center gap-2">
         <Bell size={18} className="text-muted flex-shrink-0" />
         <h2 className="text-sm font-semibold text-text">Notifications</h2>
       </div>

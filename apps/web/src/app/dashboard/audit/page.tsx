@@ -208,6 +208,7 @@ export default function AuditPage() {
                 <>
                   <div className="text-muted">$ audit --all</div>
                   <div className="text-muted">no audit events recorded yet</div>
+                  <div className="text-muted">start syncing or publishing to generate events</div>
                 </>
               ) : (
                 <>

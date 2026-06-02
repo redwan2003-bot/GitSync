@@ -221,14 +221,13 @@ export default function DraftsPage() {
       ) : (
         <div className="text-center py-12">
           <FileText size={48} className="mx-auto text-muted/30 mb-4" />
-          <H2 className="text-lg mb-2">
-            {drafts.length === 0 ? 'No drafts yet' : 'No drafts in this status'}
-          </H2>
-          <p className="text-sm text-muted max-w-md mx-auto">
-            {drafts.length === 0
-              ? 'Drafts appear after GitHub activity is detected. Check back later or start syncing repositories.'
-              : 'Drafts are automatically created when GitSync detects meaningful GitHub activity. Check other tabs or wait for new signals.'}
+          <H2 className="text-lg mb-2">No drafts yet</H2>
+          <p className="text-sm text-muted max-w-md mx-auto mb-6">
+            Drafts appear after GitHub activity is detected and reviewed by GitSync.
           </p>
+          <button disabled className="inline-block px-4 py-2 rounded-lg bg-surface-soft text-muted font-medium text-sm cursor-not-allowed opacity-50">
+            Waiting for repository activity
+          </button>
         </div>
       )}
     </div>

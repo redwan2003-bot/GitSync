@@ -220,16 +220,16 @@ export default function RepositoriesPage() {
         // GitHub connected but no repos
         <div className="text-center py-12">
           <GitBranch size={48} className="mx-auto text-signal/30 mb-4" />
-          <H2 className="text-lg mb-2">GitHub Connected</H2>
+          <H2 className="text-lg mb-2">GitHub connected</H2>
           <p className="text-sm text-muted max-w-md mx-auto mb-2">
             {integrationStatus.github.accountLogin ? `Linked to ${integrationStatus.github.accountLogin}` : 'App is connected'}
           </p>
           <p className="text-sm text-muted max-w-md mx-auto mb-6">
-            Repository sync is not complete yet. No repositories are available.
+            Repository sync is being prepared. Your selected repositories will appear here once sync is enabled.
           </p>
           <button
             disabled
-            className="inline-block px-4 py-2 rounded-lg bg-slate-700 text-slate-300 opacity-50 cursor-not-allowed"
+            className="inline-block px-4 py-2 rounded-lg bg-surface-soft text-muted cursor-not-allowed opacity-50 font-medium text-sm"
             title="Repository sync coming soon"
           >
             Repository sync coming soon

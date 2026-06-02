@@ -66,7 +66,7 @@ export function DashboardTopbar({
             <Bell size={18} className="text-muted" />
           </button>
           {notificationsOpen && (
-            <div className="absolute right-0 top-full mt-2 z-50 w-80 max-w-[calc(100vw-2rem)] md:max-w-80">
+            <div className="absolute right-0 top-full mt-2 z-[100] w-72 max-w-[calc(100vw-2rem)] md:w-80">
               <NotificationPanel
                 open={notificationsOpen}
                 onOpenChange={setNotificationsOpen}
@@ -87,7 +87,7 @@ export function DashboardTopbar({
             <User size={18} className="text-muted" />
           </button>
           {profileOpen && (
-            <div className="absolute right-0 top-full mt-2 z-50 w-80 max-w-[calc(100vw-2rem)] md:max-w-80">
+            <div className="absolute right-0 top-full mt-2 z-[100] w-56 max-w-[calc(100vw-2rem)]">
               <ProfileDropdown
                 open={profileOpen}
                 onOpenChange={setProfileOpen}

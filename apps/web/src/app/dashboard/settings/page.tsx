@@ -302,7 +302,7 @@ export default function SettingsPage() {
               <button
                 disabled
                 title="Disconnect feature coming soon"
-                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm opacity-50 cursor-not-allowed"
+                className="w-full mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-text font-medium text-sm opacity-50 cursor-not-allowed hover:bg-surface-soft"
               >
                 Disconnect (Coming Soon)
               </button>
@@ -348,7 +348,7 @@ export default function SettingsPage() {
               <button
                 disabled
                 title="Disconnect feature coming soon"
-                className="w-full mt-4 px-4 py-2 rounded-lg border border-danger text-danger font-medium text-sm opacity-50 cursor-not-allowed"
+                className="w-full mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-text font-medium text-sm opacity-50 cursor-not-allowed hover:bg-surface-soft"
               >
                 Disconnect (Coming Soon)
               </button>
@@ -426,7 +426,7 @@ export default function SettingsPage() {
         <SettingCard
           title="System Status"
           description="Monitor system health and infrastructure"
-          status="healthy"
+          status={integrations?.queue.connected ? 'healthy' : 'warning'}
           icon={Activity}
         >
           <div className="space-y-3">

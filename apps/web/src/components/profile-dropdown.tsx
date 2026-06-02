@@ -50,12 +50,12 @@ export function ProfileDropdown({ open, onOpenChange }: ProfileDropdownProps) {
   return (
     <div
       ref={dropdownRef}
-      className="bg-surface border border-border rounded-lg shadow-xl overflow-hidden"
+      className="bg-[#0f1115] border border-border rounded-lg shadow-2xl overflow-hidden z-50"
       role="menu"
       aria-orientation="vertical"
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border bg-surface-soft/30">
+      <div className="px-4 py-3 border-b border-border bg-[#1a1d24]">
         <p className="text-sm font-semibold text-text truncate">
           {session?.user?.name || 'Signed in'}
         </p>
