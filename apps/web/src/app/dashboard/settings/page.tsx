@@ -184,24 +184,19 @@ export default function SettingsPage() {
   const handleSyncInstallation = async () => {
     setSyncing(true);
     try {
-      const res = await fetch('/api/GitSync/github/installations/sync', {
+      const res = await fetch('/api/GitSync/github/repositories/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          installationId: 137189045,
-          accountLogin: 'redwan2003-bot',
-          accountType: 'User',
-        }),
       });
 
       if (!res.ok) {
         const error = await res.json();
-        alert(`Sync failed: ${JSON.stringify(error)}`);
+        alert(`Sync failed: ${error.message || JSON.stringify(error)}`);
         return;
       }
 
-      await res.json();
-      alert('Installation synced! Refreshing...');
+      const data = await res.json();
+      alert(`Successfully synced ${data.syncedCount} public repositories.`);
       
       // Reload debug info and integration status
       const debugRes = await fetch('/api/GitSync/github/debug-installation');
@@ -299,13 +294,20 @@ export default function SettingsPage() {
               </span>
             </div>
             {integrations?.github.connected && (
-              <button
-                disabled
-                title="Disconnect feature coming soon"
-                className="w-full mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-text font-medium text-sm opacity-50 cursor-not-allowed hover:bg-surface-soft"
-              >
-                Disconnect (Coming Soon)
-              </button>
+              <>
+                <button
+                  onClick={handleSyncInstallation}
+                  disabled={syncing}
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors disabled:opacity-50"
+                >
+                  {syncing ? 'Syncing...' : 'Sync public repositories'}
+                </button>
+                <div className="mt-2 text-center">
+                  <span className="inline-block px-2 py-1 rounded text-xs bg-surface-soft text-muted">
+                    Private repository sync - v2
+                  </span>
+                </div>
+              </>
             )}
             {!integrations?.github.connected && (
               workspaceId ? (

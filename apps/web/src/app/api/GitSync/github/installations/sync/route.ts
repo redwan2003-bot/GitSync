@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@GitSync/db';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { syncPublicRepositoriesForInstallation } from '@GitSync/integrations';
 
 /**
  * Manual sync/repair endpoint for GitHub App installation
@@ -107,6 +108,15 @@ export async function POST(request: NextRequest) {
     });
 
     console.log(`[GitHub Sync] User ${userId} synced installation ${installationId} to workspace ${workspaceId}`);
+
+    // Trigger public repo sync
+    try {
+      await syncPublicRepositoriesForInstallation(workspaceId, installation.installationId);
+      console.log(`[GitHub Sync] Triggered public repo sync for installation ${installationId}`);
+    } catch (syncError) {
+      console.error(`[GitHub Sync] Failed to sync repositories for installation ${installationId}:`, syncError);
+      // We don't fail the callback, just log it. The UI can retry later.
+    }
 
     return NextResponse.json({
       success: true,

@@ -138,12 +138,19 @@ model Repository {
   name            String
   fullName        String
   visibility      String
+  description     String?  @db.Text
+  language        String?
   defaultBranch   String?
   htmlUrl         String
   enabled         Boolean  @default(false)
   selected        Boolean  @default(false)
   privateEnabled  Boolean  @default(false)
+  fork            Boolean  @default(false)
+  archived        Boolean  @default(false)
+  disabled        Boolean  @default(false)
   autoMode        String   @default("REVIEW_REQUIRED")
+  syncStatus      String   @default("PENDING")
+  pushedAt        DateTime?
   lastSyncedAt    DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

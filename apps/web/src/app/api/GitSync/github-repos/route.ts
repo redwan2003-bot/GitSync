@@ -42,18 +42,49 @@ export async function GET(_request: NextRequest) {
     if (githubInstallations.length === 0) {
       return successResponse({
         repos: [],
-        hasGitHub: false,
-        message: 'GitHub App not installed',
+        githubConnected: false,
+        syncStatus: 'not_connected',
+        syncedAt: null,
       });
     }
 
-    // Return installation info
-    // Full repo list would require GitHub API call via backend
+    const installation = githubInstallations[0];
+
+    // Fetch repositories for the workspace that are not disabled/stale
+    const repositories = await prisma.repository.findMany({
+      where: {
+        workspaceId: workspace.workspaceId,
+        disabled: false,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
+
+    const isPending = repositories.length === 0;
+    const isFailed = repositories.some((r: any) => r.syncStatus === 'FAILED');
+
+    let syncStatus = 'success';
+    if (isPending) syncStatus = 'pending';
+    if (isFailed) syncStatus = 'failed';
+
+    const lastSyncedAt = repositories.length > 0 
+      ? repositories.reduce((latest: Date, r: any) => (r.lastSyncedAt && r.lastSyncedAt > latest ? r.lastSyncedAt : latest), new Date(0))
+      : null;
+
+    // Convert BigInt IDs to string for JSON serialization
+    const serializedRepos = repositories.map((repo: any) => ({
+      ...repo,
+      githubRepoId: repo.githubRepoId.toString(),
+    }));
+
     return successResponse({
-      repos: [],
-      hasGitHub: true,
-      installationCount: githubInstallations.length,
-      message: 'GitHub App is connected but full repo list requires backend GitHub API call',
+      repositories: serializedRepos,
+      githubConnected: true,
+      syncStatus,
+      syncedAt: lastSyncedAt?.toISOString() || null,
+      // For v1, we can't easily know skipped private count from DB without keeping track of it in a separate model,
+      // but we can pass an optional generic flag or rely on UI to just display the warning.
     });
   } catch (error) {
     console.error('GitHub repos error:', error);

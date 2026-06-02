@@ -9,9 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "octokit": "^3.1.2"
+    "octokit": "^3.1.2",
+    "@GitSync/db": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "@types/node": "^20.0.0"
   }
 }
