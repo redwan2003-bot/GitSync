@@ -6,17 +6,19 @@ const getGitHubApp = () => {
   const privateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(/\\n/g, '\n');
   const clientId = process.env.GITHUB_APP_CLIENT_ID;
 
-  if (!appId || !privateKey || !clientId) {
+  if (!appId || !privateKey) {
     throw new Error('Missing GitHub App environment variables');
   }
 
   return new App({
     appId,
     privateKey,
-    oauth: {
-      clientId,
-      clientSecret: process.env.GITHUB_APP_CLIENT_SECRET || '',
-    },
+    ...(clientId ? {
+      oauth: {
+        clientId,
+        clientSecret: process.env.GITHUB_APP_CLIENT_SECRET || '',
+      }
+    } : {})
   });
 };
 
