@@ -1,10 +1,10 @@
-import { NextRequest } from 'next/server';
+
 import { auth } from '@/auth';
 import { prisma } from '@GitSync/db';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '@/lib/api-response';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
 
@@ -68,13 +68,15 @@ export async function GET(_request: NextRequest) {
 
     const linkedinConnected = !!linkedInEntry;
 
+    const githubData = github as { installationId?: { toString(): string }; accountLogin?: string; accountType?: string } | null;
+
     return successResponse({
       github: {
         connected: !!github,
         configured: !!process.env.GITHUB_APP_ID,
-        installationId: github ? (github as any).installationId?.toString() : null,
-        accountLogin: (github as any)?.accountLogin || null,
-        accountType: (github as any)?.accountType || null,
+        installationId: githubData?.installationId ? githubData.installationId.toString() : null,
+        accountLogin: githubData?.accountLogin || null,
+        accountType: githubData?.accountType || null,
       },
       linkedin: {
         connected: linkedinConnected,
