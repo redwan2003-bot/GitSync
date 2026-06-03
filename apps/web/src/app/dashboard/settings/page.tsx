@@ -360,14 +360,22 @@ export default function SettingsPage() {
               </button>
             )}
             {!integrations?.linkedin.connected && (
-              <a
-                href={process.env.NEXT_PUBLIC_LINKEDIN_CONNECT_URL ?? "#"}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors inline-block text-center"
-              >
-                Connect LinkedIn
-              </a>
+              workspaceId ? (
+                <a
+                  href={`${process.env.NEXT_PUBLIC_API_URL || 'https://reposignal-api.gitsync.workers.dev'}/integrations/linkedin/connect?workspaceId=${encodeURIComponent(workspaceId)}`}
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors inline-block text-center"
+                >
+                  Connect LinkedIn
+                </a>
+              ) : (
+                <button
+                  disabled
+                  title="Workspace not ready. Refresh or sign in again."
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-slate-700 text-slate-300 font-medium text-sm opacity-50 cursor-not-allowed text-center"
+                >
+                  Connect LinkedIn
+                </button>
+              )
             )}
           </div>
         </SettingCard>
