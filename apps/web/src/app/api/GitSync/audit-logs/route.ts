@@ -18,10 +18,8 @@ export async function GET(request: NextRequest) {
     });
 
     if (!workspace) {
-      return NextResponse.json(
-        { error: 'No workspace' },
-        { status: 403 }
-      );
+      // Return empty logs for users without a workspace instead of 403
+      return NextResponse.json({ logs: [] }, { status: 200 });
     }
 
     const searchParams = request.nextUrl.searchParams;

@@ -1,3 +1,5 @@
+// Prisma schema for GitSync project
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
@@ -6,7 +8,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+
 }
 
 // --- Auth.js (Prisma adapter) ---
@@ -18,7 +20,7 @@ model User {
   name          String?
   image         String?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  updatedAt     DateTime @updatedAt
   accounts      Account[]
   sessions      Session[]
   workspaces    WorkspaceMember[]
@@ -63,6 +65,9 @@ model VerificationToken {
 // --- Workspace ---
 
 model Workspace {
+  // Existing fields...
+  // Added relationship for LinkedIn publish statistics
+  linkedinPublishStats LinkedInPublishStat[]
   id               String            @id @default(cuid())
   name             String
   createdAt        DateTime          @default(now())
@@ -85,7 +90,7 @@ model WorkspaceMember {
   userId      String
   role        String    @default("OWNER")
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
 }
@@ -110,6 +115,8 @@ model TokenVaultEntry {
   encryptedToken String
   iv             String
   tag            String
+  authorUrn      String?   // LinkedIn author URN when provider='LINKEDIN'
+  expiresAt      DateTime? // Token expiry if provided
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -117,6 +124,20 @@ model TokenVaultEntry {
   @@unique([workspaceId, provider])
 }
 
+model LinkedInPublishStat {
+  id         String   @id @default(cuid())
+  workspaceId String
+  weekStart  DateTime // Start of the ISO week (Monday 00:00 UTC)
+  count      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, weekStart])
+}
+
+// Existing models continue below
 model GitHubInstallation {
   id             String    @id @default(cuid())
   workspaceId    String
@@ -192,9 +213,9 @@ model ContentDraft {
   publishedAt     DateTime?
   usage           Json?
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  workspace       Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  repository      Repository?    @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @updatedAt
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  repository      Repository? @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
   versions        DraftVersion[]
   linkedInPost    LinkedInPost?
   evidenceSnapshots EvidenceSnapshot[]

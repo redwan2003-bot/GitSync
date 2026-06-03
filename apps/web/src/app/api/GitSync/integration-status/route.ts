@@ -27,23 +27,20 @@ export async function GET(_request: NextRequest) {
     });
 
     if (!workspace) {
-      return errorResponse(
-        ErrorCodes.FORBIDDEN,
-        'No workspace found for user',
-        403
-      );
+      // Return default disconnected status instead of 403
+      return successResponse({
+        github: { connected: false, configured: !!process.env.GITHUB_APP_ID, installationId: null, accountLogin: null, accountType: null },
+        linkedin: { connected: false, configured: !!process.env.LINKEDIN_CLIENT_ID },
+        aiProvider: { provider: 'gemini', model: 'gemini-3.5-flash', configured: !!process.env.GEMINI_API_KEY },
+        database: { connected: true },
+        queue: { connected: !!process.env.UPSTASH_REDIS_REST_URL },
+      });
     }
 
     // Check integration statuses
-    const [github, linkedin, gemini] = await Promise.all([
+    const [github, gemini, linkedInEntry] = await Promise.all([
       prisma.gitHubInstallation.findFirst({
         where: { workspaceId: workspace.workspaceId },
-      }),
-      prisma.tokenVaultEntry.findFirst({
-        where: {
-          workspaceId: workspace.workspaceId,
-          provider: 'LINKEDIN',
-        },
       }),
       prisma.tokenVaultEntry.findFirst({
         where: {
@@ -51,31 +48,35 @@ export async function GET(_request: NextRequest) {
           provider: 'GEMINI',
         },
       }),
+      prisma.tokenVaultEntry.findFirst({
+        where: {
+          workspaceId: workspace.workspaceId,
+          provider: 'LINKEDIN',
+        },
+      }),
     ]);
+
+    const linkedinConnected = !!linkedInEntry;
 
     return successResponse({
       github: {
         connected: !!github,
-        configured: process.env.GITHUB_APP_ID ? true : false,
+        configured: !!process.env.GITHUB_APP_ID,
         installationId: github ? github.installationId.toString() : null,
         accountLogin: github?.accountLogin || null,
         accountType: github?.accountType || null,
       },
       linkedin: {
-        connected: !!linkedin,
-        configured: process.env.LINKEDIN_CLIENT_ID ? true : false,
+        connected: linkedinConnected,
+        configured: !!process.env.LINKEDIN_CLIENT_ID,
       },
       aiProvider: {
         provider: 'gemini',
         model: 'gemini-3.5-flash',
-        configured: !!gemini || (process.env.GEMINI_API_KEY ? true : false),
+        configured: !!gemini || !!process.env.GEMINI_API_KEY,
       },
-      database: {
-        connected: true,
-      },
-      queue: {
-        connected: process.env.UPSTASH_REDIS_REST_URL ? true : false,
-      },
+      database: { connected: true },
+      queue: { connected: !!process.env.UPSTASH_REDIS_REST_URL },
     });
   } catch (error) {
     console.error('Integration status error:', error);
