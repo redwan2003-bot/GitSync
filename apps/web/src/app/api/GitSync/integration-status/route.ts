@@ -37,23 +37,33 @@ export async function GET(_request: NextRequest) {
       });
     }
 
+    // Safely query the database in case a table doesn't exist yet in production
+    const safeQuery = async <T>(query: Promise<T>): Promise<T | null> => {
+      try {
+        return await query;
+      } catch (e) {
+        console.error('Integration safeQuery error:', e);
+        return null;
+      }
+    };
+
     // Check integration statuses
     const [github, gemini, linkedInEntry] = await Promise.all([
-      prisma.gitHubInstallation.findFirst({
+      safeQuery(prisma.gitHubInstallation.findFirst({
         where: { workspaceId: workspace.workspaceId },
-      }),
-      prisma.tokenVaultEntry.findFirst({
+      })),
+      safeQuery(prisma.tokenVaultEntry.findFirst({
         where: {
           workspaceId: workspace.workspaceId,
           provider: 'GEMINI',
         },
-      }),
-      prisma.tokenVaultEntry.findFirst({
+      })),
+      safeQuery(prisma.tokenVaultEntry.findFirst({
         where: {
           workspaceId: workspace.workspaceId,
           provider: 'LINKEDIN',
         },
-      }),
+      })),
     ]);
 
     const linkedinConnected = !!linkedInEntry;
@@ -62,9 +72,9 @@ export async function GET(_request: NextRequest) {
       github: {
         connected: !!github,
         configured: !!process.env.GITHUB_APP_ID,
-        installationId: github ? github.installationId.toString() : null,
-        accountLogin: github?.accountLogin || null,
-        accountType: github?.accountType || null,
+        installationId: github ? (github as any).installationId?.toString() : null,
+        accountLogin: (github as any)?.accountLogin || null,
+        accountType: (github as any)?.accountType || null,
       },
       linkedin: {
         connected: linkedinConnected,

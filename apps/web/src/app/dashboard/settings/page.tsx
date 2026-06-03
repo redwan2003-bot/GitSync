@@ -145,8 +145,10 @@ export default function SettingsPage() {
     loadWorkspaceId();
   }, []);
 
-  // Load debug info
+  // Load debug info (Development only)
   useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+
     async function loadDebugInfo() {
       try {
         const res = await fetch('/api/GitSync/github/debug-installation');
@@ -198,9 +200,11 @@ export default function SettingsPage() {
       const data = await res.json();
       alert(`Successfully synced ${data.syncedCount} public repositories.`);
       
-      // Reload debug info and integration status
-      const debugRes = await fetch('/api/GitSync/github/debug-installation');
-      if (debugRes.ok) setDebugInfo(await debugRes.json());
+      // Reload debug info (Development only) and integration status
+      if (process.env.NODE_ENV !== 'production') {
+        const debugRes = await fetch('/api/GitSync/github/debug-installation');
+        if (debugRes.ok) setDebugInfo(await debugRes.json());
+      }
       
       await loadIntegrations();
     } catch (err) {
