@@ -25,8 +25,5 @@
   "dependencies": {
     "@neondatabase/serverless": "0.10.0",
     "@prisma/adapter-neon": "^5.10.0"
-  },
-  "prisma": {
-    "schema": "./packages/db/prisma/schema.prisma"
   }
 }
