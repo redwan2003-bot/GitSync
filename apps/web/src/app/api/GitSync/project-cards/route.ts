@@ -221,11 +221,11 @@ Return JSON only.`;
       },
       201
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Project card generation error:', error);
     return errorResponse(
       ErrorCodes.INTERNAL_ERROR,
-      'Failed to generate project card',
+      `Failed to generate project card: ${error?.message || 'Unknown error'}`,
       500
     );
   }
