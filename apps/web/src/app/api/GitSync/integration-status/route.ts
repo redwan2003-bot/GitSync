@@ -42,7 +42,7 @@ export async function GET() {
         linkedin: { connected: false, configured: !!process.env.LINKEDIN_CLIENT_ID },
         aiProvider: { provider: 'gemini', model: 'gemini-3.5-flash', configured: !!process.env.GEMINI_API_KEY },
         database: { connected: true },
-        queue: { connected: !!process.env.UPSTASH_REDIS_REST_URL },
+        queue: { connected: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL },
       });
     }
 
@@ -89,7 +89,7 @@ export async function GET() {
         configured: !!gemini || !!process.env.GEMINI_API_KEY,
       },
       database: { connected: true },
-      queue: { connected: !!process.env.UPSTASH_REDIS_REST_URL },
+      queue: { connected: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL },
     });
   } catch (error) {
     console.error('Integration status error:', error);
