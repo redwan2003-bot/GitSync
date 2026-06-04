@@ -2,7 +2,8 @@
 
 import { H1, H2 } from '../../../components/typography';
 import { Copy, ExternalLink, Plus, CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { ProjectCardGenerator } from '../../../components/project-card-generator';
 
 interface ProjectCard {
   id: string;
@@ -22,32 +23,35 @@ export default function ProjectCardsPage() {
   const [loading, setLoading] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadCards() {
-      try {
-        const res = await fetch('/api/GitSync/project-cards');
-        
-        if (!res.ok) throw new Error('Failed to fetch project cards');
-        
-        const json = await res.json();
-        const responseData = json.data;
-        const projectCards = Array.isArray(responseData?.cards) ? responseData.cards : [];
-        
-        setCards(projectCards);
-        if (projectCards.length > 0) {
-          setSelectedCard(projectCards[0]);
-        }
-      } catch (err) {
-        // Backend endpoint doesn't exist yet or failed - show empty state gracefully
-        console.error('Failed to load project cards:', err);
-        setCards([]);
-      } finally {
-        setLoading(false);
-      }
-    }
+  const loadCards = useCallback(async () => {
+    try {
+      const res = await fetch('/api/GitSync/project-cards');
 
-    loadCards();
+      if (!res.ok) throw new Error('Failed to fetch project cards');
+
+      const json = await res.json();
+      const responseData = json.data;
+      const projectCards = Array.isArray(responseData?.cards) ? responseData.cards : [];
+
+      setCards(projectCards);
+      if (projectCards.length > 0) {
+        setSelectedCard(projectCards[0]);
+      }
+    } catch (err) {
+      console.error('Failed to load project cards:', err);
+      setCards([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadCards();
+  }, [loadCards]);
+
+  const handleGenerateSuccess = useCallback(() => {
+    loadCards();
+  }, [loadCards]);
 
   const handleCopy = (field: string, value: string) => {
     navigator.clipboard.writeText(value);
@@ -71,11 +75,14 @@ export default function ProjectCardsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <H1>Project Cards</H1>
-        <p className="text-sm text-muted mt-2">
-          Manage LinkedIn project cards. Updates must be made directly on LinkedIn.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <H1>Project Cards</H1>
+          <p className="text-sm text-muted mt-2">
+            Generate LinkedIn project cards from your GitHub repos using AI.
+          </p>
+        </div>
+        <ProjectCardGenerator onGenerateSuccess={handleGenerateSuccess} />
       </div>
 
       {/* Split Layout */}
@@ -118,7 +125,7 @@ export default function ProjectCardsPage() {
             ) : (
               <div className="text-center py-8">
                 <div className="text-sm font-medium text-muted mb-2">No project cards yet</div>
-                <p className="text-xs text-muted">Create your first project card on LinkedIn</p>
+                <p className="text-xs text-muted">Use the &quot;Generate Card&quot; button above to create one from a GitHub repo</p>
               </div>
             )}
           </div>
@@ -130,7 +137,7 @@ export default function ProjectCardsPage() {
             {selectedCard ? (
               <>
                 <div>
-                  <H2 className="text-lg mb-4">Preview & Edit</H2>
+                  <H2 className="text-lg mb-4">Preview &amp; Edit</H2>
 
                   {/* LinkedIn Project Card Preview */}
                   <div className="bg-surface-soft rounded-lg border border-border p-6 space-y-4 mb-6">
@@ -243,7 +250,7 @@ export default function ProjectCardsPage() {
                 <div className="text-4xl mb-4">📋</div>
                 <H2 className="text-lg mb-2">No project cards yet</H2>
                 <p className="text-sm text-muted mb-6">
-                  LinkedIn project cards are managed manually in v1. GitSync helps you prepare the copy and links.
+                  Click &quot;Generate Card&quot; above to create an AI-generated LinkedIn project card from one of your GitHub repos.
                 </p>
                 <button
                   type="button"
