@@ -117,7 +117,9 @@ function RepositoriesContent() {
       const res = await fetch('/api/GitSync/github-repos');
       if (!res.ok) throw new Error('Failed to fetch repos');
       
-      const data = await res.json();
+      const json = await res.json();
+      // API uses successResponse wrapper: { success, data: { repositories, syncStatus } }
+      const data = json.data || json;
       setRepos(data.repositories || []);
       setSyncStatus(data.syncStatus || 'not_connected');
     } catch (err) {
