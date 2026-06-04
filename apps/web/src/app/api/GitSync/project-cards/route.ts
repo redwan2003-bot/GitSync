@@ -34,10 +34,21 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    // For now, return empty state (project cards backend not fully implemented)
-    // In future, fetch from real project cards backend when available
+    const projectCards = await prisma.projectCard.findMany({
+      where: { workspaceId: workspace.workspaceId },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    const formattedCards = projectCards.map(card => ({
+      id: card.id,
+      name: card.title,
+      description: card.description,
+      url: (card.links as any)?.[0]?.url || '',
+      date: card.startDate || card.createdAt.toISOString().split('T')[0]
+    }));
+
     return successResponse({
-      cards: [],
+      cards: formattedCards,
       workspace: {
         id: workspace.workspaceId,
       },

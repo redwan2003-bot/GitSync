@@ -29,8 +29,9 @@ export default function ProjectCardsPage() {
         
         if (!res.ok) throw new Error('Failed to fetch project cards');
         
-        const data = await res.json();
-        const projectCards = Array.isArray(data.cards) ? data.cards : [];
+        const json = await res.json();
+        const responseData = json.data;
+        const projectCards = Array.isArray(responseData?.cards) ? responseData.cards : [];
         
         setCards(projectCards);
         if (projectCards.length > 0) {
