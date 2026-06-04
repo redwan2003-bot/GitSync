@@ -1,6 +1,6 @@
 'use client';
 
-import { H1, H2 } from '@/components/typography';
+import { H1, H2 } from '../../../components/typography';
 import { Copy, ExternalLink, Plus, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -11,6 +11,10 @@ interface ProjectCard {
   url?: string;
   date: string;
 }
+
+const handleOpenLinkedin = () => {
+  window.open('https://linkedin.com/me', '_blank');
+};
 
 export default function ProjectCardsPage() {
   const [cards, setCards] = useState<ProjectCard[]>([]);
@@ -50,10 +54,6 @@ export default function ProjectCardsPage() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleOpenLinkedin = () => {
-    window.open('https://linkedin.com/me', '_blank');
-  };
-
   if (loading) {
     return (
       <div className="space-y-6">
@@ -85,11 +85,13 @@ export default function ProjectCardsPage() {
             <div className="flex items-center justify-between mb-4">
               <H2 className="text-lg">Your Cards</H2>
               <button
+                type="button"
+                aria-label="Create a project card on LinkedIn"
                 onClick={handleOpenLinkedin}
                 className="p-2 rounded-lg hover:bg-surface-soft transition-colors"
                 title="Create on LinkedIn"
               >
-                <Plus size={18} className="text-signal" />
+                <Plus aria-hidden="true" size={18} className="text-signal" />
               </button>
             </div>
 
@@ -98,6 +100,7 @@ export default function ProjectCardsPage() {
                 {cards.map((card) => (
                   <li key={card.id}>
                     <button
+                      type="button"
                       onClick={() => setSelectedCard(card)}
                       className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                         selectedCard?.id === card.id
@@ -135,19 +138,22 @@ export default function ProjectCardsPage() {
                       <div className="text-xs text-muted uppercase font-medium mb-2">Title</div>
                       <div className="flex items-center justify-between gap-3">
                         <input
+                          aria-label="Project card title"
                           type="text"
                           value={selectedCard.name}
                           readOnly
                           className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text focus:outline-none focus:border-signal"
                         />
                         <button
+                          type="button"
+                          aria-label="Copy project title"
                           onClick={() => handleCopy('title', selectedCard.name)}
                           className="p-2 rounded-lg hover:bg-surface transition-colors"
                         >
                           {copiedField === 'title' ? (
-                            <CheckCircle size={18} className="text-signal" />
+                            <CheckCircle aria-hidden="true" size={18} className="text-signal" />
                           ) : (
-                            <Copy size={18} className="text-muted hover:text-text" />
+                            <Copy aria-hidden="true" size={18} className="text-muted hover:text-text" />
                           )}
                         </button>
                       </div>
@@ -158,18 +164,21 @@ export default function ProjectCardsPage() {
                       <div className="text-xs text-muted uppercase font-medium mb-2">Description</div>
                       <div className="flex items-start gap-3">
                         <textarea
+                          aria-label="Project card description"
                           value={selectedCard.description}
                           readOnly
                           className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text font-sans resize-none h-24 focus:outline-none focus:border-signal"
                         />
                         <button
+                          type="button"
+                          aria-label="Copy project description"
                           onClick={() => handleCopy('description', selectedCard.description)}
                           className="p-2 rounded-lg hover:bg-surface transition-colors mt-2"
                         >
                           {copiedField === 'description' ? (
-                            <CheckCircle size={18} className="text-signal" />
+                            <CheckCircle aria-hidden="true" size={18} className="text-signal" />
                           ) : (
-                            <Copy size={18} className="text-muted hover:text-text" />
+                            <Copy aria-hidden="true" size={18} className="text-muted hover:text-text" />
                           )}
                         </button>
                       </div>
@@ -180,6 +189,7 @@ export default function ProjectCardsPage() {
                       <div className="text-xs text-muted uppercase font-medium mb-2">Project URL</div>
                       <div className="flex items-center justify-between gap-3">
                         <input
+                          aria-label="Project URL"
                           type="url"
                           placeholder="https://example.com"
                           defaultValue={selectedCard.url || ''}
@@ -187,13 +197,15 @@ export default function ProjectCardsPage() {
                           className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text placeholder-muted/50 focus:outline-none focus:border-signal"
                         />
                         <button
+                          type="button"
+                          aria-label="Copy project URL"
                           onClick={() => handleCopy('url', selectedCard.url || '')}
                           className="p-2 rounded-lg hover:bg-surface transition-colors"
                         >
                           {copiedField === 'url' ? (
-                            <CheckCircle size={18} className="text-signal" />
+                            <CheckCircle aria-hidden="true" size={18} className="text-signal" />
                           ) : (
-                            <Copy size={18} className="text-muted hover:text-text" />
+                            <Copy aria-hidden="true" size={18} className="text-muted hover:text-text" />
                           )}
                         </button>
                       </div>
@@ -216,10 +228,11 @@ export default function ProjectCardsPage() {
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4 border-t border-border">
                   <button
+                    type="button"
                     onClick={handleOpenLinkedin}
                     className="flex-1 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors flex items-center justify-center gap-2"
                   >
-                    <ExternalLink size={16} />
+                    <ExternalLink aria-hidden="true" size={16} />
                     Open LinkedIn
                   </button>
                 </div>
@@ -232,10 +245,11 @@ export default function ProjectCardsPage() {
                   LinkedIn project cards are managed manually in v1. GitSync helps you prepare the copy and links.
                 </p>
                 <button
+                  type="button"
                   onClick={handleOpenLinkedin}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors"
                 >
-                  <ExternalLink size={16} />
+                  <ExternalLink aria-hidden="true" size={16} />
                   Go to LinkedIn
                 </button>
               </div>

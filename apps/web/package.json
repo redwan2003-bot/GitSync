@@ -43,5 +43,21 @@
     "typescript": "^5",
     "vitest": "^4.1.8",
     "zod": "^3.22.4"
+  },
+  "reactDoctor": {
+    "ignore": {
+      "rules": [
+        "deslop/unused-file",
+        "deslop/unused-dependency",
+        "deslop/unused-dev-dependency",
+        "react-doctor/require-pnpm-hardening",
+        "react-doctor/no-fetch-in-effect",
+        "react-doctor/nextjs-no-client-fetch-for-server-data",
+        "react-doctor/no-initialize-state",
+        "react-doctor/prefer-useReducer",
+        "react-doctor/no-giant-component",
+        "react-doctor/no-multi-comp"
+      ]
+    }
   }
 }

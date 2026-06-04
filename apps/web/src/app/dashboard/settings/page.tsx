@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { BentoCard } from '@/components/bento-card';
-import { H1 } from '@/components/typography';
+import { BentoCard } from '../../../components/bento-card';
+import { H1 } from '../../../components/typography';
 import {
   Github,
   Linkedin,
@@ -16,7 +16,7 @@ import {
 
 interface IntegrationStatus {
   github: { connected: boolean; configured: boolean };
-  linkedin: { connected: boolean; configured: boolean };
+  linkedin: { connected: boolean; configured: boolean; authorUrn?: string | null };
   aiProvider: {
     provider: string;
     model: string;
@@ -38,6 +38,22 @@ const DEFAULT_INTEGRATIONS: IntegrationStatus = {
   queue: { connected: false },
 };
 
+const SETTING_STATUS_COLORS = {
+  connected: 'bg-signal/10 text-signal',
+  disconnected: 'bg-danger/10 text-danger',
+  healthy: 'bg-signal/10 text-signal',
+  warning: 'bg-commit/10 text-commit',
+  error: 'bg-danger/10 text-danger',
+};
+
+const SETTING_STATUS_LABELS = {
+  connected: 'Connected',
+  disconnected: 'Disconnected',
+  healthy: 'Healthy',
+  warning: 'Warning',
+  error: 'Error',
+};
+
 const SettingCard = ({
   title,
   description,
@@ -48,39 +64,23 @@ const SettingCard = ({
   title: string;
   description: string;
   status: 'connected' | 'disconnected' | 'healthy' | 'warning' | 'error';
-  icon: React.ComponentType<{ size: number; className: string }>;
+  icon: React.ComponentType<{ size?: number; className?: string; 'aria-hidden'?: boolean }>;
   children?: React.ReactNode;
 }) => {
-  const statusColors = {
-    connected: 'bg-signal/10 text-signal',
-    disconnected: 'bg-danger/10 text-danger',
-    healthy: 'bg-signal/10 text-signal',
-    warning: 'bg-commit/10 text-commit',
-    error: 'bg-danger/10 text-danger',
-  };
-
-  const statusLabels = {
-    connected: 'Connected',
-    disconnected: 'Disconnected',
-    healthy: 'Healthy',
-    warning: 'Warning',
-    error: 'Error',
-  };
-
   return (
     <BentoCard className="flex flex-col gap-4">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg bg-surface-soft">
-            <Icon size={24} className="text-muted" />
+            <Icon aria-hidden={true} size={24} className="text-muted" />
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-text">{title}</h3>
             <p className="text-sm text-muted mt-1">{description}</p>
           </div>
         </div>
-        <div className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[status]}`}>
-          {statusLabels[status]}
+        <div className={`px-3 py-1 rounded-full text-xs font-medium ${SETTING_STATUS_COLORS[status]}`}>
+          {SETTING_STATUS_LABELS[status]}
         </div>
       </div>
 
@@ -89,7 +89,11 @@ const SettingCard = ({
   );
 };
 
-export default function SettingsPage() {
+const handleViewLogs = () => {
+  window.location.href = '/dashboard/audit';
+};
+
+function SettingsContent() {
   const [integrations, setIntegrations] = useState<IntegrationStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -164,12 +168,13 @@ export default function SettingsPage() {
     loadDebugInfo();
   }, []);
 
-  // Refresh integrations when returning from GitHub install
+  // Refresh integrations when returning from OAuth/install flows
   useEffect(() => {
     const githubParam = searchParams.get('github');
     const installationIdParam = searchParams.get('installation_id');
+    const linkedinParam = searchParams.get('linkedin');
     
-    if (githubParam === 'connected' || installationIdParam) {
+    if (githubParam === 'connected' || installationIdParam || linkedinParam === 'connected') {
       // Give backend a moment to process
       const timer = setTimeout(() => {
         loadIntegrations();
@@ -178,10 +183,6 @@ export default function SettingsPage() {
       return () => clearTimeout(timer);
     }
   }, [searchParams]);
-
-  const handleViewLogs = () => {
-    window.location.href = '/dashboard/audit';
-  };
 
   const handleSyncInstallation = async () => {
     setSyncing(true);
@@ -271,11 +272,12 @@ export default function SettingsPage() {
 
           {!debugInfo.installations?.forThisWorkspace?.length && (
             <button
+              type="button"
               onClick={handleSyncInstallation}
               disabled={syncing}
               className="w-full px-3 py-2 rounded bg-signal/20 text-signal font-medium text-xs hover:bg-signal/30 disabled:opacity-50 transition-colors"
             >
-              {syncing ? 'Syncing...' : 'Repair: Sync Installation 137189045'}
+              {syncing ? 'Syncing…' : 'Repair: Sync Installation 137189045'}
             </button>
           )}
         </div>
@@ -300,11 +302,12 @@ export default function SettingsPage() {
             {integrations?.github.connected && (
               <>
                 <button
+                  type="button"
                   onClick={handleSyncInstallation}
                   disabled={syncing}
                   className="w-full mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors disabled:opacity-50"
                 >
-                  {syncing ? 'Syncing...' : 'Sync public repositories'}
+                  {syncing ? 'Syncing…' : 'Sync public repositories'}
                 </button>
                 <div className="mt-2 text-center">
                   <span className="inline-block px-2 py-1 rounded text-xs bg-surface-soft text-muted">
@@ -325,6 +328,7 @@ export default function SettingsPage() {
                 </a>
               ) : (
                 <button
+                  type="button"
                   disabled
                   title="Workspace not ready. Refresh or sign in again."
                   className="w-full mt-4 px-4 py-2 rounded-lg bg-slate-700 text-slate-300 font-medium text-sm opacity-50 cursor-not-allowed text-center"
@@ -350,8 +354,17 @@ export default function SettingsPage() {
                 {integrations?.linkedin.connected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
+            {integrations?.linkedin.connected && integrations.linkedin.authorUrn && (
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-sm text-muted">Author</span>
+                <span className="text-xs font-medium text-muted truncate">
+                  {integrations.linkedin.authorUrn}
+                </span>
+              </div>
+            )}
             {integrations?.linkedin.connected && (
               <button
+                type="button"
                 disabled
                 title="Disconnect feature coming soon"
                 className="w-full mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-text font-medium text-sm opacity-50 cursor-not-allowed hover:bg-surface-soft"
@@ -361,14 +374,18 @@ export default function SettingsPage() {
             )}
             {!integrations?.linkedin.connected && (
               workspaceId ? (
-                <a
-                  href={`${process.env.NEXT_PUBLIC_API_URL || 'https://reposignal-api.gitsync.workers.dev'}/integrations/linkedin/connect?workspaceId=${encodeURIComponent(workspaceId)}`}
-                  className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors inline-block text-center"
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.location.href = '/api/GitSync/linkedin/connect';
+                  }}
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors text-center"
                 >
                   Connect LinkedIn
-                </a>
+                </button>
               ) : (
                 <button
+                  type="button"
                   disabled
                   title="Workspace not ready. Refresh or sign in again."
                   className="w-full mt-4 px-4 py-2 rounded-lg bg-slate-700 text-slate-300 font-medium text-sm opacity-50 cursor-not-allowed text-center"
@@ -399,11 +416,12 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Status</span>
               <span className={`flex items-center gap-1 text-sm ${integrations?.aiProvider.configured ? 'text-signal' : 'text-danger'}`}>
-                <CheckCircle2 size={14} />
+                <CheckCircle2 aria-hidden="true" size={14} />
                 {integrations?.aiProvider.configured ? 'Active' : 'Inactive'}
               </span>
             </div>
             <button
+              type="button"
               disabled={!integrations?.aiProvider.configured}
               className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -428,6 +446,7 @@ export default function SettingsPage() {
               </label>
             </div>
             <button
+              type="button"
               disabled
               className="w-full mt-4 px-4 py-2 rounded-lg border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors disabled:opacity-50"
             >
@@ -447,18 +466,19 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Queue</span>
               <span className={`flex items-center gap-1 text-sm ${integrations?.queue.connected ? 'text-signal' : 'text-danger'}`}>
-                <CheckCircle2 size={14} />
+                <CheckCircle2 aria-hidden="true" size={14} />
                 {integrations?.queue.connected ? 'Operational' : 'Offline'}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">Database</span>
               <span className={`flex items-center gap-1 text-sm ${integrations?.database.connected ? 'text-signal' : 'text-danger'}`}>
-                <CheckCircle2 size={14} />
+                <CheckCircle2 aria-hidden="true" size={14} />
                 {integrations?.database.connected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
             <button
+              type="button"
               onClick={handleViewLogs}
               className="w-full mt-4 px-4 py-2 rounded-lg border border-border text-text font-medium text-sm hover:bg-surface-soft transition-colors"
             >
@@ -476,6 +496,7 @@ export default function SettingsPage() {
         >
           <div className="space-y-3">
             <button
+              type="button"
               disabled
               className="w-full mt-4 px-4 py-2 rounded-lg bg-signal text-white font-medium text-sm hover:bg-signal/90 transition-colors disabled:opacity-50"
             >
@@ -485,5 +506,20 @@ export default function SettingsPage() {
         </SettingCard>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          <H1>Settings</H1>
+          <div className="h-32 bg-surface-soft rounded-lg animate-pulse" />
+        </div>
+      }
+    >
+      <SettingsContent />
+    </Suspense>
   );
 }

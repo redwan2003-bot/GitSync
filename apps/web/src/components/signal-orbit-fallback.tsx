@@ -3,7 +3,7 @@
 export function SignalOrbitFallback() {
   return (
     <div className="w-full h-64 flex items-center justify-center bg-surface-soft/50 rounded">
-      <svg className="w-48 h-48 animate-spin-slow" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <svg className="size-48 animate-spin-slow" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
         {/* Outer orbit circle */}
         <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="1" className="text-cyan/20" />
         

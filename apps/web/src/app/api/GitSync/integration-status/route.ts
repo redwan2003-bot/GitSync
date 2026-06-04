@@ -1,8 +1,17 @@
-
-import { auth } from '@/auth';
+import { auth } from '../../../../auth';
 import { prisma } from '@GitSync/db';
-import { checkRateLimit } from '@/lib/rate-limit';
-import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '@/lib/api-response';
+import { checkRateLimit } from '../../../../lib/rate-limit';
+import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '../../../../lib/api-response';
+
+// Safely query the database in case a table doesn't exist yet in production
+const safeQuery = async <T>(query: Promise<T>): Promise<T | null> => {
+  try {
+    return await query;
+  } catch (e) {
+    console.error('Integration safeQuery error:', e);
+    return null;
+  }
+};
 
 export async function GET() {
   try {
@@ -37,16 +46,6 @@ export async function GET() {
       });
     }
 
-    // Safely query the database in case a table doesn't exist yet in production
-    const safeQuery = async <T>(query: Promise<T>): Promise<T | null> => {
-      try {
-        return await query;
-      } catch (e) {
-        console.error('Integration safeQuery error:', e);
-        return null;
-      }
-    };
-
     // Check integration statuses
     const [github, gemini, linkedInEntry] = await Promise.all([
       safeQuery(prisma.gitHubInstallation.findFirst({
@@ -66,6 +65,7 @@ export async function GET() {
       })),
     ]);
 
+    const linkedinData = linkedInEntry as { authorUrn?: string | null } | null;
     const linkedinConnected = !!linkedInEntry;
 
     const githubData = github as { installationId?: { toString(): string }; accountLogin?: string; accountType?: string } | null;
@@ -81,6 +81,7 @@ export async function GET() {
       linkedin: {
         connected: linkedinConnected,
         configured: !!process.env.LINKEDIN_CLIENT_ID,
+        authorUrn: linkedinData?.authorUrn || null,
       },
       aiProvider: {
         provider: 'gemini',
