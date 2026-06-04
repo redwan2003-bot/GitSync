@@ -1,7 +1,28 @@
 import { App } from 'octokit';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
+import { createPrivateKey } from 'crypto';
 import { prisma } from '@GitSync/db';
+
+/**
+ * Convert a PKCS#1 PEM key (BEGIN RSA PRIVATE KEY) to PKCS#8 (BEGIN PRIVATE KEY).
+ * The `universal-github-app-jwt` library used by Octokit only supports PKCS#8.
+ * If the key is already PKCS#8, it is returned as-is.
+ */
+const ensurePkcs8 = (pem: string): string => {
+  if (pem.includes('-----BEGIN PRIVATE KEY-----')) {
+    // Already PKCS#8
+    return pem;
+  }
+
+  try {
+    const keyObject = createPrivateKey(pem);
+    return keyObject.export({ type: 'pkcs8', format: 'pem' }) as string;
+  } catch (err) {
+    console.error('Failed to convert private key to PKCS#8:', err);
+    return pem; // Return original and let downstream report the error
+  }
+};
 
 const parseGitHubAppPrivateKey = (value?: string) => {
   if (!value) {
@@ -17,14 +38,14 @@ const parseGitHubAppPrivateKey = (value?: string) => {
   const looksLikePem = candidate.includes('-----BEGIN') && candidate.includes('PRIVATE KEY-----');
 
   if (looksLikePem) {
-    return candidate;
+    return ensurePkcs8(candidate);
   }
 
   const path = resolve(trimmed);
   if (existsSync(path)) {
     const fileContents = readFileSync(path, 'utf8').trim();
     if (fileContents.includes('-----BEGIN') && fileContents.includes('PRIVATE KEY-----')) {
-      return fileContents.replace(/\\n/g, '\n');
+      return ensurePkcs8(fileContents.replace(/\\n/g, '\n'));
     }
   }
 
