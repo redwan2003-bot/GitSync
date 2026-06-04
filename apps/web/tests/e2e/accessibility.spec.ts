@@ -15,7 +15,7 @@ test.describe('Accessibility Compliance', () => {
     await injectAxe(page);
     
     try {
-      await checkA11y(page, null, {
+      await checkA11y(page, undefined, {
         detailedReport: true,
         detailedReportOptions: {
           html: true,
@@ -32,7 +32,7 @@ test.describe('Accessibility Compliance', () => {
     await injectAxe(page);
     
     try {
-      await checkA11y(page, null, {
+      await checkA11y(page, undefined, {
         detailedReport: false,
       });
     } catch (e) {

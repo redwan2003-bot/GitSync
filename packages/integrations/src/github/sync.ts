@@ -1,13 +1,45 @@
 import { App } from 'octokit';
+import { existsSync, readFileSync } from 'fs';
+import { resolve } from 'path';
 import { prisma } from '@GitSync/db';
+
+const parseGitHubAppPrivateKey = (value?: string) => {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const candidate = trimmed.replace(/\\n/g, '\n');
+  const looksLikePem = candidate.includes('-----BEGIN') && candidate.includes('PRIVATE KEY-----');
+
+  if (looksLikePem) {
+    return candidate;
+  }
+
+  const path = resolve(trimmed);
+  if (existsSync(path)) {
+    const fileContents = readFileSync(path, 'utf8').trim();
+    if (fileContents.includes('-----BEGIN') && fileContents.includes('PRIVATE KEY-----')) {
+      return fileContents.replace(/\\n/g, '\n');
+    }
+  }
+
+  return candidate;
+};
 
 const getGitHubApp = () => {
   const appId = process.env.GITHUB_APP_ID;
-  const privateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  const privateKey = parseGitHubAppPrivateKey(process.env.GITHUB_APP_PRIVATE_KEY);
   const clientId = process.env.GITHUB_APP_CLIENT_ID;
 
   if (!appId || !privateKey) {
-    throw new Error('Missing GitHub App environment variables');
+    throw new Error(
+      'Missing GitHub App environment variables. Ensure GITHUB_APP_ID and GITHUB_APP_PRIVATE_KEY are set. If the key is stored in a file, set GITHUB_APP_PRIVATE_KEY to the file path.'
+    );
   }
 
   return new App({
