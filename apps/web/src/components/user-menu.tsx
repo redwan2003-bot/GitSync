@@ -14,7 +14,7 @@ export function UserMenu({ email }: { email?: string | null }) {
         onClick={() => signOut({ callbackUrl: "/" })}
         className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white px-3 py-1.5 rounded-md hover:bg-slate-800 transition-colors"
       >
-        <LogOut className="w-4 h-4" />
+        <LogOut aria-hidden="true" className="size-4" />
         Sign out
       </button>
     </div>

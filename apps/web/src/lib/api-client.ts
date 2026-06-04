@@ -35,13 +35,14 @@ export async function fetchFromAPI<T>(
 
   let lastError: Error | null = null;
 
-  for (let attempt = 0; attempt <= retries; attempt++) {
+  async function runAttempt(attempt: number): Promise<ApiResponse<T>> {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       const response = await fetch(url, {
         ...fetchOptions,
+        cache: fetchOptions.cache ?? 'no-store',
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
@@ -113,8 +114,7 @@ export async function fetchFromAPI<T>(
       // Check if it's a timeout
       if (lastError.name === 'AbortError') {
         if (attempt < retries) {
-          // Retry on timeout
-          continue;
+          return runAttempt(attempt + 1);
         }
         return {
           error: `Request timeout after ${timeout}ms`,
@@ -125,8 +125,7 @@ export async function fetchFromAPI<T>(
       // Check if it's a network error
       if (error instanceof TypeError && lastError.message.includes('fetch')) {
         if (attempt < retries) {
-          // Retry on network error
-          continue;
+          return runAttempt(attempt + 1);
         }
         return {
           error: 'Network request failed',
@@ -142,11 +141,7 @@ export async function fetchFromAPI<T>(
     }
   }
 
-  // All retries exhausted
-  return {
-    error: lastError?.message || 'Request failed after all retries',
-    code: 0,
-  };
+  return runAttempt(0);
 }
 
 /**

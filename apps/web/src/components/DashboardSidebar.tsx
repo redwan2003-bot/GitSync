@@ -24,7 +24,7 @@ export default function DashboardSidebar() {
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200 ${isActive ? "bg-primary text-background" : "text-foreground hover:bg-primary/20"}`}
           >
-            <Icon className="w-5 h-5" />
+            <Icon aria-hidden="true" className="size-5" />
             <span className="font-body text-sm">{item.name}</span>
           </Link>
         );

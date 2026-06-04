@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
+import { auth } from "../../../../auth";
 import { prisma } from "@GitSync/db";
-import { signInternalRequest } from "@/lib/api-sign";
+import { signInternalRequest } from "../../../../lib/api-sign";
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL!;
@@ -79,6 +79,7 @@ async function proxy(
 
   const res = await fetch(target, {
     method,
+    cache: "no-store",
     headers: {
       ...headers,
       ...(req.headers.get("content-type")

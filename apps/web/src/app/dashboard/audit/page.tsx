@@ -1,6 +1,6 @@
 'use client';
 
-import { H1 } from '@/components/typography';
+import { H1 } from '../../../components/typography';
 import { Search, Filter, Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -133,22 +133,25 @@ export default function AuditPage() {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3">
         {/* Date Range Stub */}
         <div className="flex items-center gap-2">
-          <Calendar size={18} className="text-muted" />
+          <Calendar aria-hidden="true" size={18} className="text-muted" />
           <input
             type="date"
+            aria-label="Audit start date"
             className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-text focus:outline-none focus:border-signal"
           />
           <span className="text-muted">to</span>
           <input
             type="date"
+            aria-label="Audit end date"
             className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-text focus:outline-none focus:border-signal"
           />
         </div>
 
         {/* Action Filter */}
         <div className="flex items-center gap-2">
-          <Filter size={18} className="text-muted" />
+          <Filter aria-hidden="true" size={18} className="text-muted" />
           <select
+            aria-label="Filter audit logs by action"
             value={actionFilter}
             onChange={(e) => setActionFilter(e.target.value)}
             className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-text focus:outline-none focus:border-signal"
@@ -165,10 +168,11 @@ export default function AuditPage() {
 
         {/* Search Input */}
         <div className="flex-1 flex items-center gap-2">
-          <Search size={18} className="text-muted" />
+          <Search aria-hidden="true" size={18} className="text-muted" />
           <input
             type="text"
-            placeholder="Search by repo, user, or action..."
+            aria-label="Search audit logs"
+            placeholder="Search by repo, user, or action…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-3 py-2 rounded-lg bg-surface border border-border text-sm text-text placeholder-muted/50 focus:outline-none focus:border-signal"

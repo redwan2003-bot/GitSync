@@ -1,7 +1,7 @@
 'use client';
 
-import { H2, Code } from '@/components/typography';
-import { PixelStatusBadge } from '@/components/typography';
+import { H2, Code } from '../../../../components/typography';
+import { PixelStatusBadge } from '../../../../components/typography';
 import { ArrowLeft, Copy, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -39,7 +39,7 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
     <div className="space-y-6">
       {/* Back Button */}
       <Link href="/dashboard/drafts" className="flex items-center gap-2 text-signal hover:text-signal/80 transition-colors">
-        <ArrowLeft size={18} />
+        <ArrowLeft aria-hidden="true" size={18} />
         <span className="text-sm font-medium">Back to Drafts</span>
       </Link>
 
@@ -54,6 +54,7 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
 
             {/* Draft Content */}
             <textarea
+              aria-label="LinkedIn draft content"
               value={draft.content}
               readOnly
               className="w-full h-48 bg-surface-soft border border-border rounded-lg p-4 text-sm text-text font-mono placeholder-muted/50 focus:outline-none focus:border-signal resize-none opacity-75 cursor-not-allowed"
@@ -64,22 +65,23 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             {/* Actions */}
             <div className="flex gap-3 mt-4">
               <button
+                type="button"
                 onClick={handleCopy}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-signal text-bg font-medium text-sm hover:bg-signal/90 transition-colors"
               >
                 {copied ? (
                   <>
-                    <CheckCircle size={16} />
+                    <CheckCircle aria-hidden="true" size={16} />
                     Copied
                   </>
                 ) : (
                   <>
-                    <Copy size={16} />
+                    <Copy aria-hidden="true" size={16} />
                     Copy
                   </>
                 )}
               </button>
-              <button disabled className="flex-1 px-4 py-2 rounded-lg border border-signal/30 text-signal/50 font-medium text-sm opacity-50 cursor-not-allowed" title="Publishing is coming soon">
+              <button type="button" disabled className="flex-1 px-4 py-2 rounded-lg border border-signal/30 text-signal/50 font-medium text-sm opacity-50 cursor-not-allowed" title="Publishing is coming soon">
                 Publish (Soon)
               </button>
             </div>
@@ -107,8 +109,8 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             <div className="pt-4">
               <div className="text-xs text-muted uppercase font-medium mb-2">Commits</div>
               <ul className="space-y-1">
-                {draft.evidence.commits.map((commit, idx) => (
-                  <li key={idx} className="text-xs text-text font-mono bg-surface-soft px-2 py-1 rounded">
+                {draft.evidence.commits.map((commit) => (
+                  <li key={commit} className="text-xs text-text font-mono bg-surface-soft px-2 py-1 rounded">
                     {commit}
                   </li>
                 ))}
@@ -119,8 +121,8 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             <div className="pt-4">
               <div className="text-xs text-muted uppercase font-medium mb-2">Files Changed</div>
               <ul className="space-y-1">
-                {draft.evidence.files.map((file, idx) => (
-                  <li key={idx} className="text-xs text-cyan font-mono">
+                {draft.evidence.files.map((file) => (
+                  <li key={file} className="text-xs text-cyan font-mono">
                     {file}
                   </li>
                 ))}

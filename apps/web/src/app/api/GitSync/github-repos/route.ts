@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
-import { auth } from '@/auth';
+import { auth } from '../../../../auth';
 import { prisma } from '@GitSync/db';
-import { checkRateLimit } from '@/lib/rate-limit';
-import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '@/lib/api-response';
+import { checkRateLimit } from '../../../../lib/rate-limit';
+import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '../../../../lib/api-response';
 
 export async function GET(_request: NextRequest) {
   try {

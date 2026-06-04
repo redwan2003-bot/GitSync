@@ -29,6 +29,7 @@ export function ErrorBoundary({ error, onRetry }: ErrorBoundaryProps) {
       <p className="text-sm text-danger/80">{error}</p>
       {onRetry && (
         <button
+          type="button"
           onClick={onRetry}
           className="text-xs text-danger hover:text-danger/80 font-medium underline"
         >
@@ -59,6 +60,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       </div>
       {action && (
         <button
+          type="button"
           onClick={action.onClick}
           className="inline-block px-4 py-2 bg-signal text-white rounded-lg hover:bg-signal/90 transition-colors text-sm font-medium mt-4"
         >

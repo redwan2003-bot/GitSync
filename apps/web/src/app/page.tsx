@@ -1,16 +1,21 @@
 import Link from "next/link";
 import { ArrowRight, BrainCircuit, ShieldCheck, Zap } from "lucide-react";
+import type { Metadata } from "next";
 
-export default async function LandingPage() {
-  console.log("Vercel build trigger");
+export const metadata: Metadata = {
+  title: "GitSync | GitHub to LinkedIn Automation",
+  description: "Turn meaningful GitHub activity into reviewed LinkedIn updates.",
+};
+
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-slate-950 text-white selection:bg-indigo-500/30">
       {/* Navigation */}
-      <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+      <nav className="border-b border-white/10 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <Zap className="h-5 w-5 text-white" />
+            <div className="size-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <Zap aria-hidden="true" className="size-5 text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight">GitSync</span>
           </div>
@@ -38,7 +43,7 @@ export default async function LandingPage() {
         
         <h1 className="relative text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
           Turn Code Commits into <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+          <span className="text-indigo-300">
             Career Momentum
           </span>
         </h1>
@@ -53,7 +58,7 @@ export default async function LandingPage() {
             className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/5 border border-white/10 rounded-full overflow-hidden transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_40px_8px_rgba(99,102,241,0.2)]"
           >
             Get Started for Free
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight aria-hidden="true" className="size-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </main>
@@ -65,8 +70,8 @@ export default async function LandingPage() {
             
             {/* Feature 1 */}
             <div className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-              <div className="h-12 w-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-6">
-                <BrainCircuit className="h-6 w-6 text-indigo-400" />
+              <div className="size-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-6">
+                <BrainCircuit aria-hidden="true" className="size-6 text-indigo-400" />
               </div>
               <h3 className="text-xl font-semibold mb-3">AI Smart Summaries</h3>
               <p className="text-gray-400">
@@ -76,8 +81,8 @@ export default async function LandingPage() {
 
             {/* Feature 2 */}
             <div className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-              <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6">
-                <Zap className="h-6 w-6 text-purple-400" />
+              <div className="size-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6">
+                <Zap aria-hidden="true" className="size-6 text-purple-400" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Human in the Loop</h3>
               <p className="text-gray-400">
@@ -87,8 +92,8 @@ export default async function LandingPage() {
 
             {/* Feature 3 */}
             <div className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-              <div className="h-12 w-12 rounded-xl bg-pink-500/20 flex items-center justify-center mb-6">
-                <ShieldCheck className="h-6 w-6 text-pink-400" />
+              <div className="size-12 rounded-xl bg-pink-500/20 flex items-center justify-center mb-6">
+                <ShieldCheck aria-hidden="true" className="size-6 text-pink-400" />
               </div>
               <h3 className="text-xl font-semibold mb-3">100% Compliant</h3>
               <p className="text-gray-400">
@@ -102,7 +107,7 @@ export default async function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-12 text-center text-gray-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} GitSync. All rights reserved.</p>
+        <p>&copy; 2026 GitSync. All rights reserved.</p>
       </footer>
     </div>
   );

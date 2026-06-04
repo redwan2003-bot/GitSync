@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "../auth";
 import { prisma } from "@GitSync/db";
 import { signInternalRequest } from "./api-sign";
 

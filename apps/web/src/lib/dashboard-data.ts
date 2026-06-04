@@ -4,7 +4,7 @@
  * Supports NEXT_PUBLIC_DEMO_MODE for local testing with mock data
  */
 
-import { auth } from '@/auth';
+import { auth } from '../auth';
 import { prisma } from '@GitSync/db';
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';

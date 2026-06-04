@@ -9,7 +9,7 @@ interface NotificationPanelProps {
 }
 
 export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -40,26 +40,25 @@ export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps
   if (!open) return null;
 
   return (
-    <div
+    <section
       ref={panelRef}
       className="bg-[#0f1115] border border-border rounded-lg shadow-2xl overflow-hidden min-h-64 z-50"
-      role="region"
       aria-label="Notifications"
     >
       {/* Header */}
       <div className="px-4 py-3 border-b border-border bg-[#1a1d24] flex items-center gap-2">
-        <Bell size={18} className="text-muted flex-shrink-0" />
+        <Bell aria-hidden="true" size={18} className="text-muted flex-shrink-0" />
         <h2 className="text-sm font-semibold text-text">Notifications</h2>
       </div>
 
       {/* Empty State */}
       <div className="px-4 py-12 text-center">
-        <Bell size={40} className="mx-auto text-muted/30 mb-3" />
+        <Bell aria-hidden="true" size={40} className="mx-auto text-muted/30 mb-3" />
         <p className="text-sm font-medium text-muted">No notifications yet.</p>
         <p className="text-xs text-muted/70 mt-2">
           You&apos;ll see activity here when there&apos;s something new.
         </p>
       </div>
-    </div>
+    </section>
   );
 }

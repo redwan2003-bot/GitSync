@@ -25,13 +25,13 @@ export function AnimatedMetricCard({
   secondary,
   color,
 }: AnimatedMetricCardProps) {
-  const Icon = LucideIcons[icon as keyof typeof LucideIcons] as React.ComponentType<{ size: number; className: string }>;
+  const Icon = LucideIcons[icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; className?: string; 'aria-hidden'?: boolean }>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between">
         <div className={`p-2 rounded-lg bg-${color}/10`}>
-          <Icon size={24} className={colorClasses[color]} />
+          <Icon aria-hidden="true" size={24} className={colorClasses[color]} />
         </div>
       </div>
       <div>

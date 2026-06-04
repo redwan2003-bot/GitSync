@@ -6,8 +6,8 @@ export default function DashboardTopBar({ title }: { title: string }) {
       <h1 className="font-heading text-lg text-foreground">{title}</h1>
       <div className="flex items-center gap-2">
         {/* Placeholder for user avatar or notifications */}
-        <button className="p-2 rounded-full hover:bg-primary/20 transition-colors" aria-label="Profile">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button type="button" className="p-2 rounded-full hover:bg-primary/20 transition-colors" aria-label="Profile">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="size-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A10 10 0 0112 2a10 10 0 016.879 15.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>

@@ -1,13 +1,13 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { BentoCard } from '@/components/bento-card';
-import { SignalOrbitPanel } from '@/components/signal-orbit-panel';
-import { AnimatedMetricCard } from '@/components/animated-metric-card';
-import { PipelineStatusTracker } from '@/components/pipeline-status-tracker';
-import { RepoSignalCard } from '@/components/repo-signal-card';
-import { IntegrationStatusCard } from '@/components/integration-status-card';
-import { H2 } from '@/components/typography';
+import { BentoCard } from '../../components/bento-card';
+import { SignalOrbitPanel } from '../../components/signal-orbit-panel';
+import { AnimatedMetricCard } from '../../components/animated-metric-card';
+import { PipelineStatusTracker } from '../../components/pipeline-status-tracker';
+import { RepoSignalCard } from '../../components/repo-signal-card';
+import { IntegrationStatusCard } from '../../components/integration-status-card';
+import { H2 } from '../../components/typography';
 import Link from 'next/link';
 
 interface DashboardMetrics {
@@ -220,7 +220,7 @@ function MetricsLoader() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div>Loading dashboard...</div>}>
+    <Suspense fallback={<div>Loading dashboard…</div>}>
       <MetricsLoader />
     </Suspense>
   );

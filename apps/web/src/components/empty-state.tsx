@@ -17,6 +17,7 @@ export function EmptyState({ icon, title, description, cta }: EmptyStateProps) {
       <p className="text-sm text-muted max-w-xs">{description}</p>
       {cta && (
         <button
+          type="button"
           onClick={cta.onClick}
           className="mt-6 px-4 py-2 rounded-lg bg-signal text-bg font-medium text-sm hover:bg-signal/90 transition-colors"
         >

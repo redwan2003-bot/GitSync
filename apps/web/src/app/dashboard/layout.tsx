@@ -1,7 +1,7 @@
 'use client';
 
-import { DashboardShell } from '@/components/dashboard-shell';
-import { ErrorBoundary } from '@/components/error-boundary';
+import { DashboardShell } from '../../components/dashboard-shell';
+import { ErrorBoundary } from '../../components/error-boundary';
 
 export default function DashboardLayout({
   children,

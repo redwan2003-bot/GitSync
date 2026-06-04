@@ -1,8 +1,8 @@
 'use client';
 
-import { BentoCard } from '@/components/bento-card';
-import { PixelStatusBadge } from '@/components/typography';
-import { H1, H2 } from '@/components/typography';
+import { BentoCard } from '../../../components/bento-card';
+import { PixelStatusBadge } from '../../../components/typography';
+import { H1, H2 } from '../../../components/typography';
 import { GitBranch, FileText, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -19,6 +19,22 @@ interface Draft {
   timestamp?: string;
   createdAt?: string;
 }
+
+const STATUS_LABELS: Record<typeof STATUS_TABS[number], string> = {
+  All: 'All',
+  READY: 'Ready',
+  SYNCING: 'Syncing',
+  REVIEW: 'Review',
+  FAILED: 'Failed',
+};
+
+const DRAFT_STATUS_MAP: Record<Draft['status'], Draft['status']> = {
+  READY: 'READY',
+  SYNCING: 'SYNCING',
+  REVIEW: 'REVIEW',
+  FAILED: 'FAILED',
+  PUBLISHED: 'PUBLISHED',
+};
 
 // Demo mode mock data (only shown if NEXT_PUBLIC_DEMO_MODE=true)
 const DEMO_DRAFTS = [
@@ -53,14 +69,6 @@ const DEMO_DRAFTS = [
 ];
 
 function DraftCard({ draft }: { draft: Draft }) {
-  const statusMap: Record<Draft['status'], Draft['status']> = {
-    READY: 'READY',
-    SYNCING: 'SYNCING',
-    REVIEW: 'REVIEW',
-    FAILED: 'FAILED',
-    PUBLISHED: 'PUBLISHED',
-  };
-
   const preview = draft.preview || draft.generatedText?.substring(0, 150) || 'No preview available';
   const timestamp = draft.timestamp || new Date(draft.createdAt || '').toLocaleString();
 
@@ -69,10 +77,10 @@ function DraftCard({ draft }: { draft: Draft }) {
       {/* Header: Repo + Status */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <GitBranch size={16} className="text-muted" />
+          <GitBranch aria-hidden="true" size={16} className="text-muted" />
           <div className="text-sm font-medium text-text">{draft.repo || 'Unknown'}</div>
         </div>
-        <PixelStatusBadge status={statusMap[draft.status]} />
+        <PixelStatusBadge status={DRAFT_STATUS_MAP[draft.status]} />
       </div>
 
       {/* Draft Preview */}
@@ -81,7 +89,7 @@ function DraftCard({ draft }: { draft: Draft }) {
       {/* Footer: Timestamp + CTA */}
       <div className="flex items-center justify-between pt-2 border-t border-border">
         <div className="flex items-center gap-1 text-xs text-muted">
-          <Calendar size={14} />
+          <Calendar aria-hidden="true" size={14} />
           {timestamp}
         </div>
         <Link
@@ -151,17 +159,6 @@ export default function DraftsPage() {
     ? drafts
     : drafts.filter(d => d.status === activeTab);
 
-  const getTabLabel = (tab: typeof STATUS_TABS[number]) => {
-    const labels: Record<typeof STATUS_TABS[number], string> = {
-      'All': 'All',
-      'READY': 'Ready',
-      'SYNCING': 'Syncing',
-      'REVIEW': 'Review',
-      'FAILED': 'Failed',
-    };
-    return labels[tab];
-  };
-
   if (loading) {
     return (
       <div className="space-y-6">
@@ -198,6 +195,7 @@ export default function DraftsPage() {
       <div className="flex gap-2 overflow-x-auto pb-2">
         {STATUS_TABS.map((tab) => (
           <button
+            type="button"
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
@@ -206,7 +204,7 @@ export default function DraftsPage() {
                 : 'bg-surface border border-border text-muted hover:text-text'
             }`}
           >
-            {getTabLabel(tab)}
+            {STATUS_LABELS[tab]}
           </button>
         ))}
       </div>
@@ -220,12 +218,12 @@ export default function DraftsPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <FileText size={48} className="mx-auto text-muted/30 mb-4" />
+          <FileText aria-hidden="true" size={48} className="mx-auto text-muted/30 mb-4" />
           <H2 className="text-lg mb-2">No drafts yet</H2>
           <p className="text-sm text-muted max-w-md mx-auto mb-6">
             Drafts appear after GitHub activity is detected and reviewed by GitSync.
           </p>
-          <button disabled className="inline-block px-4 py-2 rounded-lg bg-surface-soft text-muted font-medium text-sm cursor-not-allowed opacity-50">
+          <button type="button" disabled className="inline-block px-4 py-2 rounded-lg bg-surface-soft text-muted font-medium text-sm cursor-not-allowed opacity-50">
             Waiting for repository activity
           </button>
         </div>

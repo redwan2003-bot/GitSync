@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { auth } from '../../../../../../auth';
 import { prisma } from '@GitSync/db';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { checkRateLimit } from '../../../../../../lib/rate-limit';
 import { syncPublicRepositoriesForInstallation } from '@GitSync/integrations';
 
 /**

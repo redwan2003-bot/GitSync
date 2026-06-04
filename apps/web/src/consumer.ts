@@ -9,7 +9,7 @@ const queueHandler = {
     // _env: contains bindings defined in wrangler.jsonc, e.g., MY_QUEUE (producer) if needed.
     // _ctx: provides a waitUntil method for async background tasks.
 
-    for (const message of batch) {
+    await Promise.all(batch.map(async (message: any) => {
       try {
         // The message body is the payload we sent from the producer worker.
         const payload = await message.json();
@@ -25,9 +25,8 @@ const queueHandler = {
         console.error('Failed to process message, moving to DLQ', err);
         throw err;
       }
-    }
+    }));
   }
 };
 
 export default queueHandler;
-

@@ -1,5 +1,13 @@
 import React from 'react';
 
+const PIXEL_STATUS_COLORS = {
+  READY: 'bg-signal/10 text-signal',
+  SYNCING: 'bg-cyan/10 text-cyan',
+  REVIEW: 'bg-commit/10 text-commit',
+  FAILED: 'bg-danger/10 text-danger',
+  PUBLISHED: 'bg-signal/10 text-signal',
+};
+
 export function H1({
   children,
   className = '',
@@ -85,16 +93,8 @@ export function PixelStatusBadge({
   status: 'READY' | 'SYNCING' | 'REVIEW' | 'FAILED' | 'PUBLISHED';
   className?: string;
 }) {
-  const statusColors: Record<typeof status, string> = {
-    READY: 'bg-signal/10 text-signal',
-    SYNCING: 'bg-cyan/10 text-cyan',
-    REVIEW: 'bg-commit/10 text-commit',
-    FAILED: 'bg-danger/10 text-danger',
-    PUBLISHED: 'bg-signal/10 text-signal',
-  };
-
   return (
-    <span className={`status-badge px-2 py-1 rounded ${statusColors[status]} ${className}`}>
+    <span className={`status-badge px-2 py-1 rounded ${PIXEL_STATUS_COLORS[status]} ${className}`}>
       {status}
     </span>
   );

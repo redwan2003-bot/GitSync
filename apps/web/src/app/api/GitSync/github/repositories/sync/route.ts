@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { auth } from '../../../../../../auth';
 import { prisma } from '@GitSync/db';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { checkRateLimit } from '../../../../../../lib/rate-limit';
 import { syncPublicRepositoriesForInstallation } from '@GitSync/integrations';
 
 export async function POST(request: NextRequest) {
@@ -60,7 +60,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const syncResult = await syncPublicRepositoriesForInstallation(workspaceId, installation.installationId);
+    let syncResult;
+    try {
+      syncResult = await syncPublicRepositoriesForInstallation(workspaceId, installation.installationId.toString());
+    } catch (e) {
+      console.error('Sync error details:', e);
+      return NextResponse.json({
+        error: 'Sync failed',
+        message: e instanceof Error ? e.message : String(e),
+      }, { status: 500 });
+    }
 
     return NextResponse.json({
       success: true,

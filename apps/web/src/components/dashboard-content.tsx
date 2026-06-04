@@ -35,7 +35,7 @@ export default function DashboardContent({
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-slate-800 rounded-lg">
-                  <Github className="w-6 h-6" />
+                  <Github aria-hidden="true" className="size-6" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">GitHub App</h3>
@@ -44,11 +44,11 @@ export default function DashboardContent({
               </div>
               {githubConnected ? (
                 <span className="flex items-center gap-1 text-xs font-medium text-emerald-400 bg-emerald-950 px-2 py-1 rounded-full">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Connected
+                  <CheckCircle2 aria-hidden="true" className="size-3.5" /> Connected
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-xs font-medium text-amber-400 bg-amber-950 px-2 py-1 rounded-full">
-                  <AlertCircle className="w-3.5 h-3.5" /> Required
+                  <AlertCircle aria-hidden="true" className="size-3.5" /> Required
                 </span>
               )}
             </div>
@@ -66,6 +66,7 @@ export default function DashboardContent({
               </a>
             ) : (
               <button
+                type="button"
                 disabled
                 title="Workspace not ready. Refresh or sign in again."
                 className="w-full text-center py-2 px-4 rounded-lg bg-slate-700 text-slate-300 font-medium text-sm opacity-50 cursor-not-allowed"
@@ -79,7 +80,7 @@ export default function DashboardContent({
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-950 text-blue-400 rounded-lg">
-                  <Linkedin className="w-6 h-6" />
+                  <Linkedin aria-hidden="true" className="size-6" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">LinkedIn</h3>
@@ -88,11 +89,11 @@ export default function DashboardContent({
               </div>
               {linkedinConnected ? (
                 <span className="flex items-center gap-1 text-xs font-medium text-emerald-400 bg-emerald-950 px-2 py-1 rounded-full">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Connected
+                  <CheckCircle2 aria-hidden="true" className="size-3.5" /> Connected
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-xs font-medium text-amber-400 bg-amber-950 px-2 py-1 rounded-full">
-                  <AlertCircle className="w-3.5 h-3.5" /> Required
+                  <AlertCircle aria-hidden="true" className="size-3.5" /> Required
                 </span>
               )}
             </div>

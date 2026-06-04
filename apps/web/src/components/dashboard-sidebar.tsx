@@ -62,8 +62,10 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
     <>
       {/* Mobile overlay */}
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+        <button
+          type="button"
+          aria-label="Close sidebar overlay"
+          className="fixed inset-0 z-40 bg-slate-950/60 lg:hidden"
           onClick={() => onOpenChange(false)}
         />
       )}
@@ -77,17 +79,18 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-signal flex items-center justify-center">
+            <div className="size-8 rounded bg-signal flex items-center justify-center">
               <span className="text-xs font-bold text-bg">GS</span>
             </div>
             <span className="text-lg font-bold text-text">GitSync</span>
           </div>
           <button
+            type="button"
             onClick={() => onOpenChange(false)}
             aria-label="Close sidebar menu"
             className="lg:hidden p-1 hover:bg-surface-soft rounded"
           >
-            <X size={20} className="text-muted" />
+            <X aria-hidden="true" size={20} className="text-muted" />
           </button>
         </div>
 
@@ -109,10 +112,10 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                         : 'text-muted hover:text-text hover:bg-surface-soft'
                     }`}
                   >
-                    <Icon size={18} />
+                    <Icon aria-hidden="true" size={18} />
                     <span className="text-sm font-medium">{item.label}</span>
                     {isActive && (
-                      <ChevronRight size={16} className="ml-auto" />
+                      <ChevronRight aria-hidden="true" size={16} className="ml-auto" />
                     )}
                   </Link>
                 </li>
@@ -129,7 +132,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted">GitHub</span>
-              <div className={`w-2 h-2 rounded-full ${
+              <div aria-hidden="true" className={`size-2 rounded-full ${
                 !loading && integrations?.github?.connected
                   ? 'bg-signal'
                   : 'bg-muted/30'
@@ -137,7 +140,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted">LinkedIn</span>
-              <div className={`w-2 h-2 rounded-full ${
+              <div aria-hidden="true" className={`size-2 rounded-full ${
                 !loading && integrations?.linkedin?.connected
                   ? 'bg-signal'
                   : 'bg-muted/30'
@@ -145,7 +148,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted">Gemini</span>
-              <div className={`w-2 h-2 rounded-full ${
+              <div aria-hidden="true" className={`size-2 rounded-full ${
                 !loading && integrations?.aiProvider?.configured
                   ? 'bg-signal'
                   : 'bg-muted/30'

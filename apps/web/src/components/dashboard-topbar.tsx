@@ -34,11 +34,12 @@ export function DashboardTopbar({
       {/* Left: Menu + Title */}
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={onMenuToggle}
           aria-label="Toggle sidebar menu"
           className="lg:hidden p-1 hover:bg-surface-soft rounded transition-colors"
         >
-          <Menu size={20} className="text-muted" />
+          <Menu aria-hidden="true" size={20} className="text-muted" />
         </button>
         <div>
           <h1 className="text-sm font-semibold text-text">{title}</h1>
@@ -57,13 +58,14 @@ export function DashboardTopbar({
         {/* Notifications Button */}
         <div className="relative">
           <button
+            type="button"
             onClick={handleNotificationClick}
             aria-label="View notifications"
             aria-haspopup="menu"
             aria-expanded={notificationsOpen}
             className="p-1 hover:bg-surface-soft rounded transition-colors"
           >
-            <Bell size={18} className="text-muted" />
+            <Bell aria-hidden="true" size={18} className="text-muted" />
           </button>
           {notificationsOpen && (
             <div className="absolute right-0 top-full mt-2 z-[100] w-72 max-w-[calc(100vw-2rem)] md:w-80">
@@ -78,13 +80,14 @@ export function DashboardTopbar({
         {/* Profile Button */}
         <div className="relative">
           <button
+            type="button"
             onClick={handleProfileClick}
             aria-label="Open user profile menu"
             aria-haspopup="menu"
             aria-expanded={profileOpen}
             className="p-1 hover:bg-surface-soft rounded transition-colors"
           >
-            <User size={18} className="text-muted" />
+            <User aria-hidden="true" size={18} className="text-muted" />
           </button>
           {profileOpen && (
             <div className="absolute right-0 top-full mt-2 z-[100] w-56 max-w-[calc(100vw-2rem)]">

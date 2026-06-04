@@ -73,7 +73,7 @@ export function ProfileDropdown({ open, onOpenChange }: ProfileDropdownProps) {
           className="flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface-soft transition-colors focus:outline-none focus:bg-surface-soft"
           role="menuitem"
         >
-          <LayoutDashboard size={16} className="flex-shrink-0" />
+          <LayoutDashboard aria-hidden="true" size={16} className="flex-shrink-0" />
           <span>Dashboard</span>
         </Link>
 
@@ -84,7 +84,7 @@ export function ProfileDropdown({ open, onOpenChange }: ProfileDropdownProps) {
           className="flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface-soft transition-colors focus:outline-none focus:bg-surface-soft"
           role="menuitem"
         >
-          <Settings size={16} className="flex-shrink-0" />
+          <Settings aria-hidden="true" size={16} className="flex-shrink-0" />
           <span>Settings</span>
         </Link>
       </div>
@@ -94,11 +94,12 @@ export function ProfileDropdown({ open, onOpenChange }: ProfileDropdownProps) {
 
       {/* Sign Out */}
       <button
+        type="button"
         onClick={handleSignOut}
         className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-danger hover:bg-danger/5 transition-colors focus:outline-none focus:bg-danger/5"
         role="menuitem"
       >
-        <LogOut size={16} className="flex-shrink-0" />
+        <LogOut aria-hidden="true" size={16} className="flex-shrink-0" />
         <span>Sign out</span>
       </button>
     </div>
