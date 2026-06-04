@@ -18,6 +18,10 @@ const bodyFont = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "GitSync",
   description: "GitHub progress to credible LinkedIn visibility",
+  viewport: "width=device-width, initial-scale=1",
+};
+  title: "GitSync",
+  description: "GitHub progress to credible LinkedIn visibility",
 };
 
 export default function RootLayout({
