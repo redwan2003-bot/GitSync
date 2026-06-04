@@ -39,13 +39,34 @@ export async function GET(_request: NextRequest) {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const formattedCards = projectCards.map((card: any) => ({
-      id: card.id,
-      name: card.title,
-      description: card.description,
-      url: (card.links as any)?.[0]?.url || '',
-      date: card.startDate || card.createdAt.toISOString().split('T')[0]
-    }));
+    const formattedCards = projectCards.map((card: any) => {
+      let dateStr = '';
+      try {
+        if (card.startDate) {
+          dateStr = card.startDate;
+        } else if (card.createdAt) {
+          dateStr = new Date(card.createdAt).toISOString().split('T')[0];
+        }
+      } catch (err) {
+        console.error('Error formatting date for card', card.id, err);
+      }
+
+      let url = '';
+      try {
+        const links = Array.isArray(card.links) ? card.links : [];
+        url = links[0]?.url || '';
+      } catch (err) {
+        console.error('Error formatting url for card', card.id, err);
+      }
+
+      return {
+        id: card.id,
+        name: card.title || 'Untitled',
+        description: card.description || '',
+        url,
+        date: dateStr,
+      };
+    });
 
     return successResponse({
       cards: formattedCards,
@@ -180,9 +201,9 @@ Return JSON only.`;
       data: {
         workspaceId: workspace.workspaceId,
         repositoryId: repository.id,
-        title: generatedCard.title,
-        role: generatedCard.subtitle,
-        description: `${generatedCard.details}\n\n${generatedCard.callToAction}`,
+        title: generatedCard.title || repository.name,
+        role: generatedCard.subtitle || '',
+        description: `${generatedCard.details || ''}\n\n${generatedCard.callToAction || ''}`.trim(),
         technologies: repository.language ? [repository.language] : [],
         links: repository.htmlUrl ? [{ type: 'GitHub', url: repository.htmlUrl }] : [],
         syncStatus: 'MANUAL_READY',
@@ -196,7 +217,7 @@ Return JSON only.`;
           name: newProjectCard.title,
           description: newProjectCard.description,
           url: (newProjectCard.links as any)?.[0]?.url || '',
-          date: newProjectCard.createdAt.toISOString().split('T')[0],
+          date: newProjectCard.createdAt ? new Date(newProjectCard.createdAt).toISOString().split('T')[0] : '',
         },
       },
       201
