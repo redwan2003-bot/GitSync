@@ -3,6 +3,7 @@ import { auth } from '../../../../auth';
 import { prisma } from '@GitSync/db';
 import { checkRateLimit } from '../../../../lib/rate-limit';
 import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '../../../../lib/api-response';
+import { GoogleGenAI } from '@google/genai';
 
 export async function GET(_request: NextRequest) {
   try {
@@ -160,8 +161,6 @@ Return JSON only.`;
       return errorResponse(ErrorCodes.INTERNAL_ERROR, 'AI service not configured', 500);
     }
 
-    // Dynamic import to avoid bundling issues
-    const { GoogleGenAI } = await import('@google/genai');
     const client = new GoogleGenAI({ apiKey });
     const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
