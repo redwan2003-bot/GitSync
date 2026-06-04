@@ -39,7 +39,7 @@ export async function GET(_request: NextRequest) {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const formattedCards = projectCards.map(card => ({
+    const formattedCards = projectCards.map((card: any) => ({
       id: card.id,
       name: card.title,
       description: card.description,
