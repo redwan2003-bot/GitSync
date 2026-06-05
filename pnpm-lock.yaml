@@ -63,6 +63,9 @@ importers:
       hono:
         specifier: ^4.12.23
         version: 4.12.23
+      openai:
+        specifier: ^4.0.0
+        version: 4.104.0(ws@8.21.0)(zod@3.25.76)
       posthog-node:
         specifier: ^5.35.5
         version: 5.35.5(rxjs@7.8.2)

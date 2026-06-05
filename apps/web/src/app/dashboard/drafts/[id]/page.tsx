@@ -2,9 +2,10 @@
 
 import { H2, Code } from '../../../../components/typography';
 import { PixelStatusBadge } from '../../../../components/typography';
-import { ArrowLeft, Copy, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Copy, CheckCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface DraftDetailPageProps {
   params: { id: string };
@@ -12,27 +13,47 @@ interface DraftDetailPageProps {
 
 export default function DraftDetailPage({ params }: DraftDetailPageProps) {
   const [copied, setCopied] = useState(false);
+  const [draft, setDraft] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const router = useRouter();
 
   const draftId = params.id;
 
-  // Mock draft detail
-  const draft = {
-    id: draftId,
-    repo: 'gitflow',
-    title: 'Released v2.0.0 with major performance improvements',
-    content: 'Released v2.0.0 with major performance improvements. Includes new dark mode support and redesigned dashboard interface. Breaking changes: API v1 deprecated. Migration guide available.',
-    status: 'READY' as const,
-    evidence: {
-      commits: ['feat: dark mode theme system', 'perf: optimize bundle size', 'chore: update dependencies'],
-      files: ['src/app/globals.css', 'src/components/dashboard-shell.tsx', 'package.json'],
-      branch: 'main',
-    },
-  };
+  useEffect(() => {
+    async function fetchDraft() {
+      try {
+        const res = await fetch(`/api/GitSync/drafts/${draftId}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to fetch draft');
+        setDraft(data.data?.draft);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDraft();
+  }, [draftId]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(draft.content);
+    if (!draft?.generatedText) return;
+    navigator.clipboard.writeText(draft.generatedText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handlePublish = async () => {
+    setPublishing(true);
+    try {
+      const res = await fetch(`/api/GitSync/drafts/${draftId}`, { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to publish');
+      router.push('/dashboard/drafts');
+    } catch (e: any) {
+      alert(e.message);
+      setPublishing(false);
+    }
   };
 
   return (
@@ -44,23 +65,31 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Panel: Draft Editor/Preview */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-surface border border-border rounded-lg p-6">
-            <div className="flex items-start justify-between mb-4">
-              <H2>LinkedIn Draft</H2>
-              <PixelStatusBadge status="READY" />
-            </div>
+        {loading ? (
+          <div className="lg:col-span-3 text-center py-12">
+            <RefreshCw className="animate-spin mx-auto text-signal mb-4" />
+            <p>Loading draft...</p>
+          </div>
+        ) : error ? (
+          <div className="lg:col-span-3 p-4 bg-danger/10 text-danger rounded-lg">{error}</div>
+        ) : draft && (
+          <>
+            <div className="lg:col-span-2 space-y-4">
+              <div className="bg-surface border border-border rounded-lg p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <H2>LinkedIn Draft</H2>
+                  <PixelStatusBadge status={draft.status === 'DRAFT_PENDING' ? 'READY' : draft.status} />
+                </div>
 
-            {/* Draft Content */}
-            <textarea
-              aria-label="LinkedIn draft content"
-              value={draft.content}
-              readOnly
-              className="w-full h-48 bg-surface-soft border border-border rounded-lg p-4 text-sm text-text font-mono placeholder-muted/50 focus:outline-none focus:border-signal resize-none opacity-75 cursor-not-allowed"
-              placeholder="Draft content will appear here"
-              title="Edit is coming soon - copy to edit elsewhere for now"
-            />
+                {/* Draft Content */}
+                <textarea
+                  aria-label="LinkedIn draft content"
+                  value={draft.generatedText || ''}
+                  readOnly
+                  className="w-full h-48 bg-surface-soft border border-border rounded-lg p-4 text-sm text-text font-mono placeholder-muted/50 focus:outline-none focus:border-signal resize-none opacity-75 cursor-not-allowed"
+                  placeholder="Draft content will appear here"
+                  title="Edit is coming soon - copy to edit elsewhere for now"
+                />
 
             {/* Actions */}
             <div className="flex gap-3 mt-4">
@@ -81,14 +110,18 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
                   </>
                 )}
               </button>
-              <button type="button" disabled className="flex-1 px-4 py-2 rounded-lg border border-signal/30 text-signal/50 font-medium text-sm opacity-50 cursor-not-allowed" title="Publishing is coming soon">
-                Publish (Soon)
+              <button 
+                type="button" 
+                onClick={handlePublish}
+                disabled={publishing || draft.status === 'PUBLISHED'} 
+                className="flex-1 px-4 py-2 rounded-lg bg-linkedin text-white font-medium text-sm hover:bg-linkedin/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {publishing ? 'Publishing...' : draft.status === 'PUBLISHED' ? 'Published' : 'Publish to LinkedIn'}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right Panel: Evidence */}
         <div className="space-y-4">
           <div className="bg-surface border border-border rounded-lg p-6">
             <H2 className="text-lg mb-4">Evidence</H2>
@@ -97,11 +130,11 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             <div className="space-y-3 pb-4 border-b border-border">
               <div>
                 <div className="text-xs text-muted uppercase">Repository</div>
-                <div className="text-sm font-medium text-text">{draft.repo}</div>
+                <div className="text-sm font-medium text-text">{draft.repository?.name || 'Unknown'}</div>
               </div>
               <div>
-                <div className="text-xs text-muted uppercase">Branch</div>
-                <Code>{draft.evidence.branch}</Code>
+                <div className="text-xs text-muted uppercase">Payload</div>
+                <Code>{draft.payloadJson ? Object.keys(draft.payloadJson).join(', ') : 'N/A'}</Code>
               </div>
             </div>
 
@@ -109,27 +142,17 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             <div className="pt-4">
               <div className="text-xs text-muted uppercase font-medium mb-2">Commits</div>
               <ul className="space-y-1">
-                {draft.evidence.commits.map((commit) => (
-                  <li key={commit} className="text-xs text-text font-mono bg-surface-soft px-2 py-1 rounded">
-                    {commit}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Files */}
-            <div className="pt-4">
-              <div className="text-xs text-muted uppercase font-medium mb-2">Files Changed</div>
-              <ul className="space-y-1">
-                {draft.evidence.files.map((file) => (
-                  <li key={file} className="text-xs text-cyan font-mono">
-                    {file}
+                {(draft.payloadJson?.commits || []).map((commit: any) => (
+                  <li key={commit.id || commit.message} className="text-xs text-text font-mono bg-surface-soft px-2 py-1 rounded">
+                    {commit.message}
                   </li>
                 ))}
               </ul>
             </div>
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

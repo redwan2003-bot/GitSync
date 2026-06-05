@@ -257,6 +257,17 @@ Return JSON only.`;
       },
     });
 
+    await prisma.auditLog.create({
+      data: {
+        workspaceId: workspace.workspaceId,
+        userId: session.user.id,
+        action: 'CREATED',
+        resourceType: 'ProjectCard',
+        resourceId: newProjectCard.id,
+        details: `Generated project card for ${repository.name}`,
+      }
+    });
+
     return successResponse(
       {
         card: {
