@@ -255,7 +255,7 @@ export async function getGitHubRepos() {
 }
 
 /**
- * Fetch integration connection status (GitHub, LinkedIn, Gemini)
+ * Fetch integration connection status (GitHub, LinkedIn, OpenAI)
  */
 export async function getIntegrationStatus() {
   if (DEMO_MODE) {
@@ -264,8 +264,8 @@ export async function getIntegrationStatus() {
         github: { connected: true },
         linkedin: { connected: true },
         aiProvider: {
-          provider: 'gemini',
-          model: 'gemini-1.5-flash-latest',
+          provider: 'openai',
+          model: 'gpt-4o-mini',
           configured: true,
         },
       },
@@ -287,7 +287,7 @@ export async function getIntegrationStatus() {
     }
 
     // Check integration statuses
-    const [github, linkedin, gemini] = await Promise.all([
+    const [github, linkedin] = await Promise.all([
       prisma.gitHubInstallation.findFirst({
         where: { workspaceId: workspace.workspaceId },
       }),
@@ -297,12 +297,6 @@ export async function getIntegrationStatus() {
           provider: 'LINKEDIN',
         },
       }),
-      prisma.tokenVaultEntry.findFirst({
-        where: {
-          workspaceId: workspace.workspaceId,
-          provider: 'GEMINI',
-        },
-      }),
     ]);
 
     return {
@@ -310,9 +304,9 @@ export async function getIntegrationStatus() {
         github: { connected: !!github },
         linkedin: { connected: !!linkedin },
         aiProvider: {
-          provider: 'gemini',
-          model: 'gemini-1.5-flash-latest',
-          configured: !!gemini,
+          provider: 'openai',
+          model: 'gpt-4o-mini',
+          configured: !!process.env.OPENAI_API_KEY,
         },
       },
     };

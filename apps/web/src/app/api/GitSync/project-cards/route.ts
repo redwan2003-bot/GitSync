@@ -3,7 +3,7 @@ import { auth } from '../../../../auth';
 import { prisma } from '@GitSync/db';
 import { checkRateLimit } from '../../../../lib/rate-limit';
 import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '../../../../lib/api-response';
-import { GoogleGenAI } from '@google/genai';
+import OpenAI from 'openai';
 
 export async function GET(_request: NextRequest) {
   try {
@@ -156,36 +156,45 @@ Fields:
 
 Return JSON only.`;
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return errorResponse(ErrorCodes.INTERNAL_ERROR, 'AI service not configured', 500);
     }
 
-    const client = new GoogleGenAI({ apiKey });
-    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest';
+    const client = new OpenAI({ apiKey });
+    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
-    const response = await client.models.generateContent({
+    const response = await client.chat.completions.create({
       model,
-      contents: prompt,
-      config: {
-        systemInstruction:
-          'You generate factual, evidence-bound GitSync content. Use only the provided evidence. Do not invent metrics, users, companies, production claims, collaborators, or benchmarks. Return JSON only.',
-        temperature: 0.3,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: 'object' as any,
-          properties: {
-            title: { type: 'string' as any },
-            subtitle: { type: 'string' as any },
-            details: { type: 'string' as any },
-            callToAction: { type: 'string' as any },
-          },
-          required: ['title', 'subtitle', 'details', 'callToAction'],
+      messages: [
+        {
+          role: 'system',
+          content: 'You generate factual, evidence-bound GitSync content. Use only the provided evidence. Do not invent metrics, users, companies, production claims, collaborators, or benchmarks. Return JSON only.'
         },
-      },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.3,
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "ProjectCardSchema",
+          schema: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              subtitle: { type: 'string' },
+              details: { type: 'string' },
+              callToAction: { type: 'string' },
+            },
+            required: ['title', 'subtitle', 'details', 'callToAction'],
+            additionalProperties: false
+          },
+          strict: true
+        }
+      }
     });
 
-    const rawContent = response.text ?? '{}';
+    const rawContent = response.choices[0]?.message?.content ?? '{}';
     let generatedCard: { title: string; subtitle: string; details: string; callToAction: string };
 
     try {

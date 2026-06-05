@@ -35,27 +35,23 @@ export async function GET() {
       where: { userId: session.user.id },
     });
 
+    const openai = process.env.OPENAI_API_KEY;
+
     if (!workspace) {
       // Return default disconnected status instead of 403
       return successResponse({
         github: { connected: false, configured: !!process.env.GITHUB_APP_ID, installationId: null, accountLogin: null, accountType: null },
         linkedin: { connected: false, configured: !!process.env.LINKEDIN_CLIENT_ID },
-        aiProvider: { provider: 'gemini', model: 'gemini-1.5-flash-latest', configured: !!process.env.GEMINI_API_KEY },
+        aiProvider: { provider: 'openai', model: 'gpt-4o-mini', configured: !!openai },
         database: { connected: true },
         queue: { connected: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL },
       });
     }
 
     // Check integration statuses
-    const [github, gemini, linkedInEntry] = await Promise.all([
+    const [github, linkedInEntry] = await Promise.all([
       safeQuery(prisma.gitHubInstallation.findFirst({
         where: { workspaceId: workspace.workspaceId },
-      })),
-      safeQuery(prisma.tokenVaultEntry.findFirst({
-        where: {
-          workspaceId: workspace.workspaceId,
-          provider: 'GEMINI',
-        },
       })),
       safeQuery(prisma.tokenVaultEntry.findFirst({
         where: {
@@ -84,9 +80,9 @@ export async function GET() {
         authorUrn: linkedinData?.authorUrn || null,
       },
       aiProvider: {
-        provider: 'gemini',
-        model: 'gemini-1.5-flash-latest',
-        configured: !!gemini || !!process.env.GEMINI_API_KEY,
+        provider: 'openai',
+        model: 'gpt-4o-mini',
+        configured: !!openai || !!process.env.OPENAI_API_KEY,
       },
       database: { connected: true },
       queue: { connected: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL },

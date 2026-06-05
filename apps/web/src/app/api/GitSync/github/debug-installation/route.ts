@@ -80,7 +80,7 @@ export async function GET(_request: NextRequest) {
     // Get integration status by querying the same data
     let integrationStatus = null;
     try {
-      const [github, linkedin, gemini] = await Promise.all([
+      const [github, linkedin] = await Promise.all([
         prisma.gitHubInstallation.findFirst({
           where: { workspaceId },
         }),
@@ -88,12 +88,6 @@ export async function GET(_request: NextRequest) {
           where: {
             workspaceId,
             provider: 'LINKEDIN',
-          },
-        }),
-        prisma.tokenVaultEntry.findFirst({
-          where: {
-            workspaceId,
-            provider: 'GEMINI',
           },
         }),
       ]);
@@ -111,9 +105,9 @@ export async function GET(_request: NextRequest) {
           configured: !!process.env.LINKEDIN_CLIENT_ID,
         },
         aiProvider: {
-          provider: 'gemini',
-          model: 'gemini-1.5-flash-latest',
-          configured: !!gemini || !!process.env.GEMINI_API_KEY,
+          provider: 'openai',
+          model: 'gpt-4o-mini',
+          configured: !!process.env.OPENAI_API_KEY,
         },
       };
     } catch (err) {

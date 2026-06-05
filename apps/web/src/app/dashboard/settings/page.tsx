@@ -30,8 +30,8 @@ const DEFAULT_INTEGRATIONS: IntegrationStatus = {
   github: { connected: false, configured: false },
   linkedin: { connected: false, configured: false },
   aiProvider: {
-    provider: 'gemini',
-    model: 'gemini-1.5-flash-latest',
+    provider: 'openai',
+    model: 'gpt-4o-mini',
     configured: false,
   },
   database: { connected: false },
