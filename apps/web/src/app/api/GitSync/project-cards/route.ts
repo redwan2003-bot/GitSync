@@ -156,13 +156,18 @@ Fields:
 
 Return JSON only.`;
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    // Get OpenRouter credentials
+    const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      return errorResponse(ErrorCodes.INTERNAL_ERROR, 'AI service not configured', 500);
+      return errorResponse(ErrorCodes.INTERNAL_ERROR, 'OpenRouter API key is not configured', 500);
     }
 
-    const client = new OpenAI({ apiKey });
-    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+    const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-lite-preview-02-05:free';
+
+    const client = new OpenAI({
+      apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
+    });
 
     const response = await client.chat.completions.create({
       model,

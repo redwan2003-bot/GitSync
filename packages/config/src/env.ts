@@ -3,9 +3,9 @@ import { z } from "zod";
 const nonEmpty = z.string().min(1);
 
 const geminiEnvSchema = z.object({
-  OPENAI_API_KEY: nonEmpty,
-  OPENAI_MODEL: z.string().default("gpt-4o-mini"),
-  OPENAI_ALLOW_PRIVATE_REPO_DRAFTING: z
+  OPENROUTER_API_KEY: nonEmpty,
+  OPENROUTER_MODEL: z.string().default("google/gemini-2.0-flash-lite-preview-02-05:free"),
+  OPENROUTER_ALLOW_PRIVATE_REPO_DRAFTING: z
     .enum(["true", "false"])
     .default("false")
     .transform((v) => v === "true"),
@@ -98,9 +98,9 @@ export const apiEnvDevelopmentSchema = z.object({
     .string()
     .url()
     .default("http://localhost:3001/integrations/linkedin/callback"),
-  OPENAI_API_KEY: z.string().default(""),
-  OPENAI_MODEL: z.string().default("gpt-4o-mini"),
-  OPENAI_ALLOW_PRIVATE_REPO_DRAFTING: z
+  OPENROUTER_API_KEY: z.string().default(""),
+  OPENROUTER_MODEL: z.string().default("google/gemini-2.0-flash-lite-preview-02-05:free"),
+  OPENROUTER_ALLOW_PRIVATE_REPO_DRAFTING: z
     .enum(["true", "false"])
     .default("false")
     .transform((v) => v === "true"),

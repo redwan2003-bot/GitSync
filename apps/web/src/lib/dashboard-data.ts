@@ -304,9 +304,9 @@ export async function getIntegrationStatus() {
         github: { connected: !!github },
         linkedin: { connected: !!linkedin },
         aiProvider: {
-          provider: 'openai',
-          model: 'gpt-4o-mini',
-          configured: !!process.env.OPENAI_API_KEY,
+          provider: 'openrouter',
+          model: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-lite-preview-02-05:free',
+          configured: !!process.env.OPENROUTER_API_KEY,
         },
       },
     };

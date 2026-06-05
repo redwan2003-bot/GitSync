@@ -397,9 +397,9 @@ function SettingsContent() {
           </div>
         </SettingCard>
 
-        {/* 3. Gemini AI Configuration */}
+        {/* 3. OpenRouter AI Configuration */}
         <SettingCard
-          title="Gemini 3.5 Flash Configuration"
+          title="OpenRouter AI Configuration"
           description="Manage AI model settings for draft generation"
           status={integrations?.aiProvider.configured ? 'connected' : 'disconnected'}
           icon={Zap}

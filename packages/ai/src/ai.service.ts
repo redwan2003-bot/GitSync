@@ -15,13 +15,16 @@ export class AiGenerationService {
   private readonly model: string;
 
   constructor(options: AiGenerationServiceOptions = {}) {
-    const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
+    const apiKey = options.apiKey ?? process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      throw new Error("OPENAI_API_KEY is not set in environment.");
+      throw new Error("OPENROUTER_API_KEY is not set in environment.");
     }
 
-    this.model = options.model ?? process.env.OPENAI_MODEL ?? "gpt-4o-mini";
-    this.client = options.client ?? new OpenAI({ apiKey });
+    this.model = options.model ?? process.env.OPENROUTER_MODEL ?? "google/gemini-2.0-flash-lite-preview-02-05:free";
+    this.client = options.client ?? new OpenAI({ 
+      apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
+    });
   }
 
   /**
