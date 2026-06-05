@@ -31,7 +31,7 @@ const DEFAULT_INTEGRATIONS: IntegrationStatus = {
   linkedin: { connected: false, configured: false },
   aiProvider: {
     provider: 'gemini',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-1.5-flash',
     configured: false,
   },
   database: { connected: false },

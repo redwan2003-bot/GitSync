@@ -40,7 +40,7 @@ export async function GET() {
       return successResponse({
         github: { connected: false, configured: !!process.env.GITHUB_APP_ID, installationId: null, accountLogin: null, accountType: null },
         linkedin: { connected: false, configured: !!process.env.LINKEDIN_CLIENT_ID },
-        aiProvider: { provider: 'gemini', model: 'gemini-2.0-flash', configured: !!process.env.GEMINI_API_KEY },
+        aiProvider: { provider: 'gemini', model: 'gemini-1.5-flash', configured: !!process.env.GEMINI_API_KEY },
         database: { connected: true },
         queue: { connected: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL },
       });
@@ -85,7 +85,7 @@ export async function GET() {
       },
       aiProvider: {
         provider: 'gemini',
-        model: 'gemini-2.0-flash',
+        model: 'gemini-1.5-flash',
         configured: !!gemini || !!process.env.GEMINI_API_KEY,
       },
       database: { connected: true },

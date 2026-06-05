@@ -26,7 +26,7 @@ describe("AiGenerationService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.GEMINI_API_KEY = "test_key";
-    process.env.GEMINI_MODEL = "gemini-2.0-flash";
+    process.env.GEMINI_MODEL = "gemini-1.5-flash";
     process.env.GEMINI_ALLOW_PRIVATE_REPO_DRAFTING = "false";
 
     mocks.getTemplate.mockReturnValue("Mock template {{repoName}}");
@@ -52,7 +52,7 @@ describe("AiGenerationService", () => {
     expect(mocks.googleGenAI).toHaveBeenCalledWith({ apiKey: "test_key" });
     expect(mocks.generateContent).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: "gemini-2.0-flash",
+        model: "gemini-1.5-flash",
         contents: "Mock template test/repo",
       }),
     );

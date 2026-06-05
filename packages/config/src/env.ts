@@ -4,7 +4,7 @@ const nonEmpty = z.string().min(1);
 
 const geminiEnvSchema = z.object({
   GEMINI_API_KEY: nonEmpty,
-  GEMINI_MODEL: z.string().default("gemini-2.0-flash"),
+  GEMINI_MODEL: z.string().default("gemini-1.5-flash"),
   GEMINI_ALLOW_PRIVATE_REPO_DRAFTING: z
     .enum(["true", "false"])
     .default("false")
@@ -99,7 +99,7 @@ export const apiEnvDevelopmentSchema = z.object({
     .url()
     .default("http://localhost:3001/integrations/linkedin/callback"),
   GEMINI_API_KEY: z.string().default(""),
-  GEMINI_MODEL: z.string().default("gemini-2.0-flash"),
+  GEMINI_MODEL: z.string().default("gemini-1.5-flash"),
   GEMINI_ALLOW_PRIVATE_REPO_DRAFTING: z
     .enum(["true", "false"])
     .default("false")
