@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const formattedLogs = logs.map(log => ({
+    const formattedLogs = logs.map((log: any) => ({
       id: log.id,
       timestamp: log.createdAt.toISOString(),
       action: log.action,
