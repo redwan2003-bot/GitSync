@@ -20,7 +20,7 @@ export class AiGenerationService {
       throw new Error("GEMINI_API_KEY is not set in environment.");
     }
 
-    this.model = options.model ?? process.env.GEMINI_MODEL ?? "gemini-3.5-flash";
+    this.model = options.model ?? process.env.GEMINI_MODEL ?? "gemini-2.0-flash";
     this.client = options.client ?? new GoogleGenAI({ apiKey });
   }
 

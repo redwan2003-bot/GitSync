@@ -112,7 +112,7 @@ export async function GET(_request: NextRequest) {
         },
         aiProvider: {
           provider: 'gemini',
-          model: 'gemini-3.5-flash',
+          model: 'gemini-2.0-flash',
           configured: !!gemini || !!process.env.GEMINI_API_KEY,
         },
       };
