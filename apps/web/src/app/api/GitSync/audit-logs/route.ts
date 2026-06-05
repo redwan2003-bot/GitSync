@@ -33,9 +33,21 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
+      include: {
+        user: { select: { name: true, email: true } }
+      }
     });
 
-    return NextResponse.json({ logs });
+    const formattedLogs = logs.map(log => ({
+      id: log.id,
+      timestamp: log.createdAt.toISOString(),
+      action: log.action,
+      actor: log.user?.name || log.user?.email || log.userId,
+      resource: `${log.resourceType}:${log.resourceId}`,
+      details: log.details,
+    }));
+
+    return NextResponse.json({ logs: formattedLogs });
   } catch (error) {
     console.error('Audit logs error:', error);
     return NextResponse.json(
