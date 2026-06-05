@@ -265,7 +265,7 @@ export async function getIntegrationStatus() {
         linkedin: { connected: true },
         aiProvider: {
           provider: 'gemini',
-          model: 'gemini-1.5-flash',
+          model: 'gemini-1.5-flash-latest',
           configured: true,
         },
       },
@@ -311,7 +311,7 @@ export async function getIntegrationStatus() {
         linkedin: { connected: !!linkedin },
         aiProvider: {
           provider: 'gemini',
-          model: 'gemini-1.5-flash',
+          model: 'gemini-1.5-flash-latest',
           configured: !!gemini,
         },
       },

@@ -162,7 +162,7 @@ Return JSON only.`;
     }
 
     const client = new GoogleGenAI({ apiKey });
-    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest';
 
     const response = await client.models.generateContent({
       model,
