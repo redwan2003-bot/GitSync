@@ -11,6 +11,10 @@ interface ProjectCard {
   description: string;
   url?: string;
   date: string;
+  startDate?: string;
+  endDate?: string;
+  skills?: string[];
+  contributors?: string[];
 }
 
 const handleOpenLinkedin = () => {
@@ -218,6 +222,87 @@ export default function ProjectCardsPage() {
                         </button>
                       </div>
                     </div>
+
+                    {/* Skills */}
+                    {selectedCard.skills && selectedCard.skills.length > 0 && (
+                      <div>
+                        <div className="text-xs text-muted uppercase font-medium mb-2">Skills</div>
+                        <div className="flex items-center justify-between gap-3">
+                          <input
+                            aria-label="Project skills"
+                            type="text"
+                            value={selectedCard.skills.join(', ')}
+                            readOnly
+                            className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text focus:outline-none focus:border-signal"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleCopy('skills', selectedCard.skills!.join(', '))}
+                            className="p-2 rounded-lg hover:bg-surface transition-colors"
+                          >
+                            {copiedField === 'skills' ? (
+                              <CheckCircle aria-hidden="true" size={18} className="text-signal" />
+                            ) : (
+                              <Copy aria-hidden="true" size={18} className="text-muted hover:text-text" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Date Range */}
+                    {(selectedCard.startDate || selectedCard.endDate) && (
+                      <div>
+                        <div className="text-xs text-muted uppercase font-medium mb-2">Date Range</div>
+                        <div className="flex items-center justify-between gap-3">
+                          <input
+                            aria-label="Date range"
+                            type="text"
+                            value={`${selectedCard.startDate || ''} - ${selectedCard.endDate || 'Present'}`}
+                            readOnly
+                            className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text focus:outline-none focus:border-signal"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleCopy('dates', `${selectedCard.startDate || ''} - ${selectedCard.endDate || 'Present'}`)}
+                            className="p-2 rounded-lg hover:bg-surface transition-colors"
+                          >
+                            {copiedField === 'dates' ? (
+                              <CheckCircle aria-hidden="true" size={18} className="text-signal" />
+                            ) : (
+                              <Copy aria-hidden="true" size={18} className="text-muted hover:text-text" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Contributors */}
+                    {selectedCard.contributors && selectedCard.contributors.length > 0 && (
+                      <div>
+                        <div className="text-xs text-muted uppercase font-medium mb-2">Contributors</div>
+                        <div className="flex items-center justify-between gap-3">
+                          <input
+                            aria-label="Contributors"
+                            type="text"
+                            value={selectedCard.contributors.join(', ')}
+                            readOnly
+                            className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text focus:outline-none focus:border-signal"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleCopy('contributors', selectedCard.contributors!.join(', '))}
+                            className="p-2 rounded-lg hover:bg-surface transition-colors"
+                          >
+                            {copiedField === 'contributors' ? (
+                              <CheckCircle aria-hidden="true" size={18} className="text-signal" />
+                            ) : (
+                              <Copy aria-hidden="true" size={18} className="text-muted hover:text-text" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Guidance Text */}

@@ -267,6 +267,7 @@ model ProjectCard {
   endDate           String?
   technologies      Json
   links             Json
+  contributors      Json?    @default("[]")
   syncStatus        String   @default("MANUAL_READY")
   linkedInProjectId String?
   createdAt         DateTime @default(now())

@@ -60,12 +60,26 @@ export async function GET(_request: NextRequest) {
         console.error('Error formatting url for card', card.id, err);
       }
 
+      let skills: string[] = [];
+      try {
+        skills = Array.isArray(card.technologies) ? card.technologies : [];
+      } catch (err) {}
+
+      let contributors: string[] = [];
+      try {
+        contributors = Array.isArray(card.contributors) ? card.contributors : [];
+      } catch (err) {}
+
       return {
         id: card.id,
         name: card.title || 'Untitled',
         description: card.description || '',
         url,
         date: dateStr,
+        startDate: card.startDate || '',
+        endDate: card.endDate || '',
+        skills,
+        contributors,
       };
     });
 
@@ -153,6 +167,10 @@ Fields:
 - subtitle (string): A brief subtitle or tagline.
 - details (string): A short paragraph describing the project and why it matters.
 - callToAction (string): A short, engaging sentence prompting the reader to check out the repo or engage.
+- skills (array of strings): Up to 5 key technologies/skills used. Extract from language if possible.
+- startDate (string): The start date in "Month Year" format (e.g., "January 2023"). If unknown, leave empty.
+- endDate (string): The end date in "Month Year" format. If it is an active project, return "Present".
+- contributors (array of strings): Key contributors to the project. If unknown, leave empty.
 
 Return JSON only.`;
 
@@ -190,8 +208,12 @@ Return JSON only.`;
               subtitle: { type: 'string' },
               details: { type: 'string' },
               callToAction: { type: 'string' },
+              skills: { type: 'array', items: { type: 'string' } },
+              startDate: { type: 'string' },
+              endDate: { type: 'string' },
+              contributors: { type: 'array', items: { type: 'string' } }
             },
-            required: ['title', 'subtitle', 'details', 'callToAction'],
+            required: ['title', 'subtitle', 'details', 'callToAction', 'skills', 'startDate', 'endDate', 'contributors'],
             additionalProperties: false
           },
           strict: true
@@ -200,7 +222,16 @@ Return JSON only.`;
     });
 
     const rawContent = response.choices[0]?.message?.content ?? '{}';
-    let generatedCard: { title: string; subtitle: string; details: string; callToAction: string };
+    let generatedCard: { 
+      title: string; 
+      subtitle: string; 
+      details: string; 
+      callToAction: string;
+      skills: string[];
+      startDate: string;
+      endDate: string;
+      contributors: string[];
+    };
 
     try {
       generatedCard = JSON.parse(rawContent);
@@ -217,7 +248,10 @@ Return JSON only.`;
         title: generatedCard.title || repository.name,
         role: generatedCard.subtitle || '',
         description: `${generatedCard.details || ''}\n\n${generatedCard.callToAction || ''}`.trim(),
-        technologies: repository.language ? [repository.language] : [],
+        startDate: generatedCard.startDate || null,
+        endDate: generatedCard.endDate || null,
+        technologies: generatedCard.skills?.length ? generatedCard.skills : (repository.language ? [repository.language] : []),
+        contributors: generatedCard.contributors || [],
         links: repository.htmlUrl ? [{ type: 'GitHub', url: repository.htmlUrl }] : [],
         syncStatus: 'MANUAL_READY',
       },
