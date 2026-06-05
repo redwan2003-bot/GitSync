@@ -204,7 +204,7 @@ export default function ProjectCardsPage() {
                           aria-label="Project URL"
                           type="url"
                           placeholder="https://example.com"
-                          defaultValue={selectedCard.url || ''}
+                          value={selectedCard.url || ''}
                           readOnly
                           className="flex-1 bg-surface border border-border rounded px-3 py-2 text-sm text-text placeholder-muted/50 focus:outline-none focus:border-signal"
                         />
