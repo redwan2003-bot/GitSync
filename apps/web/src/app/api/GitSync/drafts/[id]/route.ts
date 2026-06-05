@@ -5,16 +5,17 @@ import { errorResponse, successResponse } from '../../../../../lib/api-response'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return errorResponse('UNAUTHORIZED', 'Authentication required', 401);
     }
 
     const draft = await prisma.contentDraft.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { repository: true }
     });
 
@@ -31,16 +32,17 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return errorResponse('UNAUTHORIZED', 'Authentication required', 401);
     }
 
     const draft = await prisma.contentDraft.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { workspace: true }
     });
 

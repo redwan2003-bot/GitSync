@@ -4,11 +4,11 @@ import { H2, Code } from '../../../../components/typography';
 import { PixelStatusBadge } from '../../../../components/typography';
 import { ArrowLeft, Copy, CheckCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface DraftDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function DraftDetailPage({ params }: DraftDetailPageProps) {
@@ -19,7 +19,8 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
   const [publishing, setPublishing] = useState(false);
   const router = useRouter();
 
-  const draftId = params.id;
+  const unwrappedParams = use(params);
+  const draftId = unwrappedParams.id;
 
   useEffect(() => {
     async function fetchDraft() {
