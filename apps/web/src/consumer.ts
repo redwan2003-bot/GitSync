@@ -9,7 +9,7 @@ const queueHandler = {
     // _env: contains bindings defined in wrangler.jsonc, e.g., MY_QUEUE (producer) if needed.
     // _ctx: provides a waitUntil method for async background tasks.
 
-    await Promise.all(batch.map(async (message: any) => {
+    await Promise.all(batch.map(async (message: { json: () => Promise<unknown> }) => {
       try {
         // The message body is the payload we sent from the producer worker.
         const payload = await message.json();

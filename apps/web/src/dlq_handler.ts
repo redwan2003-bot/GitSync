@@ -5,7 +5,7 @@
 const dlqHandler = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   async queue(batch: any, _env: any, _ctx: any) {
-    await Promise.all(batch.map(async (message: any) => {
+    await Promise.all(batch.map(async (message: { json: () => Promise<unknown> }) => {
       try {
         const payload = await message.json();
         // Log the failed payload for later inspection.

@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { auth } from '../../../../auth';
-import { prisma } from '@GitSync/db';
+import { prisma, type ProjectCard } from '@GitSync/db';
 import { checkRateLimit } from '../../../../lib/rate-limit';
 import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '../../../../lib/api-response';
 import OpenAI from 'openai';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
 
@@ -40,7 +40,7 @@ export async function GET(_request: NextRequest) {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const formattedCards = projectCards.map((card: any) => {
+    const formattedCards = projectCards.map((card: ProjectCard) => {
       let dateStr = '';
       try {
         if (card.startDate) {
@@ -54,7 +54,7 @@ export async function GET(_request: NextRequest) {
 
       let url = '';
       try {
-        const links = Array.isArray(card.links) ? card.links : [];
+        const links = Array.isArray(card.links) ? (card.links as Array<{ url?: string }>) : [];
         url = links[0]?.url || '';
       } catch (err) {
         console.error('Error formatting url for card', card.id, err);
@@ -62,13 +62,13 @@ export async function GET(_request: NextRequest) {
 
       let skills: string[] = [];
       try {
-        skills = Array.isArray(card.technologies) ? card.technologies : [];
-      } catch (err) {}
+        skills = Array.isArray(card.technologies) ? (card.technologies as string[]) : [];
+      } catch {}
 
       let contributors: string[] = [];
       try {
-        contributors = Array.isArray(card.contributors) ? card.contributors : [];
-      } catch (err) {}
+        contributors = Array.isArray(card.contributors) ? (card.contributors as string[]) : [];
+      } catch {}
 
       return {
         id: card.id,
@@ -264,7 +264,7 @@ Return JSON only.`;
         action: 'CREATED',
         resourceType: 'ProjectCard',
         resourceId: newProjectCard.id,
-        details: `Generated project card for ${repository.name}`,
+        metadata: { details: `Generated project card for ${repository.name}` },
       }
     });
 
@@ -274,17 +274,17 @@ Return JSON only.`;
           id: newProjectCard.id,
           name: newProjectCard.title,
           description: newProjectCard.description,
-          url: (newProjectCard.links as any)?.[0]?.url || '',
+          url: (newProjectCard.links as Array<{ url?: string }>)?.[0]?.url || '',
           date: newProjectCard.createdAt ? new Date(newProjectCard.createdAt).toISOString().split('T')[0] : '',
         },
       },
       201
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('Project card generation error:', error);
     return errorResponse(
       ErrorCodes.INTERNAL_ERROR,
-      `Failed to generate project card: ${error?.message || 'Unknown error'}`,
+      `Failed to generate project card: ${error instanceof Error ? error.message : 'Unknown error'}`,
       500
     );
   }

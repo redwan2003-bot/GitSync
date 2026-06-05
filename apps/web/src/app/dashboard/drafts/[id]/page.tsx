@@ -11,9 +11,26 @@ interface DraftDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+interface Commit {
+  id?: string;
+  message: string;
+}
+
+interface Draft {
+  id: string;
+  generatedText: string | null;
+  status: string;
+  repository?: {
+    name: string;
+  } | null;
+  payloadJson?: {
+    commits?: Commit[];
+  } | null;
+}
+
 export default function DraftDetailPage({ params }: DraftDetailPageProps) {
   const [copied, setCopied] = useState(false);
-  const [draft, setDraft] = useState<any>(null);
+  const [draft, setDraft] = useState<Draft | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
@@ -29,8 +46,8 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Failed to fetch draft');
         setDraft(data.data?.draft);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to fetch draft');
       } finally {
         setLoading(false);
       }
@@ -51,8 +68,8 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
       const res = await fetch(`/api/GitSync/drafts/${draftId}`, { method: 'POST' });
       if (!res.ok) throw new Error('Failed to publish');
       router.push('/dashboard/drafts');
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to publish');
       setPublishing(false);
     }
   };
@@ -79,7 +96,11 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
               <div className="bg-surface border border-border rounded-lg p-6">
                 <div className="flex items-start justify-between mb-4">
                   <H2>LinkedIn Draft</H2>
-                  <PixelStatusBadge status={draft.status === 'DRAFT_PENDING' ? 'READY' : draft.status} />
+                  <PixelStatusBadge status={
+                    draft.status === 'PUBLISHED' ? 'PUBLISHED' :
+                    draft.status === 'DRAFT_PENDING' ? 'READY' :
+                    draft.status === 'FAILED' ? 'FAILED' : 'REVIEW'
+                  } />
                 </div>
 
                 {/* Draft Content */}
@@ -143,7 +164,7 @@ export default function DraftDetailPage({ params }: DraftDetailPageProps) {
             <div className="pt-4">
               <div className="text-xs text-muted uppercase font-medium mb-2">Commits</div>
               <ul className="space-y-1">
-                {(draft.payloadJson?.commits || []).map((commit: any) => (
+                {(draft.payloadJson?.commits || []).map((commit) => (
                   <li key={commit.id || commit.message} className="text-xs text-text font-mono bg-surface-soft px-2 py-1 rounded">
                     {commit.message}
                   </li>

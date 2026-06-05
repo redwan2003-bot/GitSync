@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { auth } from '../../../../../auth';
 import { prisma } from '@GitSync/db';
 import { errorResponse, successResponse } from '../../../../../lib/api-response';
@@ -75,7 +75,7 @@ export async function POST(
         action: 'PUBLISHED',
         resourceType: 'ContentDraft',
         resourceId: draft.id,
-        details: `Published draft to LinkedIn`
+        metadata: { details: 'Published draft to LinkedIn' }
       }
     });
 

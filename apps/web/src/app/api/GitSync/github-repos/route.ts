@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { auth } from '../../../../auth';
-import { prisma } from '@GitSync/db';
+import { prisma, type Repository } from '@GitSync/db';
 import { checkRateLimit } from '../../../../lib/rate-limit';
 import { successResponse, rateLimitErrorResponse, errorResponse, ErrorCodes } from '../../../../lib/api-response';
 
@@ -62,18 +62,18 @@ export async function GET(_request: NextRequest) {
     });
 
     const isPending = repositories.length === 0;
-    const isFailed = repositories.some((r: any) => r.syncStatus === 'FAILED');
+    const isFailed = repositories.some((r: Repository) => r.syncStatus === 'FAILED');
 
     let syncStatus = 'success';
     if (isPending) syncStatus = 'pending';
     if (isFailed) syncStatus = 'failed';
 
     const lastSyncedAt = repositories.length > 0 
-      ? repositories.reduce((latest: Date, r: any) => (r.lastSyncedAt && r.lastSyncedAt > latest ? r.lastSyncedAt : latest), new Date(0))
+      ? repositories.reduce((latest: Date, r: Repository) => (r.lastSyncedAt && r.lastSyncedAt > latest ? r.lastSyncedAt : latest), new Date(0))
       : null;
 
     // Convert BigInt IDs to string for JSON serialization
-    const serializedRepos = repositories.map((repo: any) => ({
+    const serializedRepos = repositories.map((repo: Repository) => ({
       ...repo,
       githubRepoId: repo.githubRepoId.toString(),
     }));

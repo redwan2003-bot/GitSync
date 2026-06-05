@@ -42,10 +42,10 @@ export async function GET(request: NextRequest) {
       id: string;
       createdAt: Date;
       action: string;
-      userId: string;
+      userId: string | null;
       resourceType: string;
-      resourceId: string;
-      details: string | null;
+      resourceId: string | null;
+      metadata: { details?: string } | null;
       user: { name: string | null; email: string | null } | null;
     }) => ({
       id: log.id,
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       action: log.action,
       actor: log.user?.name || log.user?.email || log.userId,
       resource: `${log.resourceType}:${log.resourceId}`,
-      details: log.details,
+      details: log.metadata?.details || '',
     }));
 
     return NextResponse.json({ logs: formattedLogs });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
 import { H2 } from './typography';
 
@@ -22,13 +22,7 @@ export function ProjectCardGenerator({ onGenerateSuccess }: ProjectCardGenerator
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<string>('');
 
-  useEffect(() => {
-    if (isOpen && repositories.length === 0) {
-      loadRepos();
-    }
-  }, [isOpen]);
-
-  async function loadRepos() {
+  const loadRepos = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -44,12 +38,19 @@ export function ProjectCardGenerator({ onGenerateSuccess }: ProjectCardGenerator
       if (repos.length > 0) {
         setSelectedRepo(repos[0].id);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch repositories');
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && repositories.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadRepos();
+    }
+  }, [isOpen, repositories.length, loadRepos]);
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -74,8 +75,8 @@ export function ProjectCardGenerator({ onGenerateSuccess }: ProjectCardGenerator
 
       setIsOpen(false);
       onGenerateSuccess();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate card');
     } finally {
       setGenerating(false);
     }

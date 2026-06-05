@@ -166,7 +166,7 @@ Return JSON with "content" field containing the post text.`;
                 action: 'CREATED',
                 resourceType: 'ContentDraft',
                 resourceId: newDraft.id,
-                details: `Generated draft from ${event} event on ${repoName}`,
+                metadata: { details: `Generated draft from ${event} event on ${repoName}` },
               }
             });
           }
