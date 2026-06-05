@@ -16,7 +16,7 @@
     "@GitSync/db": "workspace:*",
     "@GitSync/integrations": "workspace:*",
     "@auth/prisma-adapter": "^2.8.0",
-    "@google/genai": "^1.51.0",
+    "openai": "^4.0.0",
     "@react-three/drei": "^9.95.1",
     "@react-three/fiber": "^8.15.5",
     "@sentry/nextjs": "^10.55.0",
