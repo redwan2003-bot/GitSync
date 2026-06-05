@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '../../../../../../auth';
+import { auth } from '../../../../../auth';
 import { prisma } from '@GitSync/db';
-import { errorResponse, successResponse } from '../../../../../../lib/api-response';
+import { errorResponse, successResponse } from '../../../../../lib/api-response';
 
 export async function GET(
   request: NextRequest,
